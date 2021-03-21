@@ -11,6 +11,7 @@ pygmentsUseClasses = true
   github = "yuweizzz"
   email = "yuweiy@foxmail.com"
   baseURL = "https://yuweizzz.github.io/"
+  url = "https://yuweizzz.github.io/"
   keywords = "blog, google analytics"
   rss = false
   lastmod = true
