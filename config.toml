@@ -1,3 +1,22 @@
-baseURL = "http://example.org/"
-languageCode = "en-us"
-title = "My New Hugo Site"
+languageCode = "zh-cn"
+title = "Wei's blog"
+theme = "github-style"
+googleAnalytics = "UA-174929827-1"
+pygmentsCodeFences = true
+pygmentsUseClasses = true
+
+[params]
+  author = "Wei"
+  description = "Freedom should be an opportunity that can make he becomes better."
+  github = "yuweizzz"
+  email = "yuweiy@foxmail.com"
+  url = "https://yuweizzz.github.io"
+  keywords = "blog, google analytics"
+  rss = false
+  lastmod = true
+  favicon = "/images/github.png"
+  location = "China"
+
+
+[frontmatter]
+  lastmod = ["lastmod", ":fileModTime", ":default"]

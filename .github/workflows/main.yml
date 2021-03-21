@@ -1,0 +1,52 @@
+name: deploy blog
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    name: Build and deploy blog
+    env:
+      MY_SECRET   : ${{secrets.commit_secret}}
+      USER_NAME   : yuweizzz
+      USER_EMAIL  : ${{secrets.email}}yuwei764969238@gmail.com
+      PUBLISH_DIR : ~/public
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout 
+        uses: actions/checkout@v2
+        with: 
+          submodules: true
+
+      - name: setup hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.81.0'
+          extended: true
+
+      - name: generate private key and identify host 
+        run: |
+          mkdir ~/.ssh/
+          echo "$MY_SECRET" | tr -d '\r'  > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: clone old repository
+        run: |
+          git clone git@github.com:yuweizzz/yuweizzz.github.io "$PUBLISH_DIR"
+
+      - name: build 
+        run: |
+          hugo -D -d "$PUBLISH_DIR"
+
+      - name: commit and push to branch
+        run: |
+          cd "$PUBLISH_DIR"
+          git config --local user.name $USER_NAME
+          git config --local user.email $USER_EMAIL
+          git add --all
+          message=$(date '+%Y-%m-%d %H:%M:%S')
+          git commit -m "update in $message UTC"
+          git push origin main 
+          echo "deploy complete." 
