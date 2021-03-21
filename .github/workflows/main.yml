@@ -2,14 +2,14 @@ name: deploy blog
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   build:
     name: Build and deploy blog
     env:
       MY_SECRET   : ${{secrets.commit_secret}}
       USER_NAME   : yuweizzz
-      USER_EMAIL  : ${{secrets.email}}yuwei764969238@gmail.com
+      USER_EMAIL  : ${{secrets.email}}
       PUBLISH_DIR : ~/public
     runs-on: ubuntu-latest
 
