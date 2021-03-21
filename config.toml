@@ -10,7 +10,6 @@ pygmentsUseClasses = true
   description = "Freedom should be an opportunity that can make he becomes better."
   github = "yuweizzz"
   email = "yuweiy@foxmail.com"
-  baseURL = "https://yuweizzz.github.io/"
   url = "https://yuweizzz.github.io/"
   keywords = "blog, google analytics"
   rss = false
