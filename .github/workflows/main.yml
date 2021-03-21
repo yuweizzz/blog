@@ -9,7 +9,7 @@ jobs:
     env:
       MY_SECRET   : ${{secrets.commit_secret}}
       USER_NAME   : yuweizzz
-      USER_EMAIL  : ${{secrets.email}}yuwei764969238@gmail.com
+      USER_EMAIL  : ${{secrets.email}}
       PUBLISH_DIR : ~/public
     runs-on: ubuntu-latest
 
