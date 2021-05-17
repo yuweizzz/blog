@@ -5,7 +5,7 @@ tags:
   - "GitHub"
   - "SSH"
   - "Git"
-draft: true
+draft: false
 ---
 
 通过配置 Github SSH Key 实现 GitHub 免密推送。
@@ -37,7 +37,7 @@ draft: true
 
 我们通过本地 Git 来远程管理 GitHub 上的仓库，在每次推送都需要输入账户和密码，可以通过配置 GitHub 公钥，省去重复输入账户密码的麻烦。
 
-### 创建秘钥对
+### 创建秘钥对：
 
 GitHub 的推送和 SSH 的登陆原理非常相似，通常是本地使用私钥，GitHub 端保存公钥信息，我们使用 Git 推送时，以私钥加密的信息可以被对应的公钥解析，通信就能够建立了。
 
@@ -66,13 +66,13 @@ $ ssh-keygen -t rsa -C "注册GitHub时的邮箱" -P "" -f ~/.ssh/id_rsa
 
 执行完命令后，我们可以得到 id_rsa 和 id_rsa.pub 两个文件，其中 id_rsa 是私钥，id_rsa.pub 是公钥。
 
-### 在GitHub账户中添加公钥
+### 在GitHub账户中添加公钥：
 
 我们需要把公钥信息上传到自己的 GitHub 账户。
 
 打开自己的[ GitHub 账户 ](https://github.com/settings/keys)，点击 New SSH key ，复制 id_rsa.pub 的内容到 Key 中，Title 按照自己的喜好命名，然后 Add SSH Key ，完成公钥添加。
 
-### 测试公钥
+### 测试公钥：
 
 完成云端公钥信息的添加后，我们可以在本地测试公钥是否正确设置。
 
