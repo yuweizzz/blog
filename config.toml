@@ -16,7 +16,7 @@ pygmentsUseClasses = true
   lastmod = true
   favicon = "/images/github.png"
   location = "China"
-
+  custom_js = "/js/CustomLive2D.js"
 
 [frontmatter]
   lastmod = ["lastmod", ":fileModTime", ":default"]
