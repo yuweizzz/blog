@@ -71,6 +71,45 @@ tar -xvJf output.tar.xz -C /mydir
 # 可以指定对应的压缩格式
 ```
 
+## 硬盘分区和格式化
+
+硬盘需要进行分区和格式化之后才能使用，现阶段主流的硬盘分区方式是 GPT ，小容量的硬盘和系统盘还经常会使用 msdos 。常用的分区工具有 parted ， fdisk ， gdisk 这几个，文件系统格式化一般使用 mkfs 命令。
+
+``` bash
+# fdisk 只能支持 msdos 分区
+# gdisk 在 fdisk 的基础上扩展 gpt 的功能
+# 推荐使用 parted ，它拥有更全面的功能
+
+# 查看已有分区信息
+parted /dev/sda print     
+
+# 以下命令具有一定危险，需要注意数据安全
+# 设置分区表格式
+parted /dev/sda mklabel [ gpt | msdos ]
+
+# 新增分区
+parted /dev/sda mkpart [ primary | extended | logical ] [ ext4 | xfs ] start end
+# gpt 一般只用到 primary 分区，msdos 需要额外用到 extended 和 logical 分区
+# 文件系统的标记一般可以不写
+# 分区范围是必填项
+
+# 删除某一分区， Number 代表分区编号
+parted /dev/sda rm Number
+
+# 格式化分区
+mkfs.ext4 [-b size] [-L label] /dev/sda1
+mkfs.xfs [-b size] [-L label] /dev/sda1
+# 两种最常用的文件系统，参数都是相近的
+# -b 用来设定最小区块大小，有1K，2K，4K
+# -L 用来设置文件系统标签，用于挂载文件系统
+
+# 速用脚本
+parted /dev/sda -s mklabel gpt
+parted /dev/sda -s mkpart primary 0 100%
+# -s 用来屏蔽 parted 的交互信息
+mkfs.xfs /dev/sda1
+```
+
 ## curl的基本使用
 
 curl 在 Linux 代替了浏览器的工作，经常用来调试接口。
@@ -228,4 +267,31 @@ while read A B C
 do
     echo $A,$B,$C
 done < file
+```
+
+## 使用yum下载rpm包
+
+有时候会有下载 rpm 包的需求，可以通过 yum 实现。
+
+``` bash
+yum install package --downloadonly --downloaddir=/your/dir
+# 可以只下载 rpm 包而不进行安装
+# 不指定下载目录，则下载后文件保存在 /var/cache/yum/ 下的子目录中
+# 如果 --downloadonly 运行失败，可能需要自行安装这个插件
+```
+
+## 使用cpio打开rpm文件
+
+rpm 包可以视为一个特殊的归档文件，如果需要提取这个档案中的内容，一般通过 rpm2cpio 和 cpio 去实现。
+
+``` bash
+# 常用的实例命令
+rpm2cpio package.rpm | cpio -divm
+
+# 以下是 cpio 比较重要的参数
+# -i/--extract 展开文件
+# -o/--create 生成文件
+# -v/--verbose 显示详细过程
+# -d/--make-directories 在需要时建立目录
+# -m/--preserve-modification-time 保留更改时间。
 ```
