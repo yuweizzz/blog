@@ -295,3 +295,40 @@ rpm2cpio package.rpm | cpio -divm
 # -d/--make-directories 在需要时建立目录
 # -m/--preserve-modification-time 保留更改时间。
 ```
+
+## 更新文件到initramfs镜像中
+
+在 Linux 系统中，我们一般可以在 `/boot` 目录中找到 initramfs 镜像文件，它们是引导系统的必要组件。如果需要使用到的系统命令没有编译到镜像中，可以使用 dracut 命令进行镜像更新。
+
+``` bash
+# 使用 file 命令可以看到 CentOS 7.4 的 initramfs 镜像是由 gunzip 压缩的文件
+# initramfs-3.10.0-693.el7.x86_64.img: gzip compressed data, from Unix, 
+# last modified: Sat Mar 16 15:51:25 2019, max compression
+
+# 以常规思路去处理这个文件
+# 首先需要更改命名后缀，否则 gunzip 无法识别
+cp initramfs-3.10.0-693.el7.x86_64.img /tmp/initramfs-3.10.0-693.el7.x86_64.img.gz
+# 使用 gunzip 解压
+gunzip -d initramfs-3.10.0-693.el7.x86_64.img.gz
+# 使用 file 命令可以看到解压后是 cpio 归档文件
+# initramfs-3.10.0-693.el7.x86_64.img: ASCII cpio archive (SVR4 with no CRC)
+# 进一步解包归档文件
+cpio -divm < initramfs-3.10.0-693.el7.x86_64.img
+# 到这一步可以完全提取出镜像内的文件
+
+# 使用专用命令去查看镜像信息，比较推荐使用这种用法
+lsinitrd /tmp/initramfs-3.10.0-693.el7.x86_64.img
+# 可以看到基础的镜像信息和镜像内的具体文件信息
+
+# 更新系统命令文件到 initramfs 中
+dracut -v -I '/usr/sbin/xfsdump /usr/sbin/xfsrestore' -f [initramfs.img]
+# -v 显示详细过程
+# -I 需要添加到镜像中的文件列表，不同文件以空格隔开
+# -f 强制覆写原有镜像，这个选项一般放在最后或者镜像文件名之前，否则可能会报错
+# 这里可以省略镜像名称，会默认使用 /boot/initramfs-kernel_version.img
+# 有需要可以在命令最后加上镜像文件名
+
+# 这里添加了 xfs 文件系统的备份和还原命令，它们是需要额外安装的
+# 执行 dracut 完成后可以使用 lsinitrd 检查是否成功
+```
+
