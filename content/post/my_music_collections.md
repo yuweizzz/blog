@@ -61,6 +61,10 @@ draft: false
 
 > 1996 年作品
 
+### 素顔のままKISSしよう - MANISH 
+
+> 1993 年作品
+
 ---
  
 ### Behind You - 当山ひとみ
@@ -85,6 +89,10 @@ draft: false
 
 > 1983 年作品
 
+### Last Summer Whisper - ANRI
+
+> 1982 年作品
+
 ### Cat’s Eye - ANRI
 
 > 1983 年作品，猫眼三姐妹 OP 
@@ -107,4 +115,11 @@ draft: false
 
 > 1992 年作品，上杉昇，中山美穗作词，织田哲郎作曲
 
+---
+
+### Summer Eyes - 菊池桃子
+
+> 1984 年作品
+
 ### 待后续更新 ...
+
