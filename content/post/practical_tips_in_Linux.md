@@ -1,5 +1,5 @@
 ---
-date: 2021-07-03 15:00:00
+date: 2021-07-23 15:00:00
 title: 常用 Linux 命令和 Shell 技巧记录
 tags:
   - "Linux"
@@ -105,7 +105,7 @@ mkfs.xfs [-b size] [-L label] /dev/sda1
 
 # 速用脚本
 parted /dev/sda -s mklabel gpt
-parted /dev/sda -s mkpart primary 0 100%
+parted /dev/sda -s mkpart primary 0% 100%
 # -s 用来屏蔽 parted 的交互信息
 mkfs.xfs /dev/sda1
 ```

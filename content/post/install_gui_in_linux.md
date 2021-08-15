@@ -58,7 +58,7 @@ X Server 是相对固定的一套软件，和硬件交互的主要是各类硬�
 
 ## 传统Server/Clinet架构和X Window System架构的区别
 
-### 传统Server/Clinet架构：
+### 传统Server/Clinet架构
 
 在传统的 Server/Clinet 架构中，最经典应用应该是 HTTP 服务。
 
@@ -66,7 +66,7 @@ X Server 是相对固定的一套软件，和硬件交互的主要是各类硬�
 
 从使用者的视角来看， Client 很好理解，无疑就是自己使用的 PC 设备，而 Server 就是远端提供服务的设备。
 
-### X Window System架构：
+### X Window System架构
 
 当一台 Linux 系统的机器运行图形界面时，它的 X Server 和 X Client 都会运行在自己的本地机器上，这种应用情况在传统的 Server/Clinet 架构中比较少。
 
@@ -99,6 +99,8 @@ X Server 是相对固定的一套软件，和硬件交互的主要是各类硬�
 
 ## 使用 CentOS 图形界面
 
+### 安装本地图形界面
+
 在市面上的不同 Linux 发行版中，在个人用户中比较受欢迎的是 Ubuntu ，但是我个人习惯使用的 Linux 发行版是 CentOS ，它更多地用于服务器的场景，而且一般不会安装图形界面，所以需要额外去探究一下。
 
 对于发行版的选择，我认为贴近自己的工作场景是比较重要的参考。 CentOS 是稳定的服务器系统，而 Ubuntu 使用的内核比较新，图形界面的支持比较丰富。此外还可以 Debian 或者 Fedora 这些发行版可供选择。
@@ -127,9 +129,11 @@ $ systemctl set-default graphical.target
 $ reboot  # 修改设置后重启生效
 ```
 
-### 运行时分析：
+### 运行时分析
 
 如果安装没有报错，我们在执行切换命令后就会自动切换到图形界面。
+
+> 在某些版本中，可能会出现无法立即切换图形的情况，解决办法一般是先切换为原来的运行等级，在终端界面会产生文本模式的会话，选择接受 licence 后再尝试切换。 
 
 为了更好地了解运行的原理，我们可以抓取进程信息进行分析，看看服务是如何运行的。
 
@@ -163,19 +167,21 @@ X Server 的默认监听端口是 6000 ，如果是指定了 DISPLAY 的 X Serve
 
 如果我们自行启动一个 X 进程，它默认是不带 -nolisten tcp 参数的。我们可以自行定义 DISPLAY 变量，例如 X :1 ，就可以捕捉到监听在 6001 端口的 X 服务。
 
-### 基于网络运行图形界面：
+### 基于网络运行图形界面
 
 在现实使用中，为用户提供远程桌面连接一般使用基于 RFB 协议的 VNC 或者基于 RDP 协议的 Xrdp ，其实可以直接使用 X Window System 来实现。
 
 在 X Server 和 X Client 同在一台机器上时，它们可以通过 UNIX socket 来实现通信。如果要实现 X Server 和 X Client 远程通信，则需要通过 TCP socket 来实现。
 
-在远程通信还需要解决安全问题， X Window System 自身提供多种安全认证的机制，但是最安全的方式是使用 OpenSSH X11 Forwarding 。
+远程通信还需要解决安全问题， X Window System 自身提供多种安全认证的机制，但是最安全的方式是使用 OpenSSH X11 Forwarding 。
 
-依据前面的理论，要基于网络运行图形界面，本地机器需要启动 X Server 服务，远端机器提供 X Client ，从远端的 X Client 到本地的 X Server 要使用 X11 Forwarding 来解决安全问题。 X11 Forwarding 实际上就是端口转发。我们可以先进行实践，再进行运行时的分析探究。
+依据前面的理论，要基于网络运行图形界面，本地机器需要启动 X Server 服务，远端机器提供 X Client ，从远端的 X Client 到本地的 X Server 要使用 X11 Forwarding 来解决安全问题。 X11 Forwarding 实际上就是端口转发。我们可以先进行实践，再进行分析探究。
 
 以下是需要在本地机器和远端机器进行的工作，完成后可以直接启动远程图形界面：
 
-* 远端需要完成的工作：
+---
+
+* 远端需要完成的工作
 
 首先需要为远端机器安装 X Client ，可以自行选择安装需要的桌面套件或者只安装需要的 X Client ，然后开启 SSH daemon 的 X11 Forwarding 支持。
 
@@ -190,7 +196,9 @@ $ systemctl restart sshd  # 开启后重启 daemon 使配置生效
 
 我们平时在使用 ssh 去登录远程机器时，可能会出现 WARNING! The remote SSH server rejected X11 forwarding request. 的报错，这就说明远程机器的 X11 Forwarding 功能被禁用了。如果要在网络上运行图形界面，那么 X Client 所在的远程机器必须打开这个功能。
 
-* 本地需要完成的工作：
+---
+
+* 本地需要完成的工作
 
 为了不与现有的图形环境冲突，启动一个新的 X 进程。
 
@@ -209,6 +217,9 @@ $ ssh -X user@remotehost  # -X 启动 X11 Forwarding 功能，远端此时应该
 [user@remotehost ~]$ startxfce4  # 启动 xfce 桌面，此时会在本地 X Server 中显示远程的 xfce 桌面
 [user@remotehost ~]$ firefox  # 启动单一的 X Client 而不是桌面套件，此时会在本地 X Server 中开启 firefox 浏览器
 ```
+---
+
+### 运行时分析
 
 按照以上的步骤，可以建立起两台机器之间的 X Window System 通信。下面进行简单的分析：
 
@@ -225,3 +236,4 @@ X Window System 是 Linux 上运行图形界面的基础，这个是使用图形
 在本地使用图形界面比较简单，大部分情况下可以之间安装对应软件即可之间使用。比较特殊还是在远程运行图形界面，需要进行一些配置的修改才能成功，但是 X Window System 的性能比较一般，对图形界面有更高的要求一般不使用。
 
 所以这篇笔记适用于最小安装的本地环境或者简单的内网环境。
+

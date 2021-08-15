@@ -32,7 +32,7 @@ draft: false
 
 ```
 
-## 持续集成和持续部署
+## 前言
 
 使用 GitHub Actions 之前，我们需要了解持续集成和持续部署的概念。
 
@@ -70,7 +70,7 @@ workflow 文件是使用 YAML 编写的配置文件，它会涉及以下列出�
 
 YAML 语法比较简单，这里会跳过相关介绍，直接通过实例来学习 workflow 编写。
 
-### python自动测试实例：
+## python自动测试实例
 
 以下是 GitHub 社区提供的基于 python 环境的 CI 工作流程。
 
@@ -131,7 +131,7 @@ jobs:
 
 除了 python 之外，社区还有对各类开发语言的 workflow 支持，可以根据自己的需要选用。
 
-### Hexo自动构建部署实例：
+## Hexo自动构建部署实例
 
 在很多情况下需要使用自定义 workflow ，以下是我使用过的工作流程，略微比 python 自动测试的 workflow 复杂，用来自动构建并部署静态博客。
 
@@ -200,7 +200,7 @@ Actions secrets 在 workflow 工作过程中是保密的，可以在 workflow �
 
 因为在最后一步的 action 中关联的远程仓库设置了 GitHub Pages 服务，所以在 push 之后，应用也就部署完成了。可以看到，整个过程其实是集合了我们平时编译部署需要执行的命令，模拟了一次完整的部署过程。这个 workflow 的最后一步处理还不是很完美，会把原有的 commit 信息破坏，改进后的版本可以参考这个 blog 源代码仓库的 [workflow](https://github.com/yuweizzz/Blog/blob/main/.github/workflows/main.yml) 。
 
-### 总结
+## 总结
 
 GitHub Actions 服务可以很方便实现 CI 和 CD 的工作流程。
 
