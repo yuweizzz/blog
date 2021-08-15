@@ -38,7 +38,7 @@ jobs:
 
       - name: build 
         run: |
-          hugo -D -d "$PUBLISH_DIR" --baseURL="https://yuweizzz.github.io/"
+          hugo -D -d "$PUBLISH_DIR" --baseURL="https://yuweizzz.github.io"
 
       - name: commit and push to branch
         run: |
