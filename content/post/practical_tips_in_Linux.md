@@ -1,6 +1,6 @@
 ---
 date: 2021-07-23 15:00:00
-title: 常用 Linux 命令和 Shell 技巧记录
+title: 常用 Linux 命令和 Shell 技巧速记
 tags:
   - "Linux"
   - "Shell"
@@ -89,7 +89,7 @@ parted /dev/sda mklabel [ gpt | msdos ]
 
 # 新增分区
 parted /dev/sda mkpart [ primary | extended | logical ] [ ext4 | xfs ] start end
-# gpt 一般只用到 primary 分区，msdos 需要额外用到 extended 和 logical 分区
+# gpt 不区分分区类型，这里会以 Name 代替， msdos 需要用到 primary ， extended 和 logical 分区
 # 文件系统的标记一般可以不写
 # 分区范围是必填项
 
@@ -105,7 +105,7 @@ mkfs.xfs [-b size] [-L label] /dev/sda1
 
 # 速用脚本
 parted /dev/sda -s mklabel gpt
-parted /dev/sda -s mkpart primary 0% 100%
+parted /dev/sda -s mkpart primary 0% 100%  # 这里的 primary 为分区命名，可以自行定义
 # -s 用来屏蔽 parted 的交互信息
 mkfs.xfs /dev/sda1
 ```
