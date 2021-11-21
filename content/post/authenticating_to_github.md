@@ -1,6 +1,6 @@
 ---
 date: 2020-07-20 23:00:00
-title: 配置GitHub SSH Key
+title: 配置 GitHub SSH Key
 tags:
   - "GitHub"
   - "SSH"
@@ -86,7 +86,7 @@ $ ssh git@github.com
 如果一切正常，会返回下面的信息：
 
 ``` bash
-# ssh git@github.com
+$ ssh git@github.com
 PTY allocation request failed on channel 0
 Hi yuweizzz! You've successfully authenticated, but GitHub does not provide shell access.
 Connection to github.com closed.

@@ -109,7 +109,7 @@ SATA 接口的固态硬盘的传输速率计算和普通硬盘相同，但实际
 
 ```bash
 # 这是虚机上运行的虚拟系统盘
-# parted -l
+$ parted -l
 Model: VMware, VMware Virtual S (scsi)
 Disk /dev/sda: 10.7GB
 Sector size (logical/physical): 512B/512B  # 虚拟硬盘都是模拟的，模拟的设备一般都是原生的 512B 扇区大小
@@ -122,7 +122,7 @@ Number  Start   End     Size    Type     File system     Flags
  3      1599MB  10.7GB  9138MB  primary  xfs
 
 # 这是实机上运行的一块硬盘，它就是 512e 的硬盘
-# parted -l 
+$ parted -l 
 Model: ATA ST500LT012-9WS14 (scsi)
 Disk /dev/sdb: 500GB
 Sector size (logical/physical): 512B/4096B  # 硬盘的物理扇区大小为 4096B ，逻辑扇区大小为 512B ，这是 512e 的 AF 硬盘
@@ -169,7 +169,7 @@ MBR 分区方式是比较经典的分区方式，这种分区格式流行的时�
 
 ``` bash
 # 同样是前面的两个 MBR 分区格式的硬盘
-# parted -l
+$ parted -l
 Model: VMware, VMware Virtual S (scsi)
 Disk /dev/sda: 10.7GB
 Sector size (logical/physical): 512B/512B
@@ -182,7 +182,7 @@ Number  Start   End     Size    Type     File system     Flags
  3      1599MB  10.7GB  9138MB  primary  xfs
 # 这个硬盘由三个 primary 分区组成
 
-# parted -l 
+$ parted -l 
 Model: ATA ST500LT012-9WS14 (scsi)
 Disk /dev/sdb: 500GB
 Sector size (logical/physical): 512B/4096B
@@ -210,7 +210,7 @@ GPT 使用 LBA 获取的区块来存储分区信息，其中 LBA 0 作为对传�
 除了占据的空间大小和 MBR 不同， GPT 没有 logical 分区和 extended 分区，所有分区都是相同级别，并且理论上没有数量限制。
 
 ```bash
-# parted -l
+$ parted -l
 Model: VMware, VMware Virtual S (scsi)
 Disk /dev/sdb: 12.9GB
 Sector size (logical/physical): 512B/512B
