@@ -1,13 +1,13 @@
 ---
 date: 2021-07-23 15:00:00
-title: 常用 Linux 命令和 Shell 技巧速记
+title: 常用 Linux 命令和 Shell 技巧笔记
 tags:
   - "Linux"
   - "Shell"
 draft: false
 ---
 
-这篇文档用以记录一些 Linux 下常用命令和一些实用的 Shell 技巧。
+这篇笔记用来记录 Linux 下常用命令和一些实用 Shell 技巧。
 
 <!--more-->
 
@@ -42,16 +42,16 @@ draft: false
 # 归档实例：
 
 # 打包目录
-tar -cvf output.tar /mydir
+$ tar -cvf output.tar /mydir
 # -c 代表创建打包文件
 # -v 代表显示详细过程
 # -f 命名生成的打包文件
 # 这一般是打包文件的最小操作命令，将 /mydir 打包为 output.tar
 
 # 打包文件并进行压缩
-tar -cvzpf output.tar.gz /mydir
-tar -cvjpf output.tar.bz2 /mydir
-tar -cvJpf output.tar.xz /mydir
+$ tar -cvzpf output.tar.gz /mydir
+$ tar -cvjpf output.tar.bz2 /mydir
+$ tar -cvJpf output.tar.xz /mydir
 # -j 代表使用 bzip2 压缩
 # -z 代表使用 gzip 压缩
 # -J 代表使用 xz 进行压缩
@@ -60,14 +60,14 @@ tar -cvJpf output.tar.xz /mydir
 # 命名可以任意，一般保持通用的命名规则
 
 # 解包文件
-tar -xvf output.tar -C /mydir
+$ tar -xvf output.tar -C /mydir
 # -x 代表解压文件操作
 # -f 代表进行操作的文件
 # -C 用来指定解压的路径
 # 这一般是解压文件的通用命令，可以不指定压缩格式，tar 会自动适配
 
 # 指定的压缩格式解压文件
-tar -xvJf output.tar.xz -C /mydir
+$ tar -xvJf output.tar.xz -C /mydir
 # 可以指定对应的压缩格式
 ```
 
@@ -81,33 +81,33 @@ tar -xvJf output.tar.xz -C /mydir
 # 推荐使用 parted ，它拥有更全面的功能
 
 # 查看已有分区信息
-parted /dev/sda print     
+$ parted /dev/sda print     
 
 # 以下命令具有一定危险，需要注意数据安全
 # 设置分区表格式
-parted /dev/sda mklabel [ gpt | msdos ]
+$ parted /dev/sda mklabel [ gpt | msdos ]
 
 # 新增分区
-parted /dev/sda mkpart [ primary | extended | logical ] [ ext4 | xfs ] start end
+$ parted /dev/sda mkpart [ primary | extended | logical ] [ ext4 | xfs ] start end
 # gpt 不区分分区类型，这里会以 Name 代替， msdos 需要用到 primary ， extended 和 logical 分区
 # 文件系统的标记一般可以不写
 # 分区范围是必填项
 
 # 删除某一分区， Number 代表分区编号
-parted /dev/sda rm Number
+$ parted /dev/sda rm Number
 
 # 格式化分区
-mkfs.ext4 [-b size] [-L label] /dev/sda1
-mkfs.xfs [-b size] [-L label] /dev/sda1
+$ mkfs.ext4 [-b size] [-L label] /dev/sda1
+$ mkfs.xfs [-b size] [-L label] /dev/sda1
 # 两种最常用的文件系统，参数都是相近的
 # -b 用来设定最小区块大小，有1K，2K，4K
 # -L 用来设置文件系统标签，用于挂载文件系统
 
 # 速用脚本
-parted /dev/sda -s mklabel gpt
-parted /dev/sda -s mkpart primary 0% 100%  # 这里的 primary 为分区命名，可以自行定义
+$ parted /dev/sda -s mklabel gpt
+$ parted /dev/sda -s mkpart primary 0% 100%  # 这里的 primary 为分区命名，可以自行定义
 # -s 用来屏蔽 parted 的交互信息
-mkfs.xfs /dev/sda1
+$ mkfs.xfs /dev/sda1
 ```
 
 ## curl的基本使用
@@ -116,7 +116,7 @@ curl 在 Linux 代替了浏览器的工作，经常用来调试接口。
 
 ``` bash
 # 经典curl用例
-curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' http://....
+$ curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' http://....
 # -X HTTP请求方法，通常有GET,POST,PUT,DELETE
 # -d body，常用于POST方法的请求体
 # -H header，定义HTTP请求头
@@ -134,16 +134,16 @@ sed 可以很简单快速去除空白行，首尾空白字符，注释行。
 
 ``` bash
 # 删除空白行
-sed '/^$/d'
+$ sed '/^$/d'
 
 # 删除行左边的空白字符
-sed 's/^[ \t]*//g'
+$ sed 's/^[ \t]*//g'
 
 # 删除行右边的空白字符
-sed 's/[ \t]*$//g'
+$ sed 's/[ \t]*$//g'
 
 # 删除注释行
-sed '/^#/d'
+$ sed '/^#/d'
 # 可能要配合删除左侧空白字符使用
 
 # 实现上述操作基于正则表达式：
@@ -159,6 +159,7 @@ sed '/^#/d'
 bash 4 原生支持一维数组，在某些情况下可能会使用到这种数据结构。
 
 ``` bash
+#!/bin/bash
 # 使用之前需要先声明数组
 declare -a array
 declare -A Array
@@ -193,8 +194,10 @@ echo ${#array["index"]};
 ## awk内置函数split()
 
 ``` bash
+#!/bin/bash
 # awk内置函数split()的用法：
-awk: split(string_to_split,array,IFS)
+
+# awk: split(string_to_split,array,IFS)
 # 第一个参数是想要进行分割的字符串
 # 第二个参数是分割完成后的变量
 # 第三个参数用来指定分割符
@@ -208,6 +211,7 @@ split("A;B;C;D",array,';')
 ## awk导入外部数据
 
 ``` bash
+#!/bin/bash
 # awk可以导入外部数据，通常会用来导入shell变量进行进一步处理
 # 灵活利用导入可以实现多样的数据处理
 
@@ -234,6 +238,7 @@ echo 'begin' | awk -v foreign='1#A#2#B#3#C' \
 在 Linux 中经常需要批量执行命令，需要一些限制避免占用大量资源，下面提供一些简单的循环用例。
 
 ``` bash
+#!/bin/bash
 # 限制同一时间内循环的进程数量
 
 # 总运行次数，数据源存放在file中
@@ -274,7 +279,7 @@ done < file
 有时候会有下载 rpm 包的需求，可以通过 yum 实现。
 
 ``` bash
-yum install package --downloadonly --downloaddir=/your/dir
+$ yum install package --downloadonly --downloaddir=/your/dir
 # 可以只下载 rpm 包而不进行安装
 # 不指定下载目录，则下载后文件保存在 /var/cache/yum/ 下的子目录中
 # 如果 --downloadonly 运行失败，可能需要自行安装这个插件
@@ -286,7 +291,7 @@ rpm 包可以视为一个特殊的归档文件，如果需要提取这个档案�
 
 ``` bash
 # 常用的实例命令
-rpm2cpio package.rpm | cpio -divm
+$ rpm2cpio package.rpm | cpio -divm
 
 # 以下是 cpio 比较重要的参数
 # -i/--extract 展开文件
@@ -307,21 +312,21 @@ rpm2cpio package.rpm | cpio -divm
 
 # 以常规思路去处理这个文件
 # 首先需要更改命名后缀，否则 gunzip 无法识别
-cp initramfs-3.10.0-693.el7.x86_64.img /tmp/initramfs-3.10.0-693.el7.x86_64.img.gz
+$ cp initramfs-3.10.0-693.el7.x86_64.img /tmp/initramfs-3.10.0-693.el7.x86_64.img.gz
 # 使用 gunzip 解压
-gunzip -d initramfs-3.10.0-693.el7.x86_64.img.gz
+$ gunzip -d initramfs-3.10.0-693.el7.x86_64.img.gz
 # 使用 file 命令可以看到解压后是 cpio 归档文件
 # initramfs-3.10.0-693.el7.x86_64.img: ASCII cpio archive (SVR4 with no CRC)
 # 进一步解包归档文件
-cpio -divm < initramfs-3.10.0-693.el7.x86_64.img
+$ cpio -divm < initramfs-3.10.0-693.el7.x86_64.img
 # 到这一步可以完全提取出镜像内的文件
 
 # 使用专用命令去查看镜像信息，比较推荐使用这种用法
-lsinitrd /tmp/initramfs-3.10.0-693.el7.x86_64.img
+$ lsinitrd /tmp/initramfs-3.10.0-693.el7.x86_64.img
 # 可以看到基础的镜像信息和镜像内的具体文件信息
 
 # 更新系统命令文件到 initramfs 中
-dracut -v -I '/usr/sbin/xfsdump /usr/sbin/xfsrestore' -f [initramfs.img]
+$ dracut -v -I '/usr/sbin/xfsdump /usr/sbin/xfsrestore' -f [initramfs.img]
 # -v 显示详细过程
 # -I 需要添加到镜像中的文件列表，不同文件以空格隔开
 # -f 强制覆写原有镜像，这个选项一般放在最后或者镜像文件名之前，否则可能会报错

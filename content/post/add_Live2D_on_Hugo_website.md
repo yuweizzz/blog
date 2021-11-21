@@ -1,6 +1,6 @@
 ---
 date: 2021-07-05 21:08:45
-title: 在网页上添加Live2D看板娘
+title: 在网页上添加 Live2D 看板娘
 tags:
   - "Hugo"
   - "Live2D"

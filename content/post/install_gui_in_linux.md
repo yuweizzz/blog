@@ -1,12 +1,12 @@
 ---
 date: 2021-03-30 21:00:00
-title: 安装Linux图形界面
+title: 安装 Linux 图形界面
 tags:
   - "Linux"
 draft: false
 ---
 
-这篇文档主要介绍如何为 CentOS 安装图形界面。
+这篇笔记主要介绍如何为 CentOS 安装图形界面。
 
 <!--more-->
 

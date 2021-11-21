@@ -44,11 +44,11 @@ draft: false
 
 **进行分区操作时，一定要小心谨慎，做好数据备份，对根分区的错误操作可能是无法挽救的。**
 
-```
+``` bash
 # 首先观察根分区情况，这时可以使用 fdisk 或 parted
 # 这个硬盘来自我的虚拟机
 
-# fdisk /dev/sda
+$ fdisk /dev/sda
 ...
 Command (m for help): p
 
@@ -64,7 +64,7 @@ Disk identifier: 0x0004dcb6
 /dev/sda2         1026048     3123199     1048576   83  Linux
 /dev/sda3         3123200    20971519     8924160   83  Linux
 
-# parted -l
+$ parted -l
 Model: VMware, VMware Virtual S (scsi)
 Disk /dev/sda: 10.7GB
 Sector size (logical/physical): 512B/512B
@@ -81,9 +81,9 @@ Number  Start   End     Size    Type     File system     Flags
 
 虽然很多分区工具在操作 msdos 硬盘时会保留一些起始扇区，默认从 1 MB 开始分区，以便后续兼容 GPT 格式，但一般不会对末尾扇区做保留。所以在转换 GPT 时，处于硬盘头部的分区通常可以无损转换，而处于硬盘尾部的分区会遭遇文件系统受损。
 
-```
+``` bash
 # 尝试对这个无法无损转换的硬盘进行操作
-# gdisk /dev/sda
+$ gdisk /dev/sda
 GPT fdisk (gdisk) version 0.8.10
 
 Partition table scan:
@@ -126,7 +126,7 @@ Number  Start (sector)    End (sector)  Size       Code  Name
 ...
 
 # 直接通过 gdisk 进行操作
-# gdisk /dev/sda
+$ gdisk /dev/sda
 GPT fdisk (gdisk) version 0.8.10
 
 Partition table scan:
@@ -193,13 +193,13 @@ Number  Start (sector)    End (sector)  Size       Code  Name
 
 ``` bash
 # 格式化 ESP ，注意它的文件系统是 FAT 格式
-mkfs.vfat /dev/sda4
+$ mkfs.vfat /dev/sda4
 # 如果命令不存在，安装新的软件包后重试
-yum install dosfstools
+$ yum install dosfstools
 
 # /boot 分区已经预留了 efi 目录以供 UEFI 启动分区挂载
 # 但我们现在使用的是 BIOS 启动，这个目录应该为空且没有挂载
-mount /dev/sda4 /boot/efi
+$ mount /dev/sda4 /boot/efi
 # 为了后续使用，这一步完成后应该手动更新到 fstab 中
 ```
 
@@ -215,20 +215,20 @@ grub2 在安装时有两个重要镜像 boot.img 和 core.img ，它们协作完
 
 ``` bash
 # 1.以 UEFI 引导为目标重装 grub2 ，需要提前挂载 ESP 分区
-grub2-install --target=x86_64-efi --efi-directory=/boot/efi /dev/sda
+$ grub2-install --target=x86_64-efi --efi-directory=/boot/efi /dev/sda
 # 此时应该可以在 ESP 分区， /boot/efi 子目录下找到 grubx64.efi 文件
 # 如果执行有类似模块信息丢失的报错，安装新的软件包后重试
-yum install grub2-efi-x64-modules
+$ yum install grub2-efi-x64-modules
 
 # 2.生成 grub.cfg
-grub2-mkconfig -o /boot/grub2/grub.cfg
+$ grub2-mkconfig -o /boot/grub2/grub.cfg
 # 如果对比观察新生成的 grub.cfg 和原有的 grub.cfg ，
 # 可以发现主要区别在于处理 MBR 的模块已经转换为处理 GPT 的模块。
 
 # 3.值得注意的是，我们目前的系统并不处在 UEFI 启动模式，系统下没有 UEFI 变量
 # 所以 grub2-mkconfig 还不能完全生成正确结果，需要手动修改一次
-sed -i 's/linux16/linuxefi/g' /boot/grub2/grub.cfg
-sed -i 's/initrd16/initrdefi/g' /boot/grub2/grub.cfg
+$ sed -i 's/linux16/linuxefi/g' /boot/grub2/grub.cfg
+$ sed -i 's/initrd16/initrdefi/g' /boot/grub2/grub.cfg
 # 如果没有对 grub.cfg 进行修改，系统仍然可以从 BIOS 模式启动，但无法从 UEFI 模式启动
 ```
 
@@ -246,21 +246,21 @@ sed -i 's/initrd16/initrdefi/g' /boot/grub2/grub.cfg
 
 ``` bash
 # 安装 efibootmgr
-yum install efibootmgr
+$ yum install efibootmgr
 
 # 查看系统启动项
-efibootmgr [-v]
+$ efibootmgr [-v]
 # -v 可以看到更详细的信息
 
 # 禁用一些无用的启动项
-efibootmgr -B -b [number]
+$ efibootmgr -B -b [number]
 # 启用需要的启动项目
-efibootmgr -a -b [number]
+$ efibootmgr -a -b [number]
 # 修改启动顺序
-efibootmgr -o [number,number,number...]
+$ efibootmgr -o [number,number,number...]
 
 # 将系统添加到独立的启动项
-efibootmgr -c -d /dev/sda -p 4 -L Grub2 -l /EFI/centos/grubx64.efi
+$ efibootmgr -c -d /dev/sda -p 4 -L Grub2 -l /EFI/centos/grubx64.efi
 # -c | --create  create new variable bootnum and add to bootorder
 # -d | --disk disk  (defaults to /dev/sda) containing loader
 # -l | --loader name  (defaults to "\EFI\centos\grub.efi")

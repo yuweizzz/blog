@@ -1,6 +1,6 @@
 ---
 date: 2021-07-15 21:00:00
-title: 🎹
+title: Music
 tags:
   - "Life"
 draft: false

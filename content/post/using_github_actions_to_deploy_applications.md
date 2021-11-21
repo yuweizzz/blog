@@ -1,6 +1,6 @@
 ---
 date: 2020-09-06 21:08:45
-title: 使用GitHub Actions部署应用
+title: 使用 GitHub Actions 部署应用
 tags:
   - "GitHub"
   - "GitHub Actions"

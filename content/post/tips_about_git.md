@@ -1,12 +1,12 @@
 ---
 date: 2020-07-23 22:00:00
-title: Git使用速记
+title: 常用 Git 命令笔记
 tags:
   - "Git"
-draft: true
+draft: false
 ---
 
-一些 Git 的常用的命令速记。
+这篇笔记用来记录一些常用的 Git 命令。
 
 <!--more-->
 
