@@ -1,6 +1,6 @@
 ---
 date: 2021-07-15 21:00:00
-title: ♫ Music ♫
+title: 音乐收藏 🎵
 tags:
   - "Life"
 draft: false
@@ -23,116 +23,137 @@ draft: false
 
 ```
 
----
+## 前言
 
-### Plastic Love - 竹内まりや
+这里主要记录一些自毕业后喜欢上的一些音乐，很大一部分是来自日本的 80 年代作品。
 
-> 1985 年作品，非常经典的 City Pop
+## 竹内まりや
 
-### September - 竹内まりや
+* Plastic Love
+* September
+* 夢の続き
+* テコのテーマ
+* Oh No, Oh Yes!
+* 五線紙
+* 二人のバカンス
+* 瞳のささやき
+* 不思議なピーチパイ
+* 静かな伝説
 
-> 1979 年作品
+## ANRI
 
----
+* WINDY SUMMER
+* You Are Not Alone
+* Shyness Boy
+* Good-Night For You
+* 悲しみがとまらない 
+* Remember Summer Days
+* DRIVING MY LOVE
+* Good Bye Boogie Dance
+* Last Summer Whisper
+* Summer Candles
+* I CAN'T EVER CHANGE YOUR LOVE FOR ME
+* オリビアを聴きながら
 
-### City Hunter～爱よ消えないで～ - 小比類巻かほる
+## 中原めいこ 
 
-> 1987 年作品，城市猎人 OP
+* 君たちキウイ・パパイア・マンゴーだね
+* Infinite Love
+* Dance in the memories
+* Fantasy
+* FRIDAY MAGIC
+* 今夜だけ Dance・Dance・Dance
+* 鏡の中のアクトレス
+* 冗谈じゃないわ
+* Miami Dream - Don't be shy -
 
-### WHAT'S GOIN'ON - 小比類巻かほる
+## MANISH
 
-> 1987 年作品，城市猎人片中曲
+* 声にならないほどに愛しい
+* 煌めく瞬間に捕らわれて
+* 眠らない街に流されて
+* この一瞬という永遠の中で
+* 素顔のままKISSしよう
+* せつない自由
 
----
+## 今井美樹
 
-### 声にならないほどに愛しい - MANISH
+* 雨にキッスの花束を
+* Boogie-Woogie Lonesome High-Heel
+* PIECE OF MY WISH
+* 彼女とTIP ON DUO
+* PRIDE
+* 瞳がほほえむから
+* あの日に帰りたい
 
-> 1993 年作品，上杉昇作词，织田哲郎作曲，明石昌夫编曲
+## 菊池桃子
 
-### 煌めく瞬間に捕らわれて - MANISH
+* Summer Eyes
+* ドリームボートが出る夜に
+* ナイト・クルージング
+* Ocean Side
+* 夏と秋のGood-Luck
 
-> 1995 年作品，灌篮高手 ED 
+## 当山ひとみ
 
-### 眠らない街に流されて - MANISH
+* Behind You
+* Try To Say
+* Cathy
+* Slow Love
+* Be Mine
 
-> 1993 年作品
+## 国分友里恵
 
-### この一瞬という永遠の中で - MANISH
+* 恋の横顔
+* It's A Party
 
-> 1996 年作品
+## 具岛直子
 
-### 素顔のままKISSしよう - MANISH 
+* Candy
+* モノクローム
+* 台风の夜
+* まどろみ
+* Missing You
+* 今を生きる
 
-> 1993 年作品
+## 高橋由美子
 
----
- 
-### Behind You - 当山ひとみ
+* 最上级 I Like You
+* すき…でもすき
 
-### Try To Say - 当山ひとみ
+## 本田美奈子
 
-### Cathy - 当山ひとみ
+* Girl Talk
 
-### Slow Love - 当山ひとみ
+## 安室奈美惠
 
-### Be Mine - 当山ひとみ
+* Baby Don't Cry
 
-> 以上五首均出自当山瞳 1983 年专辑 Sexy Robot B 面    
+## CINDY
 
----
+* 私達を信じていて
 
-### Good Bye Boogie Dance - ANRI
+## 須藤薫
 
-> 1983 年作品
+* 雨の中の噴水
 
-### 悲しみがとまらない - ANRI
+## 动漫相关作品
 
-> 1983 年作品
+> 城市猎人
 
-### Last Summer Whisper - ANRI
+* City Hunter～爱よ消えないで～ - 小比類巻かほる
+* What's Goin'on - 小比類巻かほる
 
-> 1982 年作品
+> 猫眼三姐妹
 
-### Shyness Boy - ANRI
+* Cat’s Eye - ANRI
+* Never Gonna Say GoodBye - Cathi Linn
 
-> 1983 年作品
+> 中华一番
 
-### Cat’s Eye - ANRI
+* 空 - 大黑摩季
+* 息もできない - ZARD
 
-> 1983 年作品，猫眼三姐妹 OP 
+> 犬夜叉
 
-### Never Gonna Say GoodBye - Cathi Linn
-
-### Dancing With The Sunshine - Cathi Linn
-
-> 以上两首均出自 1983 年动漫猫眼三姐妹原声带，其中 Dancing With The Sunshine 是动漫的 ED ， Never Gonna Say GoodBye 是片中曲
-
----
-
-### 私達を信じていて - CINDY
-
-> 1990 年作品
-
----
-
-### Summer Eyes - 菊池桃子
-
-> 1984 年作品
-
----
-
-### 世界中の誰よりきっと - WANDS&中山美穗
-
-> 1992 年作品，上杉昇，中山美穗作词，织田哲郎作曲
-
----
-
-### 空 - 大黑摩季
-
-> 1997 年作品，中华一番 OP
-
-### 息もできない - ZARD
-
-> 1998 年作品，中华一番 OP 
-
-### 待后续更新 ...
+* Four Seasons - 安室奈美惠
