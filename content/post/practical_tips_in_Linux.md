@@ -122,10 +122,11 @@ $ curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' http://.
 # -H header，定义HTTP请求头
 
 # 这里列举其他常用的参数
-# -b 用来设置cookie，常以 -b 'key1=value1;key2=value2' 的形式出现
-# -k 用来跳过SSL验证，用于请求https协议
+# -b 用来设置 cookie ，常以 -b 'key1=value1;key2=value2' 的形式出现
+# -k 用来请求 https 协议时跳过证书认证
 # -i 用来额外输出请求的响应头，响应体正常输出
 # -I 使用这个参数后只输出请求的响应头，响应体不再输出
+# -x 用来设置代理服务器，用法为 -x/--proxy 127.0.0.1:8080
 ```
 
 ## 使用sed快速去除无用字符
@@ -163,8 +164,8 @@ bash 4 原生支持一维数组，在某些情况下可能会使用到这种数�
 # 使用之前需要先声明数组
 declare -a array
 declare -A Array
-# -a 声明的数组是普通的一维数组，index只能是0,1,2,...
-# -A 声明的数组是关联数组，类似于python的字典，index可以自由定义
+# -a 声明的数组是普通的一维数组， index 只能是0,1,2,...
+# -A 声明的数组是关联数组，类似于 python 的字典， index 可以自由定义
 # 推荐使用 -A ，因为关联数组的兼容性比较好，它可以模拟普通数组，
 # 而普通数组无法实现关联数组的特性
 
@@ -172,22 +173,22 @@ declare -A Array
 array=(1 2 3 4)
 Array=([A]=1 [B]=2 [C]=3 [D]=4)
 
-# 或者直接定义index和value
+# 或者直接定义 index 和 value
 Array["index"]=vaule
 
-# 遍历index
+# 遍历 index
 # 使用 * 和 @ 均可
 for i in ${!array[*]}; do echo $i; done;
 for i in ${!array[@]}; do echo $i; done;
 
-# 遍历value，和index类似
+# 遍历 value ，和 index 类似
 for i in ${array[*]}; do echo $i; done;
 for i in ${array[@]}; do echo $i; done;
 
 # 获取数组的元素个数
 echo ${#array[*]};
 echo ${#array[@]};
-# 如果指定了确切的index，将会获取对应value的长度
+# 如果指定了确切的 index ，将会获取对应 value 的长度
 echo ${#array["index"]};
 ```
 
@@ -195,7 +196,7 @@ echo ${#array["index"]};
 
 ``` bash
 #!/bin/bash
-# awk内置函数split()的用法：
+# awk 内置函数 split() 的用法：
 
 # awk: split(string_to_split,array,IFS)
 # 第一个参数是想要进行分割的字符串
@@ -205,14 +206,14 @@ echo ${#array["index"]};
 # 实例
 split("A;B;C;D",array,';')
 # 执行完成后，array=['A','B','C','D']
-# 值得注意的是array是awk的内部变量
+# 值得注意的是 array 是 awk 的内部变量
 ```
 
 ## awk导入外部数据
 
 ``` bash
 #!/bin/bash
-# awk可以导入外部数据，通常会用来导入shell变量进行进一步处理
+# awk 可以导入外部数据，通常会用来导入 shell 变量进行进一步处理
 # 灵活利用导入可以实现多样的数据处理
 
 # 导入字符串并生成关联数组：
@@ -229,8 +230,8 @@ echo 'begin' | awk -v foreign='1#A#2#B#3#C' \
     }
 }'
 
-# -v 可以导入外部数据为awk内部变量
-# 这个例子将字符串'1#A#2#B#3#C'转换为字典([1]=A [2]=B [3]=C)
+# -v 可以导入外部数据为 awk 内部变量
+# 这个例子将字符串 '1#A#2#B#3#C' 转换为字典 ([1]=A [2]=B [3]=C)
 ```
 
 ## 简单的循环用例
@@ -241,7 +242,7 @@ echo 'begin' | awk -v foreign='1#A#2#B#3#C' \
 #!/bin/bash
 # 限制同一时间内循环的进程数量
 
-# 总运行次数，数据源存放在file中
+# 总运行次数，数据源存放在 file 中
 number=$(cat file | wc -l) 
 # 单次并发进程数量控制
 size=20
@@ -254,7 +255,7 @@ do
     for i in $(sed -n "$begin","$end"p file)
     do
     {
-        # 主循环体，数据取自于file
+        # 主循环体，数据取自于 file
     }&
     done 
 
@@ -274,6 +275,36 @@ do
 done < file
 ```
 
+## 使用rpm进行软件包操作
+
+rpm 是红帽软件包工具，是红帽系发行版使用的基本软件管理工具。除了安装卸载软件，它可以提供一些额外的功能。
+
+``` bash
+# 直接安装已有的 rpm 包
+$ rpm -ivh package.rpm  
+# -i 用来表示安装
+# -v 用来显示详细信息
+# -h 用来显示安装进度
+
+# 卸载已有软件
+$ rpm -evh package
+# -e 用来表示卸载
+
+# 升级已有软件
+$ rpm -Uvh package.rpm
+# -U 用来表示升级软件，这个选项会保留原有配置文件
+
+# 查询软件是否安装
+$ rpm -qa | grep package
+# 这是我个人常用的查询方法，用来查询所有已经安装的软件然后再抓取需要的信息
+
+# 查看软件安装的路径和文件位置
+$ rpm -ql package.rpm
+
+# 查询目标文件是由哪个软件所安装
+$ rpm -qf filename
+```
+
 ## 使用yum下载rpm包
 
 有时候会有下载 rpm 包的需求，可以通过 yum 实现。
@@ -284,6 +315,73 @@ $ yum install package --downloadonly --downloaddir=/your/dir
 # 不指定下载目录，则下载后文件保存在 /var/cache/yum/ 下的子目录中
 # 如果 --downloadonly 运行失败，可能需要自行安装这个插件
 ```
+
+## 配置yum源
+
+yum 是 Fedora 和 RedHat 以及 SUSE 中使用的软件包管理器，它的使用比直接使用 rpm 更加方便简单。
+
+``` bash
+# yum 的全局配置
+$ cat /etc/yum.conf 
+[main]
+cachedir=/var/cache/yum/$basearch/$releasever  # 指定缓存软件包和依赖信息的目录
+keepcache=0  # 指定缓存是否会在使用后保留
+debuglevel=2  # 指定日志信息的详细级别
+logfile=/var/log/yum.log  # 指定生成日志的位置
+exactarch=1  # 指定是否使用单一架构的软件包
+obsoletes=1  # 指定是否允许更新比较陈旧的软件包
+gpgcheck=1  # 指定进行安装包签名检查
+plugins=1  # 指定是否可以使用插件
+installonly_limit=5  # 指定允许保存的内核软件包数量
+bugtracker_url=http://bugs.centos.org/set_project.php?project_id=23&ref=http://bugs.centos.org/bug_report_page.php?category=yum
+distroverpkg=centos-release  #指定用来获取系统的发行版信息的软件
+```
+
+全局配置基本上不用做修改，更多情况下只需要自行添加需要的镜像源。
+
+``` bash
+# 参考具体的镜像源配置
+$ cd /etc/yum.repos.d
+$ cat CentOS-Base.repo 
+[base]
+name=CentOS-$releasever - Base
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra
+#baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+
+#rerpmleased updates 
+[updates]
+name=CentOS-$releasever - Updates
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
+#baseurl=http://mirror.centos.org/centos/$releasever/updates/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+
+#additional packages that may be useful
+[extras]
+name=CentOS-$releasever - Extras
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras&infra=$infra
+#baseurl=http://mirror.centos.org/centos/$releasever/extras/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+```
+
+在 /etc/yum.repos.d 目录中以 repo 结尾的文件会被识别为镜像源的配置文件，一个镜像源配置文件内可以配置多个 Repository ，每个 Repository 的唯一标识用 [xxxx] 表示，它们的具体内容如下：
+
+* name 是对 Repository 的描述。
+* enable 规定对应 Repository 是否启用，可以使用这个选项屏蔽 Repository 。
+* mirrorlist 和 baseurl 规定了 Repository 的地址。
+
+    * baseurl 是指向 Repository 的 repodata 目录的地址，里面存放了软件包和他们的依赖关系。它可以指向本地和云端，本地一般以 file:// 来指定，云端可以使用 http，ftp 等工具。
+    * mirrorlist 是 baseurl 的一种集合形式，可以说 mirrorlist 指向的是一系列的 baseurl ，配合 fastestmirror 插件能找到响应速度最快的 Repository 。      
+
+* gpgcheck 和 gpgkey 是对软件包的签名检查的相关选项。
+
+    * gpgcheck 规定是否进行签名检查。
+    * gpgkey 指定了签名检查的合法签名数据源。
+
+现有国内网络环境下，原始镜像速度很慢，可以使用公开的国内镜像源，它们大部分提供了相关的配置方法，如果是自建的镜像源，那么至少需要自行配置 name 和 baseurl 才能正常使用。
 
 ## 使用cpio打开rpm文件
 
@@ -336,4 +434,3 @@ $ dracut -v -I '/usr/sbin/xfsdump /usr/sbin/xfsrestore' -f [initramfs.img]
 # 这里添加了 xfs 文件系统的备份和还原命令，它们是需要额外安装的
 # 执行 dracut 完成后可以使用 lsinitrd 检查是否成功
 ```
-
