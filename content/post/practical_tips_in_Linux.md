@@ -115,7 +115,7 @@ $ mkfs.xfs /dev/sda1
 curl 在 Linux 代替了浏览器的工作，经常用来调试接口。
 
 ``` bash
-# 经典curl用例
+# 经典 curl 用例
 $ curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' http://....
 # -X HTTP请求方法，通常有GET,POST,PUT,DELETE
 # -d body，常用于POST方法的请求体
@@ -128,6 +128,27 @@ $ curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' http://.
 # -I 使用这个参数后只输出请求的响应头，响应体不再输出
 # -x 用来设置代理服务器，用法为 -x/--proxy 127.0.0.1:8080
 ```
+
+## curl结合bash变量使用
+
+curl 可以结合 bash 变量，实现更灵活的 url 请求。
+
+``` bash
+# 结合 bash 变量的简单实例
+$ keyA=AAA
+$ keyB=BBB
+$ curl -X POST -H 'Content-Type: application/json' -d '{"keyA": "'"$keyA"'","keyA": "'"$keyB"'"}' http://....
+```
+
+可以看到，这个过程使用了大量的 `'` 和 `"` ，可以将其细分为五块：
+
+* `'{"keyA": "'`
+* `"$keyA"`
+* `'","keyA": "'`
+* `"$keyB"`
+* `'"}'`
+
+其中 `'` 包围的文本不会被 bash 转义，所以 `{}` 会以源文本的格式保留而不被转义。而变量总是以 `"$keyA"` 的形式出现，保证它被 bash 正确转义并获取变量内容。所以文本块就是 `'` 包围的部分和变量转义后的组合文本，注意 `"$keyA"` 和任意 `'` 包围的部分之间不能有空格，这样它们就会被认为是完整的 `-d` 选项的内容，发起请求时就不会报错了。
 
 ## 使用sed快速去除无用字符
 
@@ -191,6 +212,41 @@ echo ${#array[@]};
 # 如果指定了确切的 index ，将会获取对应 value 的长度
 echo ${#array["index"]};
 ```
+
+## bash变量操作符
+
+bash 变量支持操作符，可以基于原有值做一些快速变换。
+
+```bash
+$ var=file.name.sh
+# 修改第一个匹配字符 . 为 _
+$ echo ${var/./_}
+file_name.sh
+
+# 修改所有匹配字符 . 为 _
+$ echo ${var//./_}
+file_name_sh
+
+# 将表达式从左到右进行匹配，删除匹配的部分，可以使用通配符
+$ echo ${var#*.}
+name.sh
+
+# 从左到右进行匹配的贪婪模式
+$ echo ${var##*.}
+sh
+
+# 将表达式从右到左进行匹配，删除匹配的部分，同样可以使用通配符
+$ echo ${var%.*}
+file.name
+
+# 从右到左进行匹配的贪婪模式
+$ echo ${var%%.*}
+file
+```
+
+使用时需要注意 `#` 和 `%` 必须是从左或从右的完整匹配，或者是方向一致的通配符匹配才能正确删除字符。
+
+关于这两个定义符的记忆，我建议直接看键盘， `#` 在 `$` 左边， `%` 在 `$` 右边，把它们指向 `$` 则暗合它们的开始匹配方向。
 
 ## awk内置函数split()
 
