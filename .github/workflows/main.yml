@@ -11,6 +11,7 @@ jobs:
       USER_NAME   : yuweizzz
       USER_EMAIL  : ${{secrets.email}}
       PUBLISH_DIR : ~/public
+      HUGO_ENV : production
     runs-on: ubuntu-latest
 
     steps:
