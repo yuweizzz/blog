@@ -27,133 +27,152 @@ draft: false
 
 这里主要记录一些自毕业后喜欢上的一些音乐，很大一部分是来自日本的 80 年代作品。
 
-## 竹内まりや
+## ＼(＾∀＾)／
 
-* Plastic Love
+**竹内まりや**
+* プラスティック・ラブ
+    * Plastic Love
 * September
 * 夢の続き
 * テコのテーマ
 * Oh No, Oh Yes!
-* 五線紙
+    * 出自专辑 Request 
+* 駅
+* 告白
+* 真夜中のナイチンゲール
 * 二人のバカンス
-* 瞳のささやき
 * 不思議なピーチパイ
 * 静かな伝説
+* 五線紙
+* 瞳のささやき
+    * 某次 Live 的演出曲目，原曲应为 Crystal Gayle 的 Don't Make My Brown Eyes Blue
 
-## ANRI
-
-* WINDY SUMMER
+**ANRI**
+* Windy Summer
 * You Are Not Alone
 * Shyness Boy
 * Good-Night For You
-* 悲しみがとまらない 
+* 悲しみがとまらない
+* オリビアを聴きながら
 * Remember Summer Days
-* DRIVING MY LOVE
+* Driving My Love
 * Good Bye Boogie Dance
 * Last Summer Whisper
 * Summer Candles
-* I CAN'T EVER CHANGE YOUR LOVE FOR ME
-* オリビアを聴きながら
+* I Can't Ever Change Your Love For Me
+* 地中海ドリーム
+* 最後のサーフホリデー
+* Cat’s Eye
+    * 「猫眼三姐妹」 OP ，同时推荐原声带中 Cathi Linn 的 Never Gonna Say GoodBye
 
-## 中原めいこ 
-
-* 君たちキウイ・パパイア・マンゴーだね
-* Infinite Love
-* Dance in the memories
-* Fantasy
-* FRIDAY MAGIC
-* 今夜だけ Dance・Dance・Dance
-* 鏡の中のアクトレス
-* 冗谈じゃないわ
-* Miami Dream - Don't be shy -
-
-## MANISH
-
+**MANISH**
 * 声にならないほどに愛しい
 * 煌めく瞬間に捕らわれて
+    * 「灌篮高手」 ED
 * 眠らない街に流されて
 * この一瞬という永遠の中で
+* だけど.止められない
 * 素顔のままKISSしよう
 * せつない自由
 
-## 今井美樹
+**中原めいこ** 
+* 君たちキウイ・パパイア・マンゴーだね
+* Infinite Love
+* Fantasy
+* Friday Magic
+* 冗谈じゃないわ
+* やきもちやきルンバ・ボーイ
+* 今夜だけ Dance・Dance・Dance
+* 鏡の中のアクトレス
+    * 「橙路」 OP
+* Dance In The Memories
+    * 「橙路」 ED
 
-* 雨にキッスの花束を
-* Boogie-Woogie Lonesome High-Heel
-* PIECE OF MY WISH
-* 彼女とTIP ON DUO
-* PRIDE
-* 瞳がほほえむから
-* あの日に帰りたい
+**長島秀幸**
+* オレンジミステリー
+    * 「橙路」 OP
 
-## 菊池桃子
-
-* Summer Eyes
-* ドリームボートが出る夜に
-* ナイト・クルージング
-* Ocean Side
-* 夏と秋のGood-Luck
-
-## 当山ひとみ
-
+**当山ひとみ**
 * Behind You
 * Try To Say
 * Cathy
 * Slow Love
 * Be Mine
 
-## 国分友里恵
+**今井美樹**
+* 雨にキッスの花束を
+    * 「YAWARA!」 OP
+* Boogie-Woogie Lonesome High-Heel
+* 彼女とTIP ON DUO
+* Piece Of My Wish
+* 瞳がほほえむから
 
+**菊池桃子**
+* ドリームボートが出る夜に
+* ナイト・クルージング
+* 雪にかいたラヴ・レター
+* 夏色片想い
+* Summer Eyes
+* Ocean Side
+
+**国分友里恵**
+* スノッブな夜へ
 * 恋の横顔
 * It's A Party
+* Just A Joke
+* It's Hard to Say Good-bye
+    * さよならは愛の言葉，与角松敏生合作演唱的作品
 
-## 具岛直子
-
-* Candy
+**具岛直子**
+* キャンディ
+    * Candy
 * モノクローム
+* 9月の海
+* 12月の街
+* メロディ
 * 台风の夜
 * まどろみ
 * Missing You
 * 今を生きる
 
-## 高橋由美子
-
-* 最上级 I Like You
-* すき…でもすき
-
-## 本田美奈子
-
-* Girl Talk
-
-## 安室奈美惠
-
+**安室奈美惠**
 * Baby Don't Cry
+* Four Seasons
+    * 「犬夜叉-天下覇道の剣」主题曲
+* Fight Together
+    * 「海贼王」 OP
 
-## CINDY
+**吉沢梨絵**
+* ネヴァー・ゴナ・ミス・ユー
+    * Never Gonna Miss You ，与角松敏生合作演唱的作品
 
+**饭岛真理**
+* 爱･おぼえていますか
+    * 「超時空要塞マクロス 愛・おぼえていますか」主题曲
+
+**大黑摩季**
+* 空
+    * 「中华一番」 OP
+
+**小比類巻かほる**
+* City Hunter～爱よ消えないで～
+    * 「城市猎人」 OP
+* What's Goin'on
+    * 「城市猎人」插曲
+
+**渡辺満里奈**
+* EVERGREEN
+* ホワイトラビットからのメッセージ
+* 青空のコラージュ
+
+**Wink**
+* 愛が止まらない ～Turn it into Love～
+
+**CINDY**
 * 私達を信じていて
 
-## 須藤薫
-
+**須藤薫**
 * 雨の中の噴水
 
-## 动漫相关作品
-
-> 城市猎人
-
-* City Hunter～爱よ消えないで～ - 小比類巻かほる
-* What's Goin'on - 小比類巻かほる
-
-> 猫眼三姐妹
-
-* Cat’s Eye - ANRI
-* Never Gonna Say GoodBye - Cathi Linn
-
-> 中华一番
-
-* 空 - 大黑摩季
-* 息もできない - ZARD
-
-> 犬夜叉
-
-* Four Seasons - 安室奈美惠
+**YOASOBI**
+* 夜に駆ける

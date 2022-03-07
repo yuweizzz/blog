@@ -280,33 +280,33 @@ files = supervisord.d/*.ini
 # 可以看到具体的配置范例
 ...
 ;[program:theprogramname]
-;command=/bin/cat              ; the program (relative uses PATH, can take args)
-;process_name=%(program_name)s ; process_name expr (default %(program_name)s)
-;numprocs=1                    ; number of processes copies to start (def 1)
-;directory=/tmp                ; directory to cwd to before exec (def no cwd)
-;umask=022                     ; umask for process (default None)
-;priority=999                  ; the relative start priority (default 999)
-;autostart=true                ; start at supervisord start (default: true)
-;autorestart=true              ; retstart at unexpected quit (default: true)
-;startsecs=10                  ; number of secs prog must stay running (def. 1)
-;startretries=3                ; max of serial start failures (default 3)
-;exitcodes=0,2                 ; 'expected' exit codes for process (default 0,2)
-;stopsignal=QUIT               ; signal used to kill process (default TERM)
-;stopwaitsecs=10               ; max num secs to wait b4 SIGKILL (default 10)
-;user=chrism                   ; setuid to this UNIX account to run the program
-;redirect_stderr=true          ; redirect proc stderr to stdout (default false)
-;stdout_logfile=/a/path        ; stdout log path, NONE for none; default AUTO
-;stdout_logfile_maxbytes=1MB   ; max logfile bytes b4 rotation (default 50MB)
-;stdout_logfile_backups=10     ; max of stdout logfile backups (default 10)
-;stdout_capture_maxbytes=1MB   ; number of bytes in 'capturemode' (default 0)
-;stdout_events_enabled=false   ; emit events on stdout writes (default false)
-;stderr_logfile=/a/path        ; stderr log path, NONE for none; default AUTO
-;stderr_logfile_maxbytes=1MB   ; max logfile bytes b4 rotation (default 50MB)
-;stderr_logfile_backups=10     ; max of stderr logfile backups (default 10)
-;stderr_capture_maxbytes=1MB   ; number of bytes in 'capturemode' (default 0)
-;stderr_events_enabled=false   ; emit events on stderr writes (default false)
-;environment=A=1,B=2           ; process environment additions (def no adds)
-;serverurl=AUTO                ; override serverurl computation (childutils)
+;command=/bin/cat                        ; the program (relative uses PATH, can take args)
+;process_name=%(program_name)s           ; process_name expr (default %(program_name)s)
+;numprocs=1                              ; number of processes copies to start (def 1)
+;directory=/tmp                          ; directory to cwd to before exec (def no cwd)
+;umask=022                               ; umask for process (default None)
+;priority=999                            ; the relative start priority (default 999)
+;autostart=true                          ; start at supervisord start (default: true)
+;autorestart=true                        ; retstart at unexpected quit (default: true)
+;startsecs=10                            ; number of secs prog must stay running (def. 1)
+;startretries=3                          ; max of serial start failures (default 3)
+;exitcodes=0,2                           ; 'expected' exit codes for process (default 0,2)
+;stopsignal=QUIT                         ; signal used to kill process (default TERM)
+;stopwaitsecs=10                         ; max num secs to wait b4 SIGKILL (default 10)
+;user=chrism                             ; setuid to this UNIX account to run the program
+;redirect_stderr=true                    ; redirect proc stderr to stdout (default false)
+;stdout_logfile=/a/path                  ; stdout log path, NONE for none; default AUTO
+;stdout_logfile_maxbytes=1MB             ; max logfile bytes b4 rotation (default 50MB)
+;stdout_logfile_backups=10               ; max of stdout logfile backups (default 10)
+;stdout_capture_maxbytes=1MB             ; number of bytes in 'capturemode' (default 0)
+;stdout_events_enabled=false             ; emit events on stdout writes (default false)
+;stderr_logfile=/a/path                  ; stderr log path, NONE for none; default AUTO
+;stderr_logfile_maxbytes=1MB             ; max logfile bytes b4 rotation (default 50MB)
+;stderr_logfile_backups=10               ; max of stderr logfile backups (default 10)
+;stderr_capture_maxbytes=1MB             ; number of bytes in 'capturemode' (default 0)
+;stderr_events_enabled=false             ; emit events on stderr writes (default false)
+;environment=A=1,B=2                     ; process environment additions (def no adds)
+;serverurl=AUTO                          ; override serverurl computation (childutils)
 ...
 ```
 
@@ -314,8 +314,8 @@ files = supervisord.d/*.ini
 
 * autorestart ：决定进程状态异常后是否会自动重启，这是最重要的值守功能，一般需要开启。
 * autostart ：决定进程是否跟随 supervisord 启动，一般需要开启，这样启动 supervisord 服务就相当于直接启动我们自定义的程序。
-* environment ：进程的环境变量配置，如果是 python 进程，一般用于配置项目的虚拟环境。
-* command ：启动时的具体命令。
+* environment ：进程的环境变量配置。
+* command ：启动时的具体命令，如果是 python 进程，可以使用项目虚拟环境的绝对路径来指明对应的解释器。
 * directory ：程序的具体工作目录。
 
 在安装 supervisor 后，只要写入对应的 ini 文件到 `/etc/supervisord.d/` 目录中，就可以使用 `supervisorctl` 启动 ini 文件定义的 program ，或者在定义文件后直接重启整个 supervisord 服务 ，同样可以启动我们需要的 program 。
