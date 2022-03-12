@@ -468,16 +468,16 @@ dnssec 引入了一些新的记录类型，比较重要的有以下几种：
 
 开启 dnssec 支持的查询过程大概如下：
 
-1. 在向权威 DNS 服务器发起正常 A 记录请求的同时，发起本次请求时启用 dnssec 。
+1. 在向权威 DNS 服务器发起正常 A 记录请求的同时，发起本次请求同时启用 dnssec 的信息。
 2. 如果目标 DNS 服务器不支持 dnssec ，则它只处理 A 记录请求。
 3. 如果目标 DNS 服务器支持 dnssec ，那么目标 DNS 服务器还会一并返回该 A 记录的 RRSIG 。
-4. 向目标 DNS 服务器请求 DNSKEY 和对应的 RRSIG ，使用 DNSKEY 验证上一步 A 记录的 RRSIG 。
-5. 向上级域请求 DS 记录和 DS 记录的 RRSIG ，然后使用 DS 记录验证上一步 DNSKEY 。
+4. 向目标 DNS 服务器请求 DNSKEY 和 DNSKEY 记录的 RRSIG ，使用 DNSKEY 验证上一步 A 记录的 RRSIG 。
+5. 向上级域请求 DS 记录和 DS 记录的 RRSIG ，然后使用 DS 记录验证上一步 DNSKEY 记录的 RRSIG 。
 6. 向更上一级域请求 DNSKEY 和对应的 RRSIG ，然后使用 DNSKEY 验证上一步 DS 记录的 RRSIG 。
 7. 重复步骤 5 和 步骤 6 ，验证一系列域的 DNSKEY 和 DS 记录的 RRSIG 。
 8. 到达根域后，由于根域的 DNSKEY 已经配置在服务中，所以整个查询链都是生效的。
 
-可以看到，在这个过程中， DS 用于对 DNSKEY 的认证， RRSIG 用于对查询记录的认证， DNSKEY 是用于解密 RRSIG 的公钥， dnssec 的信任链机制类似于 SSL 的 CA ，因为根域的密钥已经默认配置，所以需要通过逐级信任 DS 记录以构建信任链，三种记录协作完成 dnssec 的验证。
+可以看到，在这个过程中， DS 用于对 DNSKEY 的认证， RRSIG 用于对查询记录的认证， DNSKEY 是用于解密 RRSIG 的公钥， dnssec 的信任链机制类似于 SSL 的 CA ，因为根域的密钥已经默认配置，所以需要通过逐级信任 DS 记录来构建整条信任链，三种记录协作完成 dnssec 的验证。
 
 在 named.conf 中，使用以下关键字配置 dnssec ：
 
@@ -488,7 +488,7 @@ dnssec 引入了一些新的记录类型，比较重要的有以下几种：
 
 如果要对本地的权威域需要开启 dnssec ，则需要使用配套工具生成密钥对，然后对 zone file 进行数字签名，并修改对应的配置文件。
 
-在面向公众的 DNS 服务，可以选择开启 dnssec ，作为内网 DNS 服务则没有必要开启 dnssec 。
+在面向公众的 DNS 服务，可以选择开启 dnssec ，而作为内网 DNS 服务时则没有必要开启 dnssec 。
 
 ### 使用rndc管理BIND
 
