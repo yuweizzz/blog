@@ -161,7 +161,7 @@ $ parted /dev/sda align-check opt 1
 
 对新安装的硬盘设备，包括机械硬盘和固态硬盘，一般都需要分区和格式化后才能被系统使用，在 Linux 系统中用得比较多的是 MBR 和 GPT 两种分区方式。
 
-### MBR分区方式
+### MBR 分区方式
 
 MBR 分区方式是比较经典的分区方式，这种分区格式流行的时候，硬盘扇区大小为 512B 来设计的，它只用到了硬盘的第一个扇区，这个扇区会保存系统引导代码和分区表，但实际分区表的大小只有 64B ，大部分容量由引导代码所占据，可以达到 446B ，扇区最后的 2 个字节作为标志位，有效的标志为 0xAA55 ，如果破坏掉这两个字节，整个 MBR 分区会失效，硬盘分区无法正常识别，从而导致系统启动异常。
 
@@ -199,7 +199,7 @@ Number  Start   End     Size    Type      File system  Flags
 # 这个硬盘由两个 primary 分区和一个 extended 分区组成，其中 logical 分区包括了四个逻辑分区
 ```
 
-### GPT分区方式
+### GPT 分区方式
 
 GPT 是解决了 MBR 分区方式的局限的新分区方式。
 
@@ -227,7 +227,7 @@ Number  Start   End     Size    File system  Name     Flags
 
 分区的具体操作可以参考之前的[文章](https://yuweizzz.github.io/post/practical_tips_in_linux/#%E7%A1%AC%E7%9B%98%E5%88%86%E5%8C%BA%E5%92%8C%E6%A0%BC%E5%BC%8F%E5%8C%96)。
 
-## 硬盘的S.M.A.R.T.指标
+## 硬盘的 S.M.A.R.T. 指标
 
 现代硬盘一般还内置了状态检测和硬件信息报告输出的机制，用来作为硬盘健康的评测依据，以保障硬盘数据的安全。这项技术称为 Self Monitoring Analysis and Reporting Technology ，输出的信息一般简称为 S.M.A.R.T. 指标。
 

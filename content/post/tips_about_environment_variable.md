@@ -78,7 +78,7 @@ SHELL BUILTIN COMMANDS
 
 这里只讨论 Linux 环境下的 bash ，其他类型的 shell 和 bash 可能略有差别，但它们的机制应该是相近的。
 
-### shell的属性
+### shell 的属性
 
 bash 的机制比表面看上去的复杂得多，它隐藏了很多的属性设置。可以根据我们比较关系的属性，来简单划分 shell 的种类。
 
@@ -141,7 +141,7 @@ SHELL BUILTIN COMMANDS
 ...
 ```
 
-### profile和rc
+### profile 和 rc
 
 bash 使用了 profile 和 rc 来完成一些 bash 环境的设置工作，环境变量的设置会在这一步完成。
 

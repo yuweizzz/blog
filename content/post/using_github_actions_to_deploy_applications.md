@@ -42,7 +42,7 @@ CI 指的是频繁地把代码更新提交到主干中，为了实现这一过�
 
 CD 建立在 CI 的基础上，将成功集成的主干代码部署到生产环境中，这个过程同样有一些重复性工作，所以这一环节也可以自动化实现。
 
-## 快速使用GitHub Actions
+## 快速使用 GitHub Actions
 
 GitHub Actions 是 GitHub 提供的一项服务，可以通过自定义 workflow 实现代码仓库的 CI 和 CD 工作流程，使用起来快速简单，完成满足个人项目的使用。
 
@@ -54,7 +54,7 @@ GitHub Actions 是 GitHub 提供的一项服务，可以通过自定义 workflow
 
 提交了 workflow 文件后， GitHub Actions 会根据定义的 workflow 执行相关操作，可以在 Actions 中查看 workflow 的运行结果和运行日志。
 
-## 编写workflow文件
+## 编写 workflow 文件
 
 除了 GitHub 社区提供的各种编程环境的 workflow ，我们还可以自行编写 workflow 文件。
 
@@ -70,7 +70,7 @@ workflow 文件是使用 YAML 编写的配置文件，它会涉及以下列出�
 
 YAML 语法比较简单，这里会跳过相关介绍，直接通过实例来学习 workflow 编写。
 
-## python自动测试实例
+## python 自动测试实例
 
 以下是 GitHub 社区提供的基于 python 环境的 CI 工作流程。
 
@@ -131,7 +131,7 @@ jobs:
 
 除了 python 之外，社区还有对各类开发语言的 workflow 支持，可以根据自己的需要选用。
 
-## Hexo自动构建部署实例
+## Hexo 自动构建部署实例
 
 在很多情况下需要使用自定义 workflow ，以下是我使用过的工作流程，略微比 python 自动测试的 workflow 复杂，用来自动构建并部署静态博客。
 

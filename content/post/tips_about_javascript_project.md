@@ -33,7 +33,7 @@ draft: false
 
 ```
 
-## 搭建Node.js环境
+## 搭建 Node.js 环境
 
 Node.js 提供了二进制预编译的安装包，在[官网](https://nodejs.org/zh-cn/download/)直接下载到本地即可解压使用。
 
@@ -48,7 +48,7 @@ $ echo 'export PATH="$PATH":/usr/local/node-v14.15.4-linux-x64/bin/' >> /etc/pro
 
 如果只有某个用户需要使用 Node.js，可以把 PATH 变量写入到对应用户的 bash_profile 或 bashrc 中，这样可以起到一样的效果并且不会影响其他用户的环境变量。
 
-## 修改npm镜像地址
+## 修改 npm 镜像地址
 
 npm 是 Node.js 的依赖包管理工具，类似于 python 的 pip ， npm 在国内的网络环境会有下载速度慢的现象，可以将镜像地址修改为国内的镜像地址来解决这个问题。 
 
@@ -219,4 +219,3 @@ $ npm set-script "lint" "eslint src/"
 # 添加后可以直接调用 npm run lint 执行语法检查
 ```
 
-### 待后续更新 ...

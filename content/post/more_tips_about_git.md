@@ -36,7 +36,7 @@ draft: false
 
 在本地环境的 Git 使用熟练后，我们会使用到一些更复杂的功能，协助我们更好地工作。
 
-## 了解Git原理
+## 了解 Git 原理
 
 在使用更复杂的功能前，简单了解一下 Git 的原理会对后续使用有帮助。
 
@@ -86,7 +86,7 @@ Git 本质上是一个内容寻址的文件系统，它会为对象计算一个�
 
 通过整个 commit 链，我们就可以追溯整个仓库的所有历史变动。
 
-## branch的工作原理
+## branch 的工作原理
 
 在前面的使用过程中，我们接触了分支 branch 的概念了，也知道每个 Git 仓库会自动创建一个 master/main 分支，而它本质上是一个指向 commit object 的指针。
 
@@ -136,7 +136,7 @@ ref: refs/heads/branchA
 
 branch ， refs ， HEAD 三者之间有一个共同点，那就是它们的本质都是用来指向 commit object ， refs 是 branch 的低级原语，而 HEAD 是 refs 的符号引用，它是为了使用方便引出的概念，每次进行 branch 切换， HEAD 也会自动更新。
 
-## 使用remote功能
+## 使用 remote 功能
 
 除了在本地设备上使用之外， Git 更强大的地方在于远端功能的支持，我们可以把仓库托管到云端，这个云端可以是 GitHub 或者自建的 GitLab 平台，这样我们就可以随时获得最新版本的代码仓库，使得团队协作开发更方便。
 
@@ -218,7 +218,7 @@ $ git fetch origin master
 $ git merge origin/master
 ```
 
-## 使用submodule功能
+## 使用 submodule 功能
 
 submodule 可以让你的代码仓库使用其他现有的仓库作为子模块，这样我们可以轻松引用别人的仓库作为我们自己代码仓库的一部分。
 

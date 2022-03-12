@@ -36,7 +36,7 @@ draft: false
 
 现代设备中，采用 UEFI 启动的机器越来越多了，虽然在服务器中可以通过 CSM 来提供 Legacy BIOS 的支持，但是 UEFI 将会是未来使用的主流方式，所以有必要开始尝试使用 UEFI 启动。
 
-## 将MBR转换为GPT
+## 将 MBR 转换为 GPT
 
 和 UEFI 启动模式紧密配合的分区方式是 GPT ，原有的 MBR 分区方式存在一定的局限性。而 GPT 为了保持兼容，使用了 LBA 0 扇区作为 MBR 保护扇区，这也使得 MBR 分区方式迁移到 GPT 分区方式成为可能。
 
@@ -203,7 +203,7 @@ $ mount /dev/sda4 /boot/efi
 # 为了后续使用，这一步完成后应该手动更新到 fstab 中
 ```
 
-## 重新安装BootLoader
+## 重新安装 BootLoader
 
 由于我们转换了分区方式，原有的 BootLoader 也需要重新安装，现代 Liunx 系统基本都使用 grub2 作为 BootLoader 。
 
@@ -234,7 +234,7 @@ $ sed -i 's/initrd16/initrdefi/g' /boot/grub2/grub.cfg
 
 到这里系统下的工作基本完成，下一步需要重启机器进入 BIOS setup 来修改启动模式。
 
-## 修改启动模式和UEFI启动项
+## 修改启动模式和 UEFI 启动项
 
 在机器重启自检过程中，根据提示按下按键就能进入 BIOS setup ，这个按键一般会是 Del 或者 F2 。
 

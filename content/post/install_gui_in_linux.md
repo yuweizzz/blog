@@ -56,9 +56,9 @@ X Server 是相对固定的一套软件，和硬件交互的主要是各类硬�
 
 所以如果要为一台机器安装带图形界面的 Linux 系统，我们会需要安装 X Window System 组件以提供 X Server ，然后安装 KDE 这一类特殊的 X Client 套件，组成一套可用的图形界面。
 
-## 传统Server/Clinet架构和X Window System架构的区别
+## 传统 Server/Clinet 架构和 X Window System 架构的区别
 
-### 传统Server/Clinet架构
+### 传统 Server/Clinet 架构
 
 在传统的 Server/Clinet 架构中，最经典应用应该是 HTTP 服务。
 
@@ -66,7 +66,7 @@ X Server 是相对固定的一套软件，和硬件交互的主要是各类硬�
 
 从使用者的视角来看， Client 很好理解，无疑就是自己使用的 PC 设备，而 Server 就是远端提供服务的设备。
 
-### X Window System架构
+### X Window System 架构
 
 当一台 Linux 系统的机器运行图形界面时，它的 X Server 和 X Client 都会运行在自己的本地机器上，这种应用情况在传统的 Server/Clinet 架构中比较少。
 

@@ -66,7 +66,7 @@ $ ssh-keygen -t rsa -C "注册GitHub时的邮箱" -P "" -f ~/.ssh/id_rsa
 
 执行完命令后，我们可以得到 id_rsa 和 id_rsa.pub 两个文件，其中 id_rsa 是私钥，id_rsa.pub 是公钥。
 
-## 在GitHub账户中添加公钥
+## 在 GitHub 账户中添加公钥
 
 我们需要把公钥信息上传到自己的 GitHub 账户。
 

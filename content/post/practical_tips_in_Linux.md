@@ -32,7 +32,7 @@ draft: false
 
 ```
 
-## Linux的归档和压缩命令
+## Linux 的归档和压缩命令
 
 归档压缩是经常需要进行的操作，在 Linux 系统中基本上通过 tar 就可以应对大部分场景，某些特殊的场景可能会涉及 zip ， 7z ， rar 这些不同的压缩文件格式，它们需要使用额外的工具去操作，这里只介绍 tar 命令。
 
@@ -110,7 +110,7 @@ $ parted /dev/sda -s mkpart primary 0% 100%  # 这里的 primary 为分区命名
 $ mkfs.xfs /dev/sda1
 ```
 
-## curl的基本使用
+## curl 的基本使用
 
 curl 在 Linux 代替了浏览器的工作，经常用来调试接口。
 
@@ -129,7 +129,7 @@ $ curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' http://.
 # -x 用来设置代理服务器，用法为 -x/--proxy 127.0.0.1:8080
 ```
 
-## curl结合bash变量使用
+## curl 结合 bash 变量使用
 
 curl 可以结合 bash 变量，实现更灵活的 url 请求。
 
@@ -150,7 +150,7 @@ $ curl -X POST -H 'Content-Type: application/json' -d '{"keyA": "'"$keyA"'","key
 
 其中 `'` 包围的文本不会被 bash 转义，所以 `{}` 会以源文本的格式保留而不被转义。而变量总是以 `"$keyA"` 的形式出现，保证它被 bash 正确转义并获取变量内容。所以文本块就是 `'` 包围的部分和变量转义后的组合文本，注意 `"$keyA"` 和任意 `'` 包围的部分之间不能有空格，这样它们就会被认为是完整的 `-d` 选项的内容，发起请求时就不会报错了。
 
-## 使用sed快速去除无用字符
+## 使用 sed 快速去除无用字符
 
 sed 可以很简单快速去除空白行，首尾空白字符，注释行。
 
@@ -176,7 +176,7 @@ $ sed '/^#/d'
 # * 表示一个或多个，可以结合确定的单个字符或者字符范围使用
 ```
 
-## 在shell中使用数组
+## 在 shell 中使用数组
 
 bash 4 原生支持一维数组，在某些情况下可能会使用到这种数据结构。
 
@@ -213,7 +213,7 @@ echo ${#array[@]};
 echo ${#array["index"]};
 ```
 
-## bash变量操作符
+## bash 变量操作符
 
 bash 变量支持操作符，可以基于原有值做一些快速变换。
 
@@ -248,7 +248,7 @@ file
 
 关于这两个定义符的记忆，我建议直接看键盘， `#` 在 `$` 左边， `%` 在 `$` 右边，把它们指向 `$` 则暗合它们的开始匹配方向。
 
-## awk内置函数split()
+## awk 内置函数 split()
 
 ``` bash
 #!/bin/bash
@@ -265,7 +265,7 @@ split("A;B;C;D",array,';')
 # 值得注意的是 array 是 awk 的内部变量
 ```
 
-## awk导入外部数据
+## awk 导入外部数据
 
 ``` bash
 #!/bin/bash
@@ -331,7 +331,7 @@ do
 done < file
 ```
 
-## 使用rpm进行软件包操作
+## 使用 rpm 进行软件包操作
 
 rpm 是红帽软件包工具，是红帽系发行版使用的基本软件管理工具。除了安装卸载软件，它可以提供一些额外的功能。
 
@@ -361,7 +361,7 @@ $ rpm -ql package.rpm
 $ rpm -qf filename
 ```
 
-## 使用yum下载rpm包
+## 使用 yum 下载 rpm 包
 
 有时候会有下载 rpm 包的需求，可以通过 yum 实现。
 
@@ -372,7 +372,7 @@ $ yum install package --downloadonly --downloaddir=/your/dir
 # 如果 --downloadonly 运行失败，可能需要自行安装这个插件
 ```
 
-## 配置yum源
+## 配置 yum 源
 
 yum 是 Fedora 和 RedHat 以及 SUSE 中使用的软件包管理器，它的使用比直接使用 rpm 更加方便简单。
 
@@ -439,7 +439,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
 现有国内网络环境下，原始镜像速度很慢，可以使用公开的国内镜像源，它们大部分提供了相关的配置方法，如果是自建的镜像源，那么至少需要自行配置 name 和 baseurl 才能正常使用。
 
-## 使用cpio打开rpm文件
+## 使用 cpio 打开 rpm 文件
 
 rpm 包可以视为一个特殊的归档文件，如果需要提取这个档案中的内容，一般通过 rpm2cpio 和 cpio 去实现。
 
@@ -455,7 +455,7 @@ $ rpm2cpio package.rpm | cpio -divm
 # -m/--preserve-modification-time 保留更改时间。
 ```
 
-## 更新文件到initramfs镜像中
+## 更新文件到 initramfs 镜像中
 
 在 Linux 系统中，我们一般可以在 `/boot` 目录中找到 initramfs 镜像文件，它们是引导系统的必要组件。如果需要使用到的系统命令没有编译到镜像中，可以使用 dracut 命令进行镜像更新。
 

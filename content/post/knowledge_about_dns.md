@@ -39,7 +39,7 @@ draft: false
 
 而 DNS 服务器负责提供域名和 IP 地址映射关系查询的服务，一般叫做域名解析。
 
-## DNS配置文件
+## DNS 配置文件
 
 在使用网络服务时，域名解析的工作由操作系统的全局配置的 DNS 服务器负责。
 
@@ -60,7 +60,7 @@ $ cat /etc/hosts
 # 在这个文件中写入 IP 地址和对应域名，在访问对应域名时会直接使用文件中给定的 IP 地址
 ```
 
-## DNS查询规则
+## DNS 查询规则
 
 ### 域名解析记录类型
 
@@ -202,11 +202,11 @@ github.com.		520	IN	NS	dns3.p08.nsone.net.
 
 允许接受递归请求的 DNS 服务器一般都开启了缓存功能，而且它们都保存了根服务器的地址，以保证前面所述的工作链能正常执行。
 
-## DNS服务软件BIND
+## DNS 服务软件 BIND
 
 BIND (Berkeley Internet Name Domain) 是最常用的 DNS 服务软件，我们通过它的服务配置可以更好理解 DNS 解析的运行。
 
-### BIND基本配置
+### BIND 基本配置
 
 BIND 的配置文件 `named.conf` 语法和一些常规软件相似，在 `/usr/share/doc/bind-<version>/sample/etc/` 中找到配置文件的参考模板。
 
@@ -269,7 +269,7 @@ include "/etc/named.rfc1912.zones";
 include "/etc/named.root.key";
 ```
 
-### 配置zone
+### 配置 zone
  
 除了基本的服务信息的配置，每个 zone 的配置是实际域名记录的来源。
 
@@ -335,7 +335,7 @@ $TTL 1D
 
 使用不同的 zone type 共同协作才能支持 DNS 服务。
 
-#### 使用master和slave设置主从域
+#### 使用 master 和 slave 设置主从域
 
 一般来说，合理的 DNS 服务需要两台 DNS 服务器，分别用来设置主 DNS 服务器和从 DNS 服务器，提高整体服务的可靠性。
 
@@ -384,7 +384,7 @@ zone "example.com" IN {
 4. 主 DNS 服务器检查 transfer 请求是否来自 allow-transfer 的从 DNS 服务器。
 5. 检查通过则传输数据，完成同步。
 
-#### 使用forward设置转发域
+#### 使用 forward 设置转发域
 
 如果 DNS 服务器不是某个 zone 的权威 DNS ，那么可以将这个域设置为转发域，将对该域的请求转发到指定的 DNS 服务器中。
 
@@ -432,7 +432,7 @@ zone "example.com" {
 
 这样设置可以起到在全局转发的情况下，某些域可以直接在本地进行权威查询的效果。
 
-### 使用view配置智能DNS
+### 使用 view 配置智能 DNS
 
 在 named.conf 中使用 view 关键字可以实现简单的智能 DNS 。
 
@@ -456,7 +456,7 @@ options {
 
 这样设置可以实现用户分离，只要查询请求的来源符合对应的 match-client ，就使用对应的 view 去响应请求，达到智能化响应请求的效果。
 
-### 使用dnssec应对域名欺骗
+### 使用 dnssec 应对域名欺骗
 
 dnssec 是一种应对域名欺骗的 DNS 安全技术，在递归服务器向根服务器发起查询的过程中，迭代查询时返回的记录可能是一个伪造的响应，导致最终域名解析到了错误的地址，如果使用 dnssec ，就可以验证返回记录的完整性和真实性。
 
@@ -490,7 +490,7 @@ dnssec 引入了一些新的记录类型，比较重要的有以下几种：
 
 在面向公众的 DNS 服务，可以选择开启 dnssec ，而作为内网 DNS 服务时则没有必要开启 dnssec 。
 
-### 使用rndc管理BIND
+### 使用 rndc 管理 BIND
 
 rndc 是 BIND 内置的管理工具，可以在本地和远端对运行中的 BIND 进行操作和管理。
 

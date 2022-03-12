@@ -32,7 +32,7 @@ draft: false
 
 ```
 
-## LDAP的基本知识
+## LDAP 的基本知识
 
 LDAP 全称为 Light Directory Access Portocol ，它是基于 X.500 标准的轻量级目录访问协议，经常应用于企业的权限管控和登录认证，比如 AD 域控就是微软基于 LDAP 协议所开发的权限管控应用。
 
@@ -75,7 +75,7 @@ com
 
 一般来说， CN 出现在 DN 的首位，这里可以使用 uid 或者 sAMAccountName 去替代 CN 在 DN 中的位置，因为它们都是 entry 的 Attributes ，可以需要根据具体使用的 LDAP 服务器决定。
 
-## 接入LDAP的代码思路
+## 接入 LDAP 的代码思路
 
 为了代码更具有通用性，方便接入到各式各样的系统中，认证过程通常可以这样设计：
 

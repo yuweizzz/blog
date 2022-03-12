@@ -31,7 +31,7 @@ draft: false
 
 ```
 
-## 安装Nginx
+## 安装 Nginx
 
 Nginx 是应用广泛的服务器软件，在 Nginx 的官方文档中可以看到， Nginx 可以应用在多种场景，包括基本 HTTP 服务器，代理服务器，邮件代理服务器。由于支持的特性非常多，所以安装的时候需要考虑的地方也相应增多了。
 
@@ -39,7 +39,7 @@ Nginx 是应用广泛的服务器软件，在 Nginx 的官方文档中可以看�
 
 需要的源码包或者软件包的安装方式都可以在 Nginx 的[官网](http://nginx.org/)找到，在这里只介绍编译安装。
 
-### Nginx源码包结构
+### Nginx 源码包结构
 
 在下载源码包并进行解压后，可以看到几个关键的文件和目录：
 
@@ -100,7 +100,7 @@ $ make && make install
 $ /opt/nginx/sbin/nginx 
 ```
 
-## 使用Nginx
+## 使用 Nginx
 
 Nginx 通过 nginx.conf 文件来配置各项服务。
 
@@ -146,7 +146,7 @@ error_page 用来导向 http 响应错误的返回页面，如果它放在 serve
 
 除了 HTTP 服务， Nginx 还支持邮件服务和传输层服务，可以在 conf 中配置 mail 域和 stream 域来定义相关服务细节，但这些服务需要额外编译对应的模块。
 
-### loaction实现资源匹配
+### loaction 实现资源匹配
 
 location 通过 url 来匹配目标资源。
 
@@ -183,7 +183,7 @@ location 通过 url 来匹配目标资源。
 * alias 只能位于 location 块中， root 可以放在 location 和 server 中， Nginx 自带的配置语法检查可以帮助我们避免这种错误。
 > 对比 root 和 alias ， alias 的使用会更加灵活，它不会被匹配条件限定，可以自由地指定资源目录，而 root 已经在 url 匹配时隐式限定了固有的资源目录，所以推荐在 location 中使用 alias 。
 
-### rewrite实现重定向功能
+### rewrite 实现重定向功能
 
 rewrite 模块提供了灵活的重定向功能。
 
@@ -217,7 +217,7 @@ try_files 用于 location 中，可以指定多个 file ，它按顺序检查文
 
 try_files 的一般写法是 `try_files urlA urlB urlC` ， urlA 将会直接在当前 location 的 root 或 alias 中寻找匹配资源，后续的 urlB 也是相似的做法，如果它们依次都无法找到资源，才会使用最后的 urlC 执行新一轮的 location 匹配，整个过程和 url 重写非常相似，可以看做是简化版本的 rewrite 。
 
-### proxy实现代理功能
+### proxy 实现代理功能
 
 proxy 模块提供了代理功能，代理实际上就是对请求的转发。
 
@@ -250,7 +250,7 @@ location / {
 
 由于反向代理架构中，真正提供服务的是上游节点，所以代理服务器需要向真正提供服务的节点传递客户信息，要在请求转发时设置一些特殊的头部信息。
 
-### upstream实现负载均衡
+### upstream 实现负载均衡
 
 upstream 提供负载均衡功能，一般配合 proxy 模块使用，可以将反向代理的目的地由一个节点扩展为一个带有负载均衡功能的上游集群。
 
