@@ -120,20 +120,32 @@ draft: false
 * 恋の横顔
 * It's A Party
 * Just A Joke
+* Dancing Tonight
 * It's Hard to Say Good-bye
     * さよならは愛の言葉，与角松敏生合作演唱的作品
 
 **具岛直子**
+* 1969
 * キャンディ
     * Candy
 * モノクローム
 * 9月の海
 * 12月の街
 * メロディ
+    * Melody
 * 台风の夜
 * まどろみ
 * Missing You
 * 今を生きる
+* Sunday
+
+**中岛美雪** 
+* 糸
+
+**工藤静香**
+* FU-JI-TSU
+* 嵐の素顔
+* くちびるから媚薬
 
 **安室奈美惠**
 * Baby Don't Cry
@@ -163,10 +175,15 @@ draft: false
 **渡辺満里奈**
 * EVERGREEN
 * ホワイトラビットからのメッセージ
+* Cotton Candy
 * 青空のコラージュ
 
 **Wink**
 * 愛が止まらない ～Turn it into Love～
+    * 原曲应为 Kylie Minogue 的 Turn it into Love
+
+**桑名晴子**
+* 夜の海
 
 **CINDY**
 * 私達を信じていて
@@ -174,5 +191,10 @@ draft: false
 **須藤薫**
 * 雨の中の噴水
 
+**大野雄二**
+* Destiny Love
+    * 出自「ルパン三世 ルパン暗殺指令」原声带
+
 **YOASOBI**
 * 夜に駆ける
+
