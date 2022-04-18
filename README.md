@@ -1,6 +1,6 @@
-# Blog
+# blog
 
-This is Wei's Blog Source Repository.
+This is Wei's blog source repository.
 
-Automatically deploy When publish commits.
+Automatically deploy when publish commits.
 
