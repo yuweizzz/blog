@@ -5,6 +5,7 @@ tags:
   - "Linux"
   - "DNS"
   - "PowerDNS"
+  - "Lua"
 draft: false
 ---
 
@@ -116,7 +117,120 @@ reuseport=yes
 cpu-map=0=0 1=1 2=2 3=3
 ```
 
+## Recursor Server 的 lua 扩展
+
+powerdns 可以通过 lua 扩展脚本在查询的基础上实现更复杂的功能。
+
+``` bash
+# 添加 lua 脚本扩展
+$ cat pdns.conf
+lua-dns-script /path/to/lua/script
+
+# 动态重载 lua 脚本
+rec_control reload-lua-script
+```
+
+powerdns 提供了多个查询钩子，可以在对应的查询阶段进行请求拦截并重写对应的回答动作，有以下几个钩子：
+
+* ipfilter ：在查询数据包开始解析之前。
+* gettag ：在查询数据包缓存之前。
+* prerpz ：在应用响应策略之前。
+* preresolve ：在查询逻辑工作开始之前。
+* nodata, nxdomain ：在返回无数据结果和无域名结果之后。
+* postresolve ：在查询逻辑工作结束之后。
+* preoutquery ：在向权威服务器查询之前。
+* policyEventFilter ：在响应策略命中之后。
+
+由于存在着多阶段的钩子函数，所以实现扩展功能只需要重写对应的函数即可。
+
+以下是一些参考用例，更多详细用法可以参考官方文档。
+
+``` lua
+-- 以无响应域名结果的钩子为例，来自官方实例
+nxdomainsuffix = newDN("com")
+function nxdomain(dq)
+    pdnslog("nxdomain called for: "..dq.qname:toString())
+    if dq.qname:isPartOf(nxdomainsuffix) then
+        dq.rcode = 0  -- 修改为正常应答
+        dq:addAnswer(pdns.CNAME, "www.powerdns.org")
+        dq:addAnswer(pdns.A, "1.2.3.4", 60, "www.powerdns.org")
+        return true  -- return true 说明这个钩子函数生效，如果 return false 则这个钩子函数不生效
+    end
+    return false
+end
+
+-- 以查询逻辑工作开始之前的钩子为例，由官方实例改写
+blockset = newDS()
+blockset:add{"powerdns.org", "powerdns.com"}  -- 以列表形式添加多个域名
+dropset = newDS()
+dropset:add("pdns.org")  -- 添加单个域名
+function preresolve(dq)
+    -- 重写响应结果
+    if blockset:check(dq.qname) then
+        dq.variable = true      -- disable packet cache in any case
+        if dq.qtype == pdns.A then
+            dq:addAnswer(pdns.A, "1.2.3.4")
+            return true
+        end
+    end
+    -- 黑名单机制
+    if dropset:check(dq.qname) then
+        dq.appliedPolicy.policyKind = pdns.policykinds.Drop  -- 改写响应策略
+        return false -- recursor still needs to handle the policy, 后续由定义策略处理
+    end
+
+    return false
+end
+
+-- 比较复杂的重写行为，可以在自建权威服务器的基础上，配合递归转发配置实现 dns 的内网劫持
+-- 基本原理：查询请求由递归转发到自建域中，如果自建域不存在域名，再次转发到公网进行查询
+rewriteset = newDS()
+rewriteset:add("powerdns.org")
+function nxdomain(dq)
+    if rewriteset:check(dq.qname) then 
+        local dh = dq:getDH()
+        -- 独立的处理函数 udpQueryResponse 允许发起新的 udp 查询，具体用法可以参考官方文档
+        dq.followupFunction = "udpQueryResponse"
+        dq.udpCallback = "gotdomaindetails"  -- 处理函数的回调函数
+        dq.udpQueryDest = newCA("114.114.114.114:53")
+        -- build_udp_package 需要自行实现，可以参考 lua-resty-dns ，工作内容为构建 dns 查询请求包
+        dq.udpQuery = build_udp_package(dq.qname:toString(), dh:getID(), dh:getRD())
+        return true
+    end
+    return false
+end
+
+function gotdomaindetails(dq)
+    local dh = dq:getDH()
+    -- 回调函数需要清除上一步的 dq 对象的赋值
+    dq.followupFunction = ""
+    dq.udpCallback = ""
+    -- parse_response 需要自行实现，可以参考 lua-resty-dns ，工作内容为解析 dns 响应包
+    local answers = parse_response(dq.udpAnswer, dh:getID())
+    if not answers then
+        return false
+    end
+    if answers.errcode then
+        dq.rcode = answers.errcode
+        return true
+    end
+    if answers then
+        for _, ans in ipairs(answers) do
+            dq:addRecord(ans.type, ans.address or ans.cname, ans.class, ans.ttl, ans.name)
+        end
+        -- 修改为正常应答
+        dq.rcode = 0
+        return true
+    end
+end
+
+-- 自定义 metrics
+new_metrics = getMetric("metrics")  -- 新增 metrics
+metrics:inc()  -- 增加 metrics 计数，更多 metrics 方法可以参考官方文档
+```
+
 ## 参考文档
 
-* [https://doc.powerdns.com/authoritative/performance.html](https://doc.powerdns.com/authoritative/performance.html)
-* [https://docs.powerdns.com/recursor/performance.html](https://docs.powerdns.com/recursor/performance.html)
+* [powerdns authoritative performance](https://doc.powerdns.com/authoritative/performance.html)
+* [powerdns recursor performance](https://docs.powerdns.com/recursor/performance.html)
+* [powerdns recursor lua scripting](https://docs.powerdns.com/recursor/lua-scripting/index.html)
