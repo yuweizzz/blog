@@ -375,7 +375,9 @@ $ systemctl status toptest
            └─2661 /usr/bin/top -b
 ```
 
-在现有的容器进行时中， docker 默认会在 `/sys/fs/cgroup` 的各个子系统中自行维护 cgroup ，但可以通过修改 cgroup driver 来托管到 systemd 中，而 containerd 则会默认在托管的 systemd cgroup 下创建子 cgroup ，交由 systemd 管控是更受推荐的做法。
+现有常用的容器进行时中， docker 默认会在 `/sys/fs/cgroup` 的各个子系统中自行维护 cgroup ，但可以通过修改 cgroup driver 来托管到 systemd 中，而 containerd 也存在类似的驱动设置。
+
+在 docker 使用 `"exec-opts": ["native.cgroupdriver=systemd"]` 改变 cgroup driver 的情况下，新运行的容器会作为 system.slice 中的 scope 运行，如果使用默认的 cgroupfs 的情况下，会如前面所述，在 `/sys/fs/cgroup` 的各个子系统中创建 cgroup ，而不是托管在 systemd 中。
 
 ## 结语
 

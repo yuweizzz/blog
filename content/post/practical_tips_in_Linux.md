@@ -176,6 +176,20 @@ $ sed '/^#/d'
 # * 表示一个或多个，可以结合确定的单个字符或者字符范围使用
 ```
 
+## 快速生成随机强密码
+
+``` bash
+# 随机生成含有特殊字符，数字，大小写字母的强密码
+# head -c 可以设置密码长度
+$ cat /dev/urandom | tr -dc '[:graph:]' | head -c 24; echo
+
+# 字符集由 tr -dc 决定，可以按需指定
+# 只需数字
+$ cat /dev/urandom | tr -dc '0-9' | head -c 24; echo
+# 只需大小写字母
+$ cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 24; echo
+```
+
 ## 在 shell 中使用数组
 
 bash 4 原生支持一维数组，在某些情况下可能会使用到这种数据结构。
