@@ -190,6 +190,21 @@ $ cat /dev/urandom | tr -dc '0-9' | head -c 24; echo
 $ cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 24; echo
 ```
 
+## 快速转换进制
+
+``` bash
+# 将数值快速转换成目标进制表示
+
+# 十进制转十六进制
+$ printf "%x" 12345
+
+# 十进制转八进制
+$ printf "%o" 12345
+
+# 十进制转科学计数
+$ printf "%e" 12345
+```
+
 ## 在 shell 中使用数组
 
 bash 4 原生支持一维数组，在某些情况下可能会使用到这种数据结构。

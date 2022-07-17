@@ -111,10 +111,34 @@ $ openssl x509 -req -sha256 -days 365 -in request.csr -signkey key.pri -out CA.c
 
 # 站点生成证书签发请求
 $ openssl genrsa -out server_key.pri 2048
+# 这里可以通过配置多个 CN ，也可以将单个 CN 指定类似 *.software.ibm.com 的泛解析来满足多域名的情况
 $ openssl req -new -sha256 -key server_key.pri \
  -subj "/C=US/ST=IL/L=Chicago/O=IBM Corporation/OU=IBM Software Group/CN=software.ibm.com" -out request.csr
 # CA 处理签发请求，生成证书
 $ openssl x509 -req -sha256 -days 365 -in request.csr -CA CA.crt -CAkey key.pri -CAcreateserial -out software.crt
+```
+
+在 golang 1.15 之后的版本，进行 tls 握手时发生报错 `"x509: certificate relies on legacy Common Name field, use SANs or temporarily enable Common Name matching with GODEBUG=x509ignoreCN=0"` 是因为当前使用的证书依赖于 CN 作为域名绑定，需要使用 x509 拓展字段 Subject Alternative Name 才能进行正常验证，也就是报错信息所述的 SAN 。
+
+``` bash
+# 生成 SAN 证书
+
+# 前序步骤和使用 CN 的证书相似
+# 生成私钥
+$ openssl genrsa -out server_key.pri 2048
+# 生成证书签发请求
+$ openssl req -new -sha256 -key server_key.pri \
+ -subj "/C=US/ST=IL/L=Chicago/O=IBM Corporation/OU=IBM Software Group/CN=software.ibm.com" -out request.csr
+# 使用 CA 处理签发请求，生成 SAN 证书
+$ openssl x509 -req -sha256 -days 365 -in request.csr -CA CA.crt -CAkey key.pri -CAcreateserial \
+ -extfile <(printf "subjectAltName=DNS:www.software.ibm.com,DNS:software.ibm.com,IP:1.1.1.1") -out software.crt
+
+# 如果是高版本的 openssl 可以尝试这样做
+$ openssl x509 -req -sha256 -days 365 -in request.csr -CA CA.crt -CAkey key.pri -CAcreateserial \
+ -addext "subjectAltName=subjectAltName=DNS:www.software.ibm.com,DNS:software.ibm.com,IP:1.1.1.1" -out software.crt
+
+# 可以看到实际的签发方式和使用 CN 的证书类似，但是使用了 x509 ext 字段，这样可以扩展证书的泛用性，匹配多个域名和 IP 地址
+# 签发之后就可以在证书的 X509v3 extensions 看到这部分信息
 ```
 
 通过信任上述例子中的 `CA.crt` ，后续如 `software.crt` 等由 `CA.crt` 签发的证书都是自动授信的。
