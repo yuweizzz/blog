@@ -481,7 +481,7 @@ $ rpm2cpio package.rpm | cpio -divm
 # -o/--create 生成文件
 # -v/--verbose 显示详细过程
 # -d/--make-directories 在需要时建立目录
-# -m/--preserve-modification-time 保留更改时间。
+# -m/--preserve-modification-time 保留更改时间
 ```
 
 ## 更新文件到 initramfs 镜像中
