@@ -419,7 +419,7 @@ gpgcheck=1  # 指定进行安装包签名检查
 plugins=1  # 指定是否可以使用插件
 installonly_limit=5  # 指定允许保存的内核软件包数量
 bugtracker_url=http://bugs.centos.org/set_project.php?project_id=23&ref=http://bugs.centos.org/bug_report_page.php?category=yum
-distroverpkg=centos-release  #指定用来获取系统的发行版信息的软件
+distroverpkg=centos-release  # 指定用来获取系统的发行版信息的软件
 ```
 
 全局配置基本上不用做修改，更多情况下只需要自行添加需要的镜像源。
@@ -431,23 +431,23 @@ $ cat CentOS-Base.repo
 [base]
 name=CentOS-$releasever - Base
 mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra
-#baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
+# baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
-#rerpmleased updates 
+# rerpmleased updates 
 [updates]
 name=CentOS-$releasever - Updates
 mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
-#baseurl=http://mirror.centos.org/centos/$releasever/updates/$basearch/
+# baseurl=http://mirror.centos.org/centos/$releasever/updates/$basearch/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
-#additional packages that may be useful
+# additional packages that may be useful
 [extras]
 name=CentOS-$releasever - Extras
 mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras&infra=$infra
-#baseurl=http://mirror.centos.org/centos/$releasever/extras/$basearch/
+# baseurl=http://mirror.centos.org/centos/$releasever/extras/$basearch/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 ```
@@ -456,17 +456,27 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
 * name 是对 Repository 的描述。
 * enable 规定对应 Repository 是否启用，可以使用这个选项屏蔽 Repository 。
-* mirrorlist 和 baseurl 规定了 Repository 的地址。
-
-    * baseurl 是指向 Repository 的 repodata 目录的地址，里面存放了软件包和他们的依赖关系。它可以指向本地和云端，本地一般以 file:// 来指定，云端可以使用 http，ftp 等工具。
-    * mirrorlist 是 baseurl 的一种集合形式，可以说 mirrorlist 指向的是一系列的 baseurl ，配合 fastestmirror 插件能找到响应速度最快的 Repository 。      
-
-* gpgcheck 和 gpgkey 是对软件包的签名检查的相关选项。
-
-    * gpgcheck 规定是否进行签名检查。
-    * gpgkey 指定了签名检查的合法签名数据源。
+* baseurl 是指向 Repository 的 repodata 目录的地址，里面存放了软件包和他们的依赖关系。它可以指向本地和云端，本地文件以 `file://` 来指定，云端可以使用 http，ftp 等工具。
+* mirrorlist 是 baseurl 的一种集合形式，可以说 mirrorlist 指向的是一系列的 baseurl ，配合 fastestmirror 插件能找到响应速度最快的 Repository 。
+* gpgcheck 规定是否进行签名检查。
+* gpgkey 指定了签名检查的合法签名数据源。
 
 现有国内网络环境下，原始镜像速度很慢，可以使用公开的国内镜像源，它们大部分提供了相关的配置方法，如果是自建的镜像源，那么至少需要自行配置 name 和 baseurl 才能正常使用。
+
+## 配置 Debian 源
+
+dpkg 和 apt 是 Debian 系列 Linux 发行版的软件包管理器，其中 dpkg 是比较底层的软件包工具，而 apt 则是更高层级的管理工具，两者之间的关系类似于 rpm 和 yum 的关系。
+
+``` bash
+# 修改 Debian 10 buster 的 apt 镜像源
+$ echo 'deb http://mirrors.ustc.edu.cn/debian buster main contrib non-free
+deb http://mirrors.ustc.edu.cn/debian buster-updates main contrib non-free
+deb http://mirrors.ustc.edu.cn/debian buster-backports main contrib non-free
+deb http://mirrors.ustc.edu.cn/debian-security/ buster/updates main contrib non-free' > /etc/apt/sources.list
+
+# 更新软件列表
+$ apt update
+```
 
 ## 使用 cpio 打开 rpm 文件
 

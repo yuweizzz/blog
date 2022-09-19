@@ -3,6 +3,7 @@ date: 2022-01-04 22:22:45
 title: Python 知识笔记
 tags:
   - "Python"
+  - "ElasticSearch"
 draft: false
 ---
 
@@ -333,3 +334,74 @@ $ supervisorctl start all
 $ supervisorctl start theprogramname
 ```
 
+## 使用 python 进行 ElasticSearch 滚动查询
+
+适用于不关心数据顺序，获取索引中所有文档部分所需字段的场景。
+
+``` python
+# 实现 ElasticSearch 滚动查询，将结果写入 csv
+import requests
+import json
+import csv
+
+index = 'index'
+host = 'host'
+user = 'user'
+password = 'password'
+headers = {'Content-Type': 'application/json'}
+url = f'http://{user}:{password}@{host}:9200/{index}/_search?scroll=1m'
+
+# 获取符合条件的数据
+dsl = {
+    'size': 10000,
+    'query': {
+        'wildcard': {
+            'name': '*abc*'
+        }
+    },
+    'sort': [
+        '_doc'
+    ]
+    '_source': ['name', 'value']
+}
+
+# 获取全量数据
+# dsl = {
+#     'size': 10000,
+#     'query': {
+#         'match_all': {}
+#     },
+#     'sort': [
+#         '_doc'
+#     ]
+#     '_source': ['name', 'value']
+# }
+
+resp = requests.post(url, headers=headers, data=json.dumps(dsl))
+dicts = resp.json()
+csvfile = open('result.csv', 'w', newline='')
+writer = csv.writer(csvfile)
+writer.writerow(['name', 'value'])
+for each in dicts['hits']['hits']:
+    writer.writerow([each['_source'].get('name'), each['_source'].get('value')])
+
+scroll_id = dicts.get('_scroll_id')
+
+url = f'http://{user}:{password}@{host}:9200/_search/scroll/'
+body = {
+    'scroll': '1m', 
+    'scroll_id': scroll_id
+}
+
+while True:
+    resp = requests.post(url, headers=headers, data=json.dumps(body))
+    dicts = resp.json()
+    # 滚动结束， hits 数组为空
+    if not dicts['hits']['hits']:
+        break
+    else:
+        for each in dicts['hits']['hits']:
+            writer.writerow([each['_source'].get('name'), each['_source'].get('value')])
+
+csvfile.close()
+```
