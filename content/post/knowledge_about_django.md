@@ -326,3 +326,154 @@ chord_instance()
 # 通过 Celery 启动 flower
 (project) $ celery -A project flower --address=127.0.0.1 --port=5555
 ```
+
+## 使用 Django 序列化器
+
+序列化实际上是比较广泛的定义，在 Django 中一般指将 Django Model 转换为通用型数据格式，最常用的就是 json 格式。
+
+原生的 Django serializers 可以将 Model 转换为 json 格式的纯文本，除了 json 还包括 xml 和 yaml 这两种格式。
+
+通常情况下会使用 Django REST framework 提供的 serializers 来替代原生的序列化器， Django REST framework 是非常强大的 Django 扩展库，在 Django 原有的基础类上做了增强封装，它的 serializers 拥有更丰富的内置函数，可以轻松实现序列化和反序列化。
+
+``` python
+from django.core import serializers
+from rest_framework import serializers as drf_serializers
+from apps.models import DBModel
+import json
+
+# django serializers
+string = serializers.serialize("json", DBModel.objects.all(), fields=('id', 'data'))
+pyobjs = json.loads(string)
+
+# DRF serializers
+class DBSerializer(drf_serializers.ModelSerializer):
+    class Meta:
+        model = DBModel
+        fields = ['id', 'data']
+
+serializer = DBSerializer(DBModel.objects.all(), many=True)
+pyobjs = serializer.data
+```
+
+反序列化则是将原生的数据格式转换为 Model Object ，是序列化的相反过程，这个过程使用 Django REST framework serializers 比使用原生 Django serializers 更加简单直接，并且支持数据合法性验证。
+
+``` python
+from django.core import serializers
+from rest_framework import serializers as drf_serializers
+from apps.models import DBModel
+import json
+
+# django serializers
+string = serializers.serialize("json", DBModel.objects.all(), fields=('id', 'data'))
+for deserialized_object in serializers.deserialize("json", string):
+    deserialized_object.save()
+
+# DRF serializers
+class DBModelSerializer(drf_serializers.Serializer):
+    id = serializers.IntegerField(required=True)
+    data = serializers.CharField(required=True, allow_blank=False, max_length=100)
+
+    def create(self, validated_data):
+        return DBModel.objects.create(**validated_data)
+
+serializer = DBModelSerializer(data=json.loads(string))
+serializer.is_valid()
+serializer.save()
+```
+
+## 使用 Django ManyToMany Field
+
+在 Django Model 支持的 field 中有一个特殊的类型 `ManyToManyField` ，用来实现 Model 之间的多对多关系，它会在数据库中新建一张表，这张表会保存两个 Model 之间的主键关系，从而可以通过某个 Model 的主键找到所有和它关联的另一种 Model 。
+
+可以通过 Model 直接 `add` 或者 `remove` 来修改关联关系，但是也可以通过直接操作这张关系表来修改 Model 之间的关系。
+
+``` python
+from django.db import models
+
+class Publication(models.Model):
+    title = models.CharField(max_length=30)
+
+    class Meta:
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+class Article(models.Model):
+    headline = models.CharField(max_length=100)
+    publications = models.ManyToManyField(Publication)
+
+    class Meta:
+        ordering = ['headline']
+
+    def __str__(self):
+        return self.headline
+
+m2m_model = Article.publications.through
+# 查询所有的 Model 关系
+relation = m2m_model.objects.all()
+```
+
+## 使用 Django Signal
+
+Django 内置支持 Signal ，原生支持的 Signal 主要有 Model 变动相关的信号和请求相关的信号，同时支持自定义信号。
+
+``` python
+from django.dispatch import receiver
+# 自定义信号
+signal = django.dispatch.Signal()
+
+# 发送信号
+signal.send(sender=None, args_1='value_1', args_2='value_2')
+
+# 接收器函数
+@receiver(signal)
+def signal_callback(sender, **kwargs):
+    print(kwargs['args_1'], kwargs['args_2'])
+```
+
+其中 `send` 函数是信号的内置函数，通常使用 `sender` 来传递触发信号发送的对象，并使用它的一些自定义方法，但这个对象也是可以为空的。
+
+内置的信号通过搭配 `partial` 使用，这样在参数传递时会更加简洁。
+
+``` python
+from functools import partial
+from django.db.models.signals import m2m_changed
+from django.db import models
+
+class Publication(models.Model):
+    title = models.CharField(max_length=30)
+
+    class Meta:
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+class Article(models.Model):
+    headline = models.CharField(max_length=100)
+    publications = models.ManyToManyField(Publication)
+
+    class Meta:
+        ordering = ['headline']
+
+    def __str__(self):
+        return self.headline
+
+# 模拟 Publication 对象被删除时发送的信号
+m2m_model = Article.publications.through
+send = partial(
+    m2m_changed.send,
+    sender=m2m_model,
+    # Publication 变动而受到影响的 Article 实例
+    instance=Article.objects.filter(...),
+    # Article 包含了 Publication ，二者非反向关系
+    reverse=False,
+    # Publication 变动
+    model=Publication,
+    # Publication 变动实例的主键集
+    pk_set=[ for i.id in Publication.objects.filter(...) ]
+)
+# 发送 pre_remove 信号
+send(action="pre_remove")
+```
