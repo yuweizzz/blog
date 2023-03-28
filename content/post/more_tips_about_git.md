@@ -218,6 +218,15 @@ $ git fetch origin master
 $ git merge origin/master
 ```
 
+## 解决 git clone 超时的问题
+
+由于众所周知的网络原因，有时候从 Github 直接 clone 或者 pull 代码可能会出现超时问题，这个问题在我使用 luarocks 出现了几次，经过查阅资料后发现应该是 `git://` 被封锁导致的，应对这种情况的一种做法是将 git 协议修改为 https 协议并使用代理服务器。
+
+``` bash
+$ git config --global url."https://".insteadOf git://
+$ git config --global https.proxy http://127.0.0.1:4396
+```
+
 ## 使用 submodule 功能
 
 submodule 可以让你的代码仓库使用其他现有的仓库作为子模块，这样我们可以轻松引用别人的仓库作为我们自己代码仓库的一部分。
