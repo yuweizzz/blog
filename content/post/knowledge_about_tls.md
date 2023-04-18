@@ -2,7 +2,6 @@
 date: 2022-03-26 13:22:45
 title: TLS 协议工作原理
 tags:
-  - "Linux"
   - "OpenSSL"
   - "TLS"
 draft: false

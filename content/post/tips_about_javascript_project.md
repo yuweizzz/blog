@@ -2,7 +2,6 @@
 date: 2021-08-03 22:00:00
 title: 前端项目开发笔记
 tags:
-  - "Linux"
   - "npm"
   - "Node.js"
 draft: false
