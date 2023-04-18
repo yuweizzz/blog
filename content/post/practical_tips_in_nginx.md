@@ -229,6 +229,30 @@ location / {
 }
 ```
 
+## 通过 SNI 分发不同证书
+
+Nginx 可以通过 SNI 获取到请求的域名信息，我们可以根据这个信息分发对应的证书，适合用于同站点多域名的情况。
+
+``` bash
+# 需要确认 nginx 版本是否支持 SNI
+$ nginx -V
+......
+TLS SNI support enabled
+......
+
+$ cat nginx.conf
+......
+# 变量 ssl_server_name 可以获取 ssl 握手时请求的域名，只需要将实际签发的证书按照对应域名命名即可
+server {
+    listen 443 ssl;
+    server_name $ssl_server_name;
+    ssl_certificate $ssl_server_name.crt;
+    ssl_certificate_key $ssl_server_name.pri;
+    ......
+}
+......
+```
+
 ## 开启 HSTS
 
 为了将访问 HTTP 的 80 端口流量导向 HTTPS 的 443 端口，通过会额外配置一个虚拟主机用于重定向。
