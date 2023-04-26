@@ -7,11 +7,13 @@ jobs:
   build:
     name: Build and deploy blog
     env:
-      MY_SECRET   : ${{secrets.commit_secret}}
-      USER_NAME   : yuweizzz
-      USER_EMAIL  : ${{secrets.email}}
-      PUBLISH_DIR : ~/public
-      HUGO_ENV : production
+      MY_SECRET: ${{secrets.commit_secret}}
+      USER_NAME: yuweizzz
+      USER_EMAIL: ${{secrets.email}}
+      PUBLISH_DIR: ~/public
+      TMP_DIR: ~/tmp
+      HUGO_ENV: production
+      KEEP_FILES: "LICENSE README.md googlec2b7f26499be0c2f.html"
     runs-on: ubuntu-latest
 
     steps:
@@ -37,9 +39,20 @@ jobs:
         run: |
           git clone git@github.com:yuweizzz/yuweizzz.github.io "$PUBLISH_DIR"
 
-      - name: build 
+      - name: keep files which should not overwrite by build command
         run: |
+          mkdir "$TMP_DIR"
+          cd "$PUBLISH_DIR"
+          mv "$KEEP_FILES" "$TMP_DIR"
+
+      - name: clean old file and build 
+        run: |
+          rm -rf "$PUBLISH_DIR"/*
           hugo -D -d "$PUBLISH_DIR" --baseURL="https://yuweizzz.github.io"
+
+      - name: restore files
+        run: |
+          mv "$TMP_DIR"/* "$PUBLISH_DIR"
 
       - name: commit and push to branch
         run: |
