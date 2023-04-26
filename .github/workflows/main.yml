@@ -42,8 +42,10 @@ jobs:
       - name: keep files which should not overwrite by build command
         run: |
           mkdir "$TMP_DIR"
-          cd "$PUBLISH_DIR"
-          mv "$KEEP_FILES" "$TMP_DIR"
+          for f in $KEEP_FILES
+          do
+            mv "$PUBLISH_DIR"/"$f" "$TMP_DIR"
+          done
 
       - name: clean old file and build 
         run: |
