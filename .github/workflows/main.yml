@@ -50,7 +50,7 @@ jobs:
       - name: clean old file and build 
         run: |
           rm -rf "$PUBLISH_DIR"/*
-          hugo -D -d "$PUBLISH_DIR" --baseURL="https://yuweizzz.github.io"
+          hugo -d "$PUBLISH_DIR" --baseURL="https://yuweizzz.github.io"
 
       - name: restore files
         run: |
