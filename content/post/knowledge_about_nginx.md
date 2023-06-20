@@ -152,7 +152,7 @@ location 通过 url 来匹配目标资源。
 
 具体的匹配方式有 prefix string 和 regular expression ，也就是前缀匹配和正则匹配，还有比较特殊的完整匹配，可以参考 location 的语法规则。
 
-> Syntax: location [ = | ~ | ~* | ^~ ] url { ... }
+> Syntax: `location [ = | ~ | ~* | ^~ ] url { ... }`
 
 各个匹配符号的含义如下：
 

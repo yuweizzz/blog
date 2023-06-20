@@ -231,18 +231,13 @@ Number  Start   End     Size    File system  Name     Flags
 
 现代硬盘一般还内置了状态检测和硬件信息报告输出的机制，用来作为硬盘健康的评测依据，以保障硬盘数据的安全。这项技术称为 Self Monitoring Analysis and Reporting Technology ，输出的信息一般简称为 S.M.A.R.T. 指标。
 
-这里列出一些硬盘健康的相关指标，主要用于机械硬盘：
+这里列出一些主要用于机械硬盘硬盘健康的相关指标：
 
-* SMART 5: Reallocated_Sector_Count --> 扇区重定位计数，如果物理扇区已经损坏，硬盘会自动把指向这一故障扇区的请求映射到特定的空间作为代替，这个值的增长说明硬盘已经出现坏块，如果坏块数量过多，会明显影响硬盘的读写。
-
-* SMART 187: Reported_Uncorrect --> 无法纠错扇区计数，这个值增长说明硬盘的部分扇区已经出现故障并且无法恢复纠正。
-
-* SMART 188: Command_Timeout --> 命令超时计数，对某些硬盘指令无响应的计数值，这个值增长说明硬盘变得不稳定，对这个硬盘读写有可能出现 IO Error 。
-
-* SMART 196: Reallocation_Event_Count --> 重定位事件计数，和 SMART 5 类似，用来记录已重映射扇区和可能重映射扇区的事件，这个值增长说明硬盘不稳定。
-
-* SMART 197: Current_Pending_Sector_Count --> 等候重定位的扇区计数，记录了不稳定的扇区的数量，这些扇区可能是响应过慢或者故障，这个值增长说明硬盘不稳定。
-
-* SMART 198: Offline_Uncorrectable --> 已经无法纠错的掉线扇区计数，和 SMART 187 类似，记录已经出错的掉线扇区数量，这个值增长说明硬盘出现坏块。
+* SMART 5 : Reallocated_Sector_Count --> 扇区重定位计数，如果物理扇区已经损坏，硬盘会自动把指向这一故障扇区的请求映射到特定的空间作为代替，这个值的增长说明硬盘已经出现坏块，如果坏块数量过多，会明显影响硬盘的读写。
+* SMART 187 : Reported_Uncorrect --> 无法纠错扇区计数，这个值增长说明硬盘的部分扇区已经出现故障并且无法恢复纠正。
+* SMART 188 : Command_Timeout --> 命令超时计数，对某些硬盘指令无响应的计数值，这个值增长说明硬盘变得不稳定，对这个硬盘读写有可能出现 IO Error 。
+* SMART 196 : Reallocation_Event_Count --> 重定位事件计数，和 SMART 5 类似，用来记录已重映射扇区和可能重映射扇区的事件，这个值增长说明硬盘不稳定。
+* SMART 197 : Current_Pending_Sector_Count --> 等候重定位的扇区计数，记录了不稳定的扇区的数量，这些扇区可能是响应过慢或者故障，这个值增长说明硬盘不稳定。
+* SMART 198 : Offline_Uncorrectable --> 已经无法纠错的掉线扇区计数，和 SMART 187 类似，记录已经出错的掉线扇区数量，这个值增长说明硬盘出现坏块。
 
 某些硬盘厂商可以对固件进行定制，设置不同的 SMART 指标，但以上几个指标在不同厂家都是类似的，它们可以作为是否更换硬盘的参考。
