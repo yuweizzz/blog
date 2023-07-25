@@ -253,6 +253,35 @@ server {
 ......
 ```
 
+## 使用 TLS 会话复用优化 https
+
+TLS 握手成功后会在服务端创建 session 并返回 session ID 给到客户端，这样在首次 TLS 握手成功后，后续的通信就可以直接通过 session 复用省去密钥协商过程，提高响应效率。
+
+在 nginx 中通过使用 ssl_session_cache 关键字来启用 TLS session 。
+
+``` bash
+$ cat nginx.conf
+......
+server {
+    listen 443 ssl;
+    server_name $ssl_server_name;
+    ssl_certificate $ssl_server_name.crt;
+    ssl_certificate_key $ssl_server_name.pri;
+    
+    # 使用 shared 会由所有工作进程共享 session ， 1m 代表共享空间的内存大小为 1MB
+    ssl_session_cache shared:SSL:1m;
+    # ssl_session_tickets 是 tls 复用的另一种机制
+    # 它不同于 session ID ，这种机制由客户端保存来 session ticket ，在会话复用时由服务端认证 ticket 来决定能否复用会话
+    ssl_session_tickets on;
+    # ssl_session_ticket_key 可以自行指定或者保持注释由 nginx 使用默认随机数
+    # ssl_session_ticket_key random.key;
+    # ssl_session_timeout 代表会话的有效时间， 5m 代表有效时间为 5 分钟
+    ssl_session_timeout 5m;
+    ......
+}
+......
+```
+
 ## 开启 HSTS
 
 为了将访问 HTTP 的 80 端口流量导向 HTTPS 的 443 端口，通过会额外配置一个虚拟主机用于重定向。

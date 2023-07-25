@@ -249,4 +249,17 @@ user:user
 # Linux 客户端连接 rsyncd 服务端
 $ rsync -rvu rsync://user@192.168.1.2/data /mnt/
 # 执行命令会将 C:\Files\Downloads 中的文件会递归同步到 /mnt 中
+
+# 更复杂的同步用法要配合其他子选项，这是一个支持断点传输的用例：
+$ rsync -rv --progress --partial --append-verify rsync://user@192.168.1.2/data /mnt/
+
+# 具体的选项意义如下：
+# -r 表示同步过程将递归项目下的所有目录
+# -v 用于显示整个传输过程的运行信息
+# --progress 用于显示传输过程中各文件的传输进度
+# --partial 表示保留未完全传输完成的文件区块
+# --append-verify 会利用 --partial 中保留的文件区块，实现断点传输
+# -u/--update 与 --append-verify 都是优化传输的选项
+# -u 会根据文件命名和文件时间戳只更新不同的部分，是相对于整个文件而言
+# --append-verify 可以使得部分传输完成的文件块进行续传，不过它和 -u 选项不能同时使用
 ```

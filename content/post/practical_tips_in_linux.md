@@ -173,7 +173,11 @@ $ sed '/^#/d'
 # ^ 代表行首
 # [] 整体代表一个字符，[] 里面是字符范围
 # 在上面的操作中，[ \t] 用来匹配 ' ' 或 '\t' 任意一种
-# * 表示一个或多个，可以结合确定的单个字符或者字符范围使用
+# * 用来表示零个或多个字符，可以结合确定的单个字符或者字符范围使用
+# 可以用来代表字符的特殊符号有：
+# . 用来表示任意单一字符
+# ? 用来代表零个或一个字符
+# + 用来代表一个或多个字符
 ```
 
 ## 快速生成随机强密码
@@ -214,7 +218,7 @@ bash 4 原生支持一维数组，在某些情况下可能会使用到这种数�
 # 使用之前需要先声明数组
 declare -a array
 declare -A Array
-# -a 声明的数组是普通的一维数组， index 只能是0,1,2,...
+# -a 声明的数组是普通的一维数组， index 只能是 0,1,2,...
 # -A 声明的数组是关联数组，类似于 python 的字典， index 可以自由定义
 # 推荐使用 -A ，因为关联数组的兼容性比较好，它可以模拟普通数组，
 # 而普通数组无法实现关联数组的特性
@@ -418,7 +422,6 @@ obsoletes=1  # 指定是否允许更新比较陈旧的软件包
 gpgcheck=1  # 指定进行安装包签名检查
 plugins=1  # 指定是否可以使用插件
 installonly_limit=5  # 指定允许保存的内核软件包数量
-bugtracker_url=http://bugs.centos.org/set_project.php?project_id=23&ref=http://bugs.centos.org/bug_report_page.php?category=yum
 distroverpkg=centos-release  # 指定用来获取系统的发行版信息的软件
 ```
 
@@ -452,16 +455,16 @@ gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 ```
 
-在 /etc/yum.repos.d 目录中以 repo 结尾的文件会被识别为镜像源的配置文件，一个镜像源配置文件内可以配置多个 Repository ，每个 Repository 的唯一标识用 [xxxx] 表示，它们的具体内容如下：
+在 `/etc/yum.repos.d` 目录中以 repo 结尾的文件会被识别为镜像源的配置文件，一个镜像源配置文件内可以配置多个 Repository ，每个 Repository 的唯一标识用 `[xxxx]` 表示，它们的具体内容如下：
 
-* name 是对 Repository 的描述。
-* enable 规定对应 Repository 是否启用，可以使用这个选项屏蔽 Repository 。
-* baseurl 是指向 Repository 的 repodata 目录的地址，里面存放了软件包和他们的依赖关系。它可以指向本地和云端，本地文件以 `file://` 来指定，云端可以使用 http，ftp 等工具。
-* mirrorlist 是 baseurl 的一种集合形式，可以说 mirrorlist 指向的是一系列的 baseurl ，配合 fastestmirror 插件能找到响应速度最快的 Repository 。
-* gpgcheck 规定是否进行签名检查。
-* gpgkey 指定了签名检查的合法签名数据源。
+* `name` 是对 Repository 的描述。
+* `enable` 规定对应 Repository 是否启用，可以使用这个选项屏蔽 Repository 。
+* `baseurl` 是指向 Repository 的 repodata 目录的地址，里面存放了软件包和他们的依赖关系。它可以指向本地和云端，本地文件以 `file://` 来指定，云端可以使用 http，ftp 等工具。
+* `mirrorlist` 是 `baseurl` 的一种集合形式，可以说 `mirrorlist` 指向的是一系列的 `baseurl` ，配合 fastestmirror 插件能找到响应速度最快的 Repository 。
+* `gpgcheck` 规定是否进行签名检查。
+* `gpgkey` 指定了签名检查的合法签名数据源。
 
-现有国内网络环境下，原始镜像速度很慢，可以使用公开的国内镜像源，它们大部分提供了相关的配置方法，如果是自建的镜像源，那么至少需要自行配置 name 和 baseurl 才能正常使用。
+现有国内网络环境下，原始镜像速度很慢，可以使用公开的国内镜像源，它们大部分提供了相关的配置方法，如果是自建的镜像源，那么至少需要自行配置 `name` 和 `baseurl` 才能正常使用。
 
 ## 配置 Debian 源
 
@@ -492,6 +495,18 @@ $ rpm2cpio package.rpm | cpio -divm
 # -v/--verbose 显示详细过程
 # -d/--make-directories 在需要时建立目录
 # -m/--preserve-modification-time 保留更改时间
+```
+
+## xfs 文件系统备份与还原
+
+xfs 文件系统可以通过命令来备份和还原。
+
+``` bash
+# 指定路径进行备份
+$ xfsdump -f /tmp/home.img /home
+
+# 将备份文件还原到路径中
+$ xfsrestore -f /tmp/home.img /data
 ```
 
 ## 更新文件到 initramfs 镜像中
