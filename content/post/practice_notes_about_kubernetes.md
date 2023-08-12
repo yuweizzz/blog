@@ -6,7 +6,7 @@ tags:
 draft: false
 ---
 
-这篇笔记用来记录一些 Kubernetes 的相关知识。
+这篇笔记用来记录一些 Kubernetes 的相关知识，主要是 Kubernetes 实践过程中的相关内容。
 
 <!--more-->
 
@@ -168,164 +168,86 @@ spec:
 
 在 Pod 中通过 service 的名称来访问对应的服务时， `br_netfilter` 起到极为重要的作用，建议把这个模块写入到模块开机启动配置 `/etc/modules-load.d/modules.conf` 当中。
 
-由于一开始没有启用这个模块，导致所有域名访问方式都超时失效，所以就选择使用 dnsutils 镜像进行 `dig` 排查，结果返回了奇怪的报错信息： `reply from unexpected source: 10.244.0.22#53, expected 10.96.0.10#53` ，在查看官方 issue 之后，直接在对应节点上执行 `modprobe br_netfilter` 马上就解决了问题。
+由于一开始没有启用这个模块，导致所有域名访问方式都超时失效，通过使用 `kubectl run dnsutils --image=mydlqclub/dnsutils:1.3 --command -- sleep 3600` 启动 Pod 来进行 `dig` 排查，结果返回了奇怪的报错信息： `reply from unexpected source: 10.244.0.22#53, expected 10.96.0.10#53` ，在查看官方 issue 之后，直接在对应节点上执行 `modprobe br_netfilter` 马上就解决了问题。
 
 其实这里也侧面反映出了 service 的服务原理， Pod 所配置的 `/etc/resolv.conf` 是 kube-dns service 的 IP 地址 `10.96.0.10` ，所以 DNS 请求直接向这个地址发起请求，数据包正常从 Pod 内经过 kube-proxy 后发往 kube-dns 的任一 Pod 中，但是在数据包返回时，由于没有启用 `br_netfilter` 模块， nat 没有正常修改返回地址，导致最终返回到 Pod 中时，远端 IP 地址是 kube-dns 其中某一个 Pod IP ，被 Pod 认为不是正确的返回包直接丢弃，产生超时报错。
 
-## Pod 的 DNS 策略
+## 更新镜像和回退
 
-根据官网，目前 Kubernetes 支持以下特定 Pod 的 DNS 策略，设定字段为 `.spec.dnsPolicy` ：
+通过某个 deployment 作为实例：
 
-* `Default` ： Pod 从运行所在的节点继承 `/etc/resolv.conf` ，但是这种策略并不是 Pod 默认的 DNS 策略。
-* `ClusterFirst` ：使用集群提供的 DNS 服务，通常使用 CoreDNS 作为集群 DNS ， `ClusterFirst` 才是 Pod 默认的 DNS 策略。
-* `ClusterFirstWithHostNet` ：对于以 hostNetwork 方式运行的 Pod ，应该将它的 DNS 策略显式设置为 `ClusterFirstWithHostNet` 。
-* `None` ：允许 Pod 忽略集群中的 DNS 设置并使用 `.spec.dnsConfig` 作为 DNS 设置。
+``` yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+      initContainers:
+      - name: init
+        image: busybox:1.28
+        command: ['sh', '-c', 'echo The init containers is running!']
+```
 
-使用 `Default` 策略时， Pod 中的 `/etc/resolv.conf` 将和宿主机中的 `/etc/resolv.conf` 完全一致，这时就无法通过 service name 域名的方式去访问内部服务。
-
-使用 `ClusterFirst` 策略时，可以突破 `Default` 策略的限制，在 Pod 中直接通过 service name 域名去访问集群中 service 类型的资源，这时 Pod 中的 `/etc/resolv.conf` 一般会是如下的内容：
+initContainers 和 containers 中的容器都可以更新镜像：
 
 ``` bash
-search default.svc.cluster.local svc.cluster.local cluster.local
-nameserver 10.96.0.10
-options ndots:5
+$ kubectl set image deployment/nginx-deployment init=busybox:1.29  nginx=nginx:1.16.1 --record=true
+# set image 可以更新一个或多个镜像
+# set image 可以操作的资源对象有：
+#   pod (po), replication controller (rc), deployment (deploy), daemonset (ds), replica set (rs)
+# 使用 --record=true 可以在 .metadata.annotations.kubernetes.io/change-cause 中记录本次更新镜像所使用的完整命令
 ```
 
-可以看到 `search` 把搜索域限定在集群中，所以我们就可以直接访问内部服务了，不跨命名空间的 service 访问将在 `default.svc.cluster.local` 域中搜索，因为这部分内容取自 `default` 命名空间中的 Pod ，不同命名空间中的 Pod 将会自动跟随当前所在空间；跨命名空间的 service 访问将在 `svc.cluster.local` 域中搜索，但没有显式给出命名空间，所以要由使用者自动指定 service name 加 namespace name 的域名。
+更新镜像这类使得对应资源产生变化的操作可以通过 rollout 命令回退：
 
-而 `options` 中的 `ndots` 是用来判断是否需要使用 `search` 查找域的凭据，如果给定域名中的 `.` 小于 `ndots` 定义的数值，则会先在所有 `search` 定义的域中查询，在这些查询都失败后再直接使用给定域名进行查询。当访问内部服务时，不论是否跨命名空间，给定域名是 `service-name` 或 `service-name.namespace-name` 这种形式，它们都会被 `ndots` 命中并执行 `search` 查找。
+``` bash
+# undo 会回退到当前资源的前一版本
+$ kubectl rollout undo deployment/nginx-deployment
 
-使用 `ClusterFirstWithHostNet` 策略则是在 `.spec.hostNetwork` 值为 `true` 时所需要使用的关键字，不使用这个策略，则 `.spec.hostNetwork` 值为 `true` 的 Pod 无法访问集群内部服务。
+# 可以查看详细的历史版本
+$ kubectl rollout history deployment/nginx-deployment
+deployment.apps/nginx-deployment
+# --record=true 会把改变资源的命令记录到 CHANGE-CAUSE 中，否则 CHANGE-CAUSE 应为 <none>
+REVISION        CHANGE-CAUSE
+1               <none>
+2               <none>
+...
 
-使用 `None` 策略可以参考官方给出的配置参考，定义自己需要的配置：
-
-``` yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  namespace: default
-  name: dns-example
-spec:
-  containers:
-    - name: test
-      image: nginx
-  dnsPolicy: "None"
-  dnsConfig:
-    nameservers:
-      - 192.0.2.1
-    searches:
-      - ns1.svc.cluster-domain.example
-      - my.dns.search.suffix
-    options:
-      - name: ndots
-        value: "2"
-      - name: edns0
+# 根据详细的历史版本，可以指定需要回退到具体版本
+$ kubectl rollout undo deployment/nginx-deployment --revision=1
 ```
 
-## Service type
+## 安装 ingress controller
 
-Kubernetes 的 sevice 资源有四种类型，它决定了集群服务是如何暴露的，设定字段为 `.spec.type` ：
+除了 service 对象资源， Kubernetes 还在这一基础上抽象出 ingress 的概念。
 
-### ClusterIP
+一般来说我们会基于 deployment 创建出 service ，再通过这些创建出来的 service 使得它们能够向集群外部提供服务，但现在我们不止满足于单纯向外提供服务，我们还想要控制流量的具体行为，这就是 ingress 这一对象存在的原因，它可以认为是对 service 对象中具体流量的控制规则。
 
-`ClusterIP` 是默认和最常见的服务类型，成功创建资源后集群会自动分配服务的 IP 地址，这个 IP 地址和 Pod 网段是隔离的，它的网络通信依赖于 kube-proxy 组件。
+那么如果想要使得 ingress 这一资源对象正常工作，我们就需要安装 ingress controller 到集群中。通常云厂商都会提供一些基于自身云服务开发的 ingress controller ，如果我们想要一些独立于云厂商之外的 ingress controller ，也有不少优秀的开源 ingress controller 实现，不过这里我们选择了官方维护的 ingress NGINX controller 。
 
-``` yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx
-  labels:
-    app.kubernetes.io/name: proxy
-spec:
-  containers:
-  - name: nginx
-    image: nginx:stable
-    ports:
-      - containerPort: 80
-        name: http-web-svc
+安装 ingress NGINX controller 可以参考具体的[官方文档](https://kubernetes.github.io/ingress-nginx/)。
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-service
-spec:
-  selector:
-    app.kubernetes.io/name: proxy
-  ports:
-  - name: name-of-service-port
-    protocol: TCP
-    port: 80
-    targetPort: http-web-svc
-```
+如果我们剖析具体的 yaml 文件，我们可以看到除了重要的 deployment 和 service 之外，主要是关于资源权限控制和自定义资源的相关定义。如果我们想要在自建的集群中使用，可以主要关注两个部分：
 
-通常会将 Pod 或者 Deployment 资源加上 label ，然后使用 Service selector 来选中这些资源，这样的 Service 就可以将请求均衡发送到 Pod 集合中。
+* 整体服务的可用性。
+* service 种类。
 
-### NodePort
+由于默认的 deployment 是非常简单，启动后我们会发现这是单 pod 的 deployment ，基于实际上的考虑，我们可以选择将 deployment 修改为 daemonset 来增强容错能力，否则我们至少应该调整 deployment 的副本数来保证服务的可用性，此外还可能需要根据访问量来调节 Pod 资源，并且考虑 Pod Affinity 的相关问题。
 
-`NodePort` 是 `ClusterIP` 的扩展类型。除了集群内部的服务 IP 地址，还会在集群中所有节点的对应端口进行监听，并代理到各自节点中的 Pod 中，实现外部访问集群内服务。
-
-``` yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-service
-spec:
-  type: NodePort
-  selector:
-    app.kubernetes.io/name: MyApp
-  ports:
-    - port: 80
-      targetPort: 80
-      nodePort: 30007
-```
-
-在 yaml 文件中， port 是 Pod 暴露服务的端口， targetPort 是 Service 暴露服务的端口，两者可以保持一致，由 targetPort 跟随 port 即可， nodePort 可以显式指定，也可以不进行指定并由集群自动分配，通常采取第二种方式，来避免手动指定的端口和已有的服务产生冲突。自动分配的范围由 apiServer 中的 `--service-node-port-range` 参数指定，默认值是 `30000-32767` 。
-
-### LoadBalancer
-
-`LoadBalancer` 是基于云厂商提供服务实现的服务类型，它基于 `NodePort` 进行扩展，和云厂商的负载均衡器绑定，是更高级的外部访问集群内服务实现方式。
-
-可以认为这里 `NodePort` 是隐式实现的，并且云厂商还应该提供负载均衡器，它会对集群中所有节点代理，实现负载均衡。这样外部访问不再直接访问集群节点而是通过负载均衡器进行代理转发。
-
-``` yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-service
-spec:
-  selector:
-    app.kubernetes.io/name: MyApp
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 9376
-  clusterIP: 10.0.171.239
-  type: LoadBalancer
-status:
-  loadBalancer:
-    ingress:
-    - ip: 192.0.2.127
-```
-
-在创建 LoadBalancer Service 时，通常只需要指定 `LoadBalancer` 作为 Service 类型即可，关于 port 的设置和 `nodePort` 类型相似。创建资源完成后会将负载均衡器信息报告在 status 中。
-
-### ExternalName
-
-`ExternalName` 是不直接关联 Pod 的服务类型，它实际是通过创建 CNAME 记录，来实现 Service 访问映射到其他域名。
-
-``` yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-service
-  namespace: prod
-spec:
-  type: ExternalName
-  externalName: my.database.example.com
-```
-
-从官方文档中的实例可以非常明确这个服务类型的作用，它创建了一个内部服务，在提供给其他服务的同时，它本身并未在集群中运行，而这个服务只是在内部 DNS 创建 CNAME 记录，当其他服务访问时，实际上会通过 CNAME 访问到集群外部。也就是在访问 `my-service.prod.svc.cluster.local` 时，实际相当于访问 `my.database.example.com` 。
-
-除了映射外部域名，它也经常用于将其他命名空间的服务映射为本地命名空间的服务，方便内部服务的域名访问规范。
+而默认的 service 种类是 LoadBalancer ，它需要云厂商提供的负载均衡器来实现，并且这一过程可能要根据云厂商具体的实现文档，对已有的 service 进行某些修改才能正常工作，通常会是修改一些注释信息，同样地， ingress 也可能要做出一些对应的修改，才能正常在基于 LoadBalancer 的服务种类下正常工作。而如果是集群不是基于云服务实现的，那么我们可以选择 NodePort 类型的 service 或者将整个 deployment 运行在主机的网络栈中，这样做甚至可以将 service 省去，但这样做需要额外考虑负载均衡和可用性的相关问题。
