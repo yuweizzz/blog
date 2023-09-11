@@ -188,3 +188,266 @@ spec:
 从官方文档中的实例可以非常明确这个服务类型的作用，它创建了一个内部服务，在提供给其他服务的同时，它本身并未在集群中运行，而这个服务只是在内部 DNS 创建 CNAME 记录，当其他服务访问时，实际上会通过 CNAME 访问到集群外部。也就是在访问 `my-service.prod.svc.cluster.local` 时，实际相当于访问 `my.database.example.com` 。
 
 除了映射外部域名，它也经常用于将其他命名空间的服务映射为本地命名空间的服务，方便内部服务的域名访问规范。
+
+## Kubernetes 身份认证与鉴权
+
+在 Kubernetes 中， Pod 和其他的工作负载资源是我们最经常接触的资源对象，通常来说它们是直接和集群外部交互的，但是当它们需要进行集群内部交互，比如最常见的与 ApiServer 进行交互的时候，就会涉及到身份认证与鉴权，在 Kubernetes 中是一般使用基于 RBAC 的鉴权方式来实现。
+
+在这个认证体系中，比较重要的是 `ServiceAccount` 资源对象，它在每个新的 `namespace` 创建时都会随之默认生成，实际上也就是这个命名空间中的资源向 ApiServer 请求时默认使用的身份，当然除了这个默认对象之外也可以自行创建。
+
+``` yaml
+# 来自 ingress nginx controller manifest 中的 ServiceAccount
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/version: 1.8.2
+  name: ingress-nginx
+  namespace: ingress-nginx
+
+---
+# 来自 Kubernetes 官方文档，带有 imagePullSecrets 的 ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: default
+  namespace: default
+imagePullSecrets:
+  - name: myregistrykey
+```
+ 
+`ServiceAccount` 中的 `automountServiceAccountToken` 参数可以控制是否将 `ServiceAccount` 对应生成的 token 挂载到具体的工作负载中，一般会在容器的 `/run/secrets/kubernetes.io/serviceaccount/` 路径下，但是 token 的具体内容信息跟所在 Kubernetes 集群的版本有关。 `ServiceAccount` 还可以通过 `imagePullSecrets` 参数来关联 `Secret` 类型资源，使用了这种关键字的 `ServiceAccount` 就会具有特定的镜像拉取认证信息。
+
+具体的 `ServiceAccount` 可以通过工作负载资源对象中的 `serviceAccountName` 参数来具体指定，否则工作负载默认使用创建命名空间时自动创建的 `ServiceAccount` 。
+
+但是只凭借 `ServiceAccount` 是不够的，可以说它只是确认了请求方究竟是谁的问题，也就我们说的身份认证。而对于请求方实际具有的权限则是通过 `Role` ， `RoleBinding` ，`ClusterRole` 和 `ClusterRoleBinding` 来定义。
+
+这种方式就是基于 RBAC 的鉴权方式，通过具体身份绑定了定义具体权限的角色，这样请求方认证身份后就拥有对应的权限。
+
+{{<details "`Role` 和 `ClusterRole` 具体实例">}}
+
+``` yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/version: 1.8.2
+  name: ingress-nginx
+  namespace: ingress-nginx
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods
+  - secrets
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingressclasses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resourceNames:
+  - ingress-nginx-leader
+  resources:
+  - leases
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - list
+  - watch
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/version: 1.8.2
+  name: ingress-nginx
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - endpoints
+  - nodes
+  - pods
+  - secrets
+  - namespaces
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingressclasses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - list
+  - watch
+  - get
+```
+
+{{</details>}}
+
+根据 Kubernetes 的官方文档， `Role` 和 `ClusterRole` 都是用来定义具体权限规则的鉴权资源，但是 `Role` 只能用于定义某个命名空间范围内的资源对象，而 `ClusterRole` 可以定义甚至整个集群作用域范围内的资源对象，可以看到它们的具体内容都是根据不同的 apiGroups 来定义对应资源的访问方法，一般只要结合两者就可以覆盖所有资源对象的具体访问权限。
+
+在创建 `Role` 和 `ClusterRole` 之后，就完成了对角色具体权限的定义，这时只需要将这个角色和具体用户绑定，就可以赋予这个用户这些已经定义的权限，这一步需要用到的是 `RoleBinding` 和 `ClusterRoleBinding` 的资源对象。
+
+``` yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/version: 1.8.2
+  name: ingress-nginx
+  namespace: ingress-nginx
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ingress-nginx
+subjects:
+- kind: ServiceAccount
+  name: ingress-nginx
+  namespace: ingress-nginx
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/version: 1.8.2
+  name: ingress-nginx
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ingress-nginx
+subjects:
+- kind: ServiceAccount
+  name: ingress-nginx
+  namespace: ingress-nginx
+```
+
+在完成上述资源的定义之后，就可以使用对应的工作负载中的 token 来和 ApiServer 进行交互，很多实际使用的云原生服务都用到了这些资源。

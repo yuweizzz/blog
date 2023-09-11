@@ -174,6 +174,11 @@ $ openssl dgst -sha256 -out sign.txt -sign key.pri file
 # 使用公钥和私钥分别验证数字签名
 $ openssl dgst -sha256 -prverify key.pri -signature sign.txt file
 $ openssl dgst -sha256 -verify key.pub -signature sign.txt file
+
+# 查看证书过期时间
+$ openssl x509 -in x509.crt -noout -enddate
+# 配合 s_client 可以通过发起 ssl 连接来测试证书是否过期
+$ echo | openssl s_client -servername www.github.com -connect "www.github.com:443" 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | awk -F '=' '{print $2}'
 ```
 
 ## TLS 协议握手过程
