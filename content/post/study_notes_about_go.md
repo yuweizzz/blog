@@ -249,3 +249,99 @@ func main() {
 ```
 
 它必须和 array 类型一样，显示地声明函数参数就是一个指针变量，否则直接使用结构体作为函数参数是无法成功改变实参的。
+
+## 通过 struct 嵌入 interface 实现重写
+
+以下是来自 golang 官方文档的示例代码：
+
+``` go
+package main
+
+import (
+	"io/fs"
+	"log"
+	"net/http"
+	"strings"
+)
+
+// containsDotFile reports whether name contains a path element starting with a period.
+// The name is assumed to be a delimited by forward slashes, as guaranteed
+// by the http.FileSystem interface.
+func containsDotFile(name string) bool {
+	parts := strings.Split(name, "/")
+	for _, part := range parts {
+		if strings.HasPrefix(part, ".") {
+			return true
+		}
+	}
+	return false
+}
+
+// dotFileHidingFile is the http.File use in dotFileHidingFileSystem.
+// It is used to wrap the Readdir method of http.File so that we can
+// remove files and directories that start with a period from its output.
+type dotFileHidingFile struct {
+	http.File
+}
+
+// Readdir is a wrapper around the Readdir method of the embedded File
+// that filters out all files that start with a period in their name.
+func (f dotFileHidingFile) Readdir(n int) (fis []fs.FileInfo, err error) {
+	files, err := f.File.Readdir(n)
+	for _, file := range files { // Filters out the dot files
+		if !strings.HasPrefix(file.Name(), ".") {
+			fis = append(fis, file)
+		}
+	}
+	return
+}
+
+// dotFileHidingFileSystem is an http.FileSystem that hides
+// hidden "dot files" from being served.
+type dotFileHidingFileSystem struct {
+	http.FileSystem
+}
+
+// Open is a wrapper around the Open method of the embedded FileSystem
+// that serves a 403 permission error when name has a file or directory
+// with whose name starts with a period in its path.
+func (fsys dotFileHidingFileSystem) Open(name string) (http.File, error) {
+	if containsDotFile(name) { // If dot file, return 403 response
+		return nil, fs.ErrPermission
+	}
+
+	file, err := fsys.FileSystem.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	return dotFileHidingFile{file}, err
+}
+
+func main() {
+	fsys := dotFileHidingFileSystem{http.Dir(".")}
+	http.Handle("/", http.FileServer(fsys))
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+```
+
+其中 `dotFileHidingFile` 和 `dotFileHidingFileSystem` 就是 struct 嵌入 interface 的实例。以下是对应的接口信息：
+
+``` go
+type File interface {
+	io.Closer
+	io.Reader
+	io.Seeker
+	Readdir(count int) ([]fs.FileInfo, error)
+	Stat() (fs.FileInfo, error)
+}
+
+type FileSystem interface {
+	Open(name string) (File, error)
+}
+```
+
+可以看到， `File` 实际上也是多个 interface 组成的，但拥有两个独有的方法，而前面的 `dotFileHidingFile` 只重写了 `Readdir()` 这个方法，而 `Stat()` 没有重新实现，这里有别于常规 struct ，如果 struct 没有实现 interface 定义的方法，是无法直接调用这个方法的。但是 `dotFileHidingFile` 是可以正常调用 `Stat()` 的，这就是 struct 直接嵌入 interface 的特殊之处。
+
+这里的理解方式类似于 Python 中的子类继承， `dotFileHidingFile` 完全继承了 `File` 的所有方法，但是对其中某些方法做了重写。由于 golang 中并没有类的概念，都是通过接口来实现的。
+
+从 `dotFileHidingFileSystem` 可以看到一些相关的代码编写， `dotFileHidingFileSystem` 在重写 `Open()` 方法时，实际上还是使用到了原有接口实现的方法 `dotFileHidingFileSystem.FileSystem.Open()` ，所以这里新的方法实际上只是旧方法的重新包装，当然完全重新实现也是可以的。而且在 `Open()` 返回 interface 时通过返回嵌入的 struct 来指定它后续使用的方法是明确的被重写过的新方法，而不是原有 interface 中的方法。

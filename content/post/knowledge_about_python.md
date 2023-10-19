@@ -405,3 +405,17 @@ while True:
 
 csvfile.close()
 ```
+
+## 中文字符处理
+
+``` python
+# 可用于处理中文文档中段落开头的两个空格
+with open('/path/to/readfile', 'r') as readf:
+    strings = readf.read()
+    # 通过 unicode 替换
+    trim = strings.replace(u'\u3000', '')
+
+writef = open('/path/to/writefile', 'w')
+writef.write(trim)
+writef.close()
+```
