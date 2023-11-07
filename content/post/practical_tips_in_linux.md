@@ -116,10 +116,10 @@ curl 在 Linux 代替了浏览器的工作，经常用来调试接口。
 
 ``` bash
 # 经典 curl 用例
-$ curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' http://....
-# -X HTTP请求方法，通常有GET,POST,PUT,DELETE
-# -d body，常用于POST方法的请求体
-# -H header，定义HTTP请求头
+$ curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' 'http://....'
+# -X HTTP 请求方法，通常有 GET,POST,PUT,DELETE
+# -d body ，常用于 POST 方法的请求体
+# -H header ，定义 HTTP 请求头
 
 # 这里列举其他常用的参数
 # -b 用来设置 cookie ，常以 -b 'key1=value1;key2=value2' 的形式出现
@@ -127,6 +127,17 @@ $ curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' http://.
 # -i 用来额外输出请求的响应头，响应体正常输出
 # -I 使用这个参数后只输出请求的响应头，响应体不再输出
 # -x 用来设置代理服务器，用法为 -x/--proxy 127.0.0.1:8080
+# -u 用来设置 HTTP Basic Authentication ，用法为 -u 'username:password'
+
+# 将文件内容作为请求体
+$ cat data.json
+{
+    "key": "value",
+}
+$ curl -X POST -H 'Content-Type: application/json' --data-binary @data.json 'http://....'
+
+# 将文件内容转换为标准输入流之后再作为请求体，这样可以多做一次处理
+$ cat data.json | curl -X POST -H 'Content-Type: application/json' --data-binary @- 'http://....'
 ```
 
 ## curl 结合 bash 变量使用
@@ -543,4 +554,17 @@ $ dracut -v -I '/usr/sbin/xfsdump /usr/sbin/xfsrestore' -f [initramfs.img]
 
 # 这里添加了 xfs 文件系统的备份和还原命令，它们是需要额外安装的
 # 执行 dracut 完成后可以使用 lsinitrd 检查是否成功
+```
+
+## tcpdump 基本用法
+
+``` bash
+# 使用 tcpdump 抓包
+$ tcpdump -n -v -s0 -i lo port 8080 -w tcpdump.pcap
+# -n 不解析域名
+# -v 显示详细信息
+# -s 抓取数据包时的默认抓取长度， 0 表示抓取完整数据包
+# -i 指定网络接口
+# port 指定抓取条件为通过 8080 端口的数据包
+# -w 将抓取数据写入到指定文件中
 ```
