@@ -568,3 +568,25 @@ $ tcpdump -n -v -s0 -i lo port 8080 -w tcpdump.pcap
 # port 指定抓取条件为通过 8080 端口的数据包
 # -w 将抓取数据写入到指定文件中
 ```
+
+## 使用 mysqldump 进行数据库备份
+
+进行数据库备份迁移可以参考这个步骤：
+
+1. 源数据导出：
+
+``` bash
+# db_name 是需要备份的数据库名称
+$ mysqldump -u root -p db_name > backup.sql
+```
+
+备份完成后可以看到 backup.sql 基本都是由 `CREATE TABLE` 和 `INSERT INTO` 这些生成语句构成的，但是在表生成语句前一般都会有 `DROP` 旧表的动作，在实际操作时候应该小心。
+
+2. 导入到新的 mysql 服务中：
+
+``` bash
+# 在导入 sql 语句前应该在创建新库并且显示使用这个库
+$ sed -i '1i create database db_name;' backup.sql
+$ sed -i '2i use db_name;' backup.sql
+$ mysql -u root -p < backup.sql
+```
