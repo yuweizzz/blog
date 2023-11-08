@@ -251,3 +251,33 @@ $ kubectl rollout undo deployment/nginx-deployment --revision=1
 由于默认的 deployment 是非常简单，启动后我们会发现这是单 pod 的 deployment ，基于实际上的考虑，我们可以选择将 deployment 修改为 daemonset 来增强容错能力，否则我们至少应该调整 deployment 的副本数来保证服务的可用性，此外还可能需要根据访问量来调节 Pod 资源，并且考虑 Pod Affinity 的相关问题。
 
 而默认的 service 种类是 LoadBalancer ，它需要云厂商提供的负载均衡器来实现，并且这一过程可能要根据云厂商具体的实现文档，对已有的 service 进行某些修改才能正常工作，通常会是修改一些注释信息，同样地， ingress 也可能要做出一些对应的修改，才能正常在基于 LoadBalancer 的服务种类下正常工作。而如果是集群不是基于云服务实现的，那么我们可以选择 NodePort 类型的 service 或者将整个 deployment 运行在主机的网络栈中，这样做甚至可以将 service 省去，但这样做需要额外考虑负载均衡和可用性的相关问题。
+
+## 通过指定 endpoints 的 service 访问外部服务
+
+除了 `ExternalName` 类型的 service 可以实现访问集群外部服务，还可以通过指定 endpoints 来实现。
+
+``` yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+  namespace: prod
+spec:
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1     
+kind: Endpoints
+metadata:
+  name: my-service
+  namespace: prod
+subsets:
+- addresses:
+  - ip: 10.10.10.10
+  ports:
+  - port: 8080
+```
+
+这里的 service 将会是 `ClusterIP` 类型，但是它的具体 endpoints 不使用 selector 进行选取，而是自行定义到具体服务入口，适用于那些运行在集群外但是在同个内网下的服务。
