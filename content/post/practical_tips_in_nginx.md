@@ -492,3 +492,31 @@ http {
 $ echo | openssl s_client -status -connect www.github.com:443 2>/dev/null | grep 'OCSP Response'
 # 出现 OCSP Response Status: successful (0x0) 则说明服务端开启了 OCSP stapling
 ```
+
+## Nginx 常用配置选项
+
+### ngx_http_core_module 配置
+
+* `client_header_buffer_size 1k;` ：这个配置用来定义请求的 Header 缓冲区大小，如果 Header 内容大于这个值，会使用 `large_client_header_buffers` 的配置。
+* `large_client_header_buffers 4 8k;` ：这个配置用来限制请求 URL 和 Header 字段大小，虽然定义了多个缓冲区，但是 URL 和单个 Header 不能超过单个缓冲区的最大限制，而且总大小应该保持在多个缓冲区总和内，否则都会返回请求错误。
+
+### ngx_http_proxy_module 超时时间配置
+
+* `proxy_connect_timeout 60s;` ：这个配置用来定义请求与上游建立连接的超时时间。
+* `proxy_read_timeout 60s;` ：这个配置用来定义读取连接的超时时间，是指相邻两次读操作之间的最长时间间隔，达到超时时间连接将会关闭。
+* `proxy_send_timeout 60s;` ：这个配置用来定义写入连接的超时时间，和 `proxy_read_timeout` 的定义类似，只不过它是基于写操作的。
+
+### ngx_http_proxy_module 缓冲设置
+
+启用代理缓冲在一定程度上可以提高访问的效率。其中 `proxy_buffering` 是启用代理缓冲的开关，而 `proxy_buffer_size` 是基本的内存缓冲区大小，和 `proxy_buffering` 是否启用无关。
+
+根据 nginx 的官方文档，不启用 `proxy_buffering` ， nginx 会同步性地获取上游响应并返回给客户端，每次获取的响应大小被限制在 `proxy_buffer_size` 中，通常情况下是 4k ，也就是一个内存页的大小，会根据运行平台而变。
+
+如果使用 `proxy_buffering` ，那么如下关键字就可以被有效使用：
+
+* `proxy_buffers 8 4k|8k;` ：定义缓冲区的数量和字节大小。
+* `proxy_busy_buffers_size 8k|16k;` ：在上游响应未完全读取的情况下，当缓冲的内容超过这个定义的大小时，就开始向客户端返回数据。
+* `proxy_temp_file_write_size 8k|16k;` ：内存缓冲区大小不足时，单次写入磁盘缓冲文件的字节大小。
+* `proxy_max_temp_file_size 1024m;` ：内存缓冲区大小不足时，最大可用的磁盘缓冲文件的字节大小。
+
+使用 `proxy_buffering` ，缓冲区将由 `proxy_buffer_size` 和 `proxy_buffers` 共同构成，并且 `proxy_busy_buffers_size` 默认是这两个值中单个缓冲区的两倍大小，在整体缓冲区容量不足的情况下，需要设置 `proxy_temp_file_write_size` 和 `proxy_max_temp_file_size` 的容量大小才能使用磁盘缓冲。
