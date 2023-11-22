@@ -590,3 +590,35 @@ $ sed -i '1i create database db_name;' backup.sql
 $ sed -i '2i use db_name;' backup.sql
 $ mysql -u root -p < backup.sql
 ```
+
+批量备份参考脚本：
+
+``` bash
+#!/bin/bash
+
+# db_names 文件内容可以通过 show databases 获取，并且应该去掉默认内置的数据库：
+# performance_schema
+# information_schema
+# sys
+# mysql
+
+export MYSQL_PWD=mysql_password
+endpoint=mysql_endpoint
+user=mysql_user
+port=mysql_port
+basedir=/home/db_backup/$endpoint
+db_name_file=/home/db_backup/$endpoint/db_names
+date=`date +%Y%m%d`
+date_detail=`date +%Y%m%d_%H%M%S`
+
+cd $basedir
+if [ ! -d $date ];then
+    mkdir $date
+fi
+cd $date
+
+for i in `cat $db_name_file`;
+do
+    mysqldump -h $endpoint -P $port -u $user $i | gzip > $i-$date_detail.sql.gz
+done
+```
