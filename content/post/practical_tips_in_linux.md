@@ -622,3 +622,61 @@ do
     mysqldump -h $endpoint -P $port -u $user $i | gzip > $i-$date_detail.sql.gz
 done
 ```
+
+## 添加 sudo 命令
+
+``` bash
+# 通过 visudo 去编辑 /etc/sudoers 文件
+$ visudo
+
+# 添加单个用户命令的具体格式
+$ cat /etc/sudoers
+......
+username ALL=(ALL) NOPASSWD:/usr/bin/ls
+......
+
+# 具体用户可以查看已经允许的命令
+$ sudo -l
+```
+
+## rsyslog 日志重定向
+
+使用 systemd 的 Linux 系统中，如果不明确指定 systemd service 的日志输出，也就是在 `/etc/systemd/system/*.service` 文件中配置 `[Service]` 部分的 `StandardOutput` ，那么默认的输出对象应该是 `journal` ，一般所有的 systemd service 都可以使用 `journalctl` 获取到日志信息。
+
+在 CentOS 中经常可以看到 `StandardOutput=syslog` 和 `StandardError=syslog` 的用法，此时一般可以在 `/var/log/messages` 中找到对应服务的日志信息，这里是由 syslog/rsyslog 所完成的工作，你可以在 `/etc/rsyslog.conf` 中找到 `$ModLoad imjournal` 和 `*.info;mail.none;authpriv.none;cron.none` 这两个相关的配置选项。
+
+如果想把某个服务中的日志文件独立出来，除了服务自身实现的日志管理，可以将日志输出到 rsyslog 中再做处理，但是这样做的前提是系统运行着 rsyslog 服务并且对应服务配置了 `StandardOutput=syslog` 和 `StandardError=syslog` 。
+
+``` bash
+# 简单的 systemd service 示例
+$ cat /etc/systemd/system/my-service.service
+[Unit]
+Description=my-service
+After=network.target
+
+[Service]
+Type=simple
+
+ExecStart=my-service run
+WorkingDirectory=/usr/local/bin/my-service
+Restart=on-failure
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=my-service
+
+[Install]
+WantedBy=multi-user.target
+
+# 添加对应的配置项到 rsyslog
+$ cat /etc/rsyslog.d/my-service.conf
+# programname 就是 SyslogIdentifier 定义的内容
+# 如果没有定义 SyslogIdentifier ，则可以通过 journalctl -u my-service 查看具体的日志格式
+# 根据官方文档： For example, when TAG is “named[12345]”, programname is “named”.
+if $programname == 'my-service' then {
+    /var/log/my_service/my-service.log
+    stop
+}
+
+# 新增配置后需要重启 rsyslog
+$ systemctl restart rsyslog.service
+```
