@@ -477,21 +477,6 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
 现有国内网络环境下，原始镜像速度很慢，可以使用公开的国内镜像源，它们大部分提供了相关的配置方法，如果是自建的镜像源，那么至少需要自行配置 `name` 和 `baseurl` 才能正常使用。
 
-## 配置 Debian 源
-
-dpkg 和 apt 是 Debian 系列 Linux 发行版的软件包管理器，其中 dpkg 是比较底层的软件包工具，而 apt 则是更高层级的管理工具，两者之间的关系类似于 rpm 和 yum 的关系。
-
-``` bash
-# 修改 Debian 10 buster 的 apt 镜像源
-$ echo 'deb http://mirrors.ustc.edu.cn/debian buster main contrib non-free
-deb http://mirrors.ustc.edu.cn/debian buster-updates main contrib non-free
-deb http://mirrors.ustc.edu.cn/debian buster-backports main contrib non-free
-deb http://mirrors.ustc.edu.cn/debian-security/ buster/updates main contrib non-free' > /etc/apt/sources.list
-
-# 更新软件列表
-$ apt update
-```
-
 ## 使用 cpio 打开 rpm 文件
 
 rpm 包可以视为一个特殊的归档文件，如果需要提取这个档案中的内容，一般通过 rpm2cpio 和 cpio 去实现。
