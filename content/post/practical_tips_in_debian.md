@@ -126,6 +126,27 @@ $ echo "deb [arch="$(dpkg --print-architecture)" signed-by=/usr/share/keyrings/d
   > /etc/apt/sources.list.d/docker-ce.list
 $ apt update
 $ apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+# openresty
+$ curl -fsSL https://openresty.org/package/pubkey.gpg \
+  > /usr/share/keyrings/openresty-keyring.asc
+$ echo "deb [signed-by=/usr/share/keyrings/openresty-keyring.asc] http://openresty.org/package/debian \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" openresty" \
+  > /etc/apt/sources.list.d/openresty.list
+$ apt update
+$ apt install openresty
+
+# mysql
+$ wget https://dev.mysql.com/get/mysql-apt-config_0.8.15-1_all.deb
+# mysql-apt-config 实际上就是安装对应的 apt 镜像源和签名信息的步骤
+# 0.8.15 版本的 mysql-apt-config 可以下载安装 mysql 5.7 和 mysql 8.0
+# 新版本的 mysql-apt-config 只能下载安装 mysql 8.0
+$ dpkg -i mysql-apt-config_0.8.15-1_all.deb
+# 安装完成后会跳出图形界面，可以自行选择需要的镜像源，这里选择的是 mysql 5.7
+# 配置完成后想要修改的话可以通过以下命令重新打开
+$ dpkg-reconfigure mysql-apt-config
+$ apt update
+$ apt install mysql-community-server
 ```
 
 ## 调整网卡配置
@@ -163,7 +184,7 @@ iface lo inet loopback
 allow-hotplug ens33
 auto ens33
 iface ens33 inet static
-    address 192.168.1.2/23
-    gateway 192.168.1.1
-    dns-nameservers 192.168.1.1
+address 192.168.1.2/23
+gateway 192.168.1.1
+dns-nameservers 192.168.1.1
 ```
