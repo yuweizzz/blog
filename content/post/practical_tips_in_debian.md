@@ -188,3 +188,17 @@ address 192.168.1.2/23
 gateway 192.168.1.1
 dns-nameservers 192.168.1.1
 ```
+
+## vim 兼容性问题
+
+在 Debian 的一些版本中默认安装的编辑器是 vim-tiny ，可能会出现比如上下左右方向键变成 ABCD 的字符输入，退格键不能正常删除字符，或者文本粘贴出现异常缩进，可以通过修改 `vimrc` 来解决。
+
+``` bash
+$ cat ~/.vimrc
+"解决文本粘贴出现异常缩进"
+set paste
+"关闭兼容模式，解决上下左右方向键变成 ABCD 的字符输入"
+set nocompatible
+"解决退格键不能正常删除字符"
+set backspace=2
+```
