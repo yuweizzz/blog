@@ -91,7 +91,7 @@ $ yum install openssl-devel openssl
 # 添加 nginx 用户组
 $ groupadd nginx
 # 添加 nginx 用户
-useradd nginx -g nginx -s /sbin/nologin -M
+$ useradd nginx -g nginx -s /sbin/nologin -M
 $ ./configure --prefix=/opt -user=nginx -group=nginx --with-http_ssl_module
 # 不指定 prefix 则默认安装在 /usr/local 的 nginx 中
 # 执行编译并安装

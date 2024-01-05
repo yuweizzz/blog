@@ -202,3 +202,116 @@ set nocompatible
 "解决退格键不能正常删除字符"
 set backspace=2
 ```
+
+## sshd 安全加固
+
+sshd 基本上是 Linux 系统必定会运行的服务，一般会增加一些相关的安全配置。
+
+``` bash
+# 修改 sshd 服务的配置
+$ cat /etc/ssh/sshd_config
+# 禁止 root 用户登陆
+PermitRootLogin no
+
+# 禁用通过用户密码验证登陆
+PasswordAuthentication no
+
+# 启用用户私钥验证登陆
+PubkeyAuthentication yes
+# 验证私钥的公钥来源文件，一般不作修改
+# AuthorizedKeysFile .ssh/authorized_keys
+
+# AllowUsers 和 DenyUsers 可以限制用户登陆，其中 Deny 的优先级高于 Allow
+# 除了用户还可以限制登陆来源 IP ，来源 IP 可以是具体 host 或者 CIDR
+AllowUsers userA@192.168.0.0/24 userA@10.0.0.1
+DenyUsers userB
+```
+
+### sshd 算法禁用
+
+sshd 用到的一些算法可能已经不安全，所以需要手动禁用。
+
+``` bash
+# 查看默认支持的加密算法
+$ ssh -Q cipher
+# 查看默认支持的 mac 算法
+$ ssh -Q mac
+# 查看系统支持的密钥交换算法
+$ ssh -Q kex
+
+# 大部分情况下使用的 sshd 配置是默认的，可以先进行查询
+$ sshd -T | grep -i cipher
+$ sshd -T | grep -i macs
+$ sshd -T | grep -i kexalgorithms
+
+# 在原有查询的基础上修改 sshd 服务的配置
+# 如果是禁用某些算法，直接把它去掉即可
+# 如果是新增某些算法，则不应该超出 ssh -Q 查询到的对应算法范围
+# 以下是 Debian 11 的默认 sshd 服务配置，可以在这个基础上修改
+$ cat /etc/ssh/sshd_config
+Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com
+MACs macs umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256
+
+# 一些已知的弱算法
+Ciphers:
+3des-cbc
+aes128-cbc
+aes192-cbc
+aes256-cbc
+blowfish-cbc
+cast128-cbc
+
+MACs:
+hmac-md5
+hmac-md5-96
+hmac-md5-etm@openssh.com
+hmac-md5-96-etm@openssh.com
+umac-64-etm@openssh.com
+umac-64@openssh.com
+
+KexAlgorithms:
+diffie-hellman-group-exchange-sha1
+diffie-hellman-group1-sha1
+
+# 修改后需要重启 sshd 服务，可以通过命令来验证是否成功
+$ nmap --script ssh2-enum-algos -sV -p 22 127.0.0.1
+$ ssh -o Ciphers=aes128-cbc root@127.0.0.1
+$ ssh -o KexAlgorithms=diffie-hellman-group-exchange-sha1 root@127.0.0.1
+```
+
+### 启用 sftp
+
+sshd 服务默认就会启动 sftp 服务，这里主要是对某些用户做一些额外的 sftp 适配。
+
+``` bash
+# 增加 sftp 用户并修改密码
+$ useradd sftp -s /sbin/nologin -M
+$ passwd sftp
+
+# 修改 sshd 服务的配置
+$ cat /etc/ssh/sshd_config
+Subsystem sftp internal-sftp
+Match User sftp
+ForceCommand internal-sftp
+X11Forwarding no
+AllowTcpForwarding no
+PasswordAuthentication yes
+ChrootDirectory /data/sftp
+
+# 创建 sftp 数据目录
+$ mkdir -p /data/sftp
+$ chown root:root /data/sftp
+$ mkdir -p /data/sftp/sftp
+$ chown sftp:sftp /data/sftp
+$ chmod 750 /data/sftp/sftp
+# 使用 sftp 用户登陆后会被限制在 /data/sftp 中，并且只能修改 /data/sftp/sftp 下的文件
+```
+
+## 增加 history 时间戳
+
+``` bash
+# 追加环境变量到 /etc/profile.d/history_timestamp.sh 文件中
+$ cat /etc/profile.d/history_timestamp.sh
+export HISTTIMEFORMAT="%F %T `whoami` "
+```

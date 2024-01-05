@@ -89,6 +89,15 @@ $ openssl req -new -sha256 -key key.pri \
  -subj "/C=US/ST=IL/L=Chicago/O=IBM Corporation/OU=IBM Software Group/CN=www.ibm.com" -out request.csr
 # 生成自签证书，由于它不会被自动信任， signkey 可以重新生成或者直接沿用自身的私钥
 $ openssl x509 -req -sha256 -days 365 -in request.csr -signkey key.pri -out ibm.crt
+
+# 上述例子生成的证书就是 RSA 证书，下面的例子是生成 ECC 证书
+# 查看当前 openssl 版本支持的椭圆曲线 
+$ openssl ecparam -list_curves
+# 一般使用 prime256v1 来生成私钥 
+$ openssl ecparam -genkey -name prime256v1 -out key.pri
+$ openssl req -new -sha256 -key key.pri \
+ -subj "/C=US/ST=IL/L=Chicago/O=IBM Corporation/OU=IBM Software Group/CN=www.ibm.com" -out request.csr
+$ openssl x509 -req -sha256 -days 365 -in request.csr -signkey key.pri -out ibm.crt
 ```
 
 自签名意味着自身就是签发的 CA 机构，在访问使用自签名 TLS 证书的站点时，通常会显示证书不受信任的提示，手动把这个自签名证书加入到操作系统的信任链中后这个提示就不会再出现了。但是将单一站点的 TLS 证书加入到信任链中是非常少见的操作，一般只会直接信任 CA 证书。
@@ -179,6 +188,25 @@ $ openssl dgst -sha256 -verify key.pub -signature sign.txt file
 $ openssl x509 -in x509.crt -noout -enddate
 # 配合 s_client 可以通过发起 ssl 连接来测试证书是否过期
 $ echo | openssl s_client -servername www.github.com -connect "www.github.com:443" 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | awk -F '=' '{print $2}'
+
+# 追踪 tls 握手过程
+# -status 可以看到 ocsp 信息
+# -tlsextdebug 可以看到 tls 扩展信息
+$ echo | openssl s_client -status -tlsextdebug -servername www.github.com -connect "www.github.com:443" 2>/dev/null
+
+# 指定加密算法的 tls 握手请求，主要用来测试 ECC 证书，对应前面的不同种类证书的生成命令
+# RSA 证书测试，理论上可以在输出中追踪到 PKEY: rsaEncryption
+$ echo | openssl s_client -cipher ECDHE-RSA-AES128-SHA256 -status -tlsextdebug -servername www.ibm.com -connect "127.0.0.1:443"
+# ECC 证书测试，理论上可以在输出中追踪到 PKEY: id-ecPublicKey
+$ echo | openssl s_client -cipher ECDHE-ECDSA-AES128-SHA256 -status -tlsextdebug -servername www.ibm.com -connect "127.0.0.1:443"
+
+# 查看 openssl 对各个版本 tls 协议的算法支持
+$ openssl ciphers -v
+# cipher 遵从对应的 RFC 命名标准，在 ECDHE-RSA-AES128-SHA256 中：
+# ECDHE 指的是 Key Exchange 算法， ECDHE 是 DH 算法基于椭圆曲线的变种
+# RSA 指的是认证算法， RSA 是非对称加密算法
+# AES128 指的是用于 session 过程中的加密算法， AES128 是 128 bit 的对称加密算法
+# SHA256 指的是摘要算法， SHA256 是 256 bit 的摘要算法
 ```
 
 ## TLS 协议握手过程
