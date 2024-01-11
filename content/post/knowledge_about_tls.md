@@ -189,6 +189,9 @@ $ openssl x509 -in x509.crt -noout -enddate
 # 配合 s_client 可以通过发起 ssl 连接来测试证书是否过期
 $ echo | openssl s_client -servername www.github.com -connect "www.github.com:443" 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | awk -F '=' '{print $2}'
 
+# 证书格式转换
+$ openssl x509 -in x509.der -inform der -outform pem -out x509.pem
+
 # 追踪 tls 握手过程
 # -status 可以看到 ocsp 信息
 # -tlsextdebug 可以看到 tls 扩展信息

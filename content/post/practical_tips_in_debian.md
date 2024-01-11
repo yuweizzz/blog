@@ -315,3 +315,23 @@ $ chmod 750 /data/sftp/sftp
 $ cat /etc/profile.d/history_timestamp.sh
 export HISTTIMEFORMAT="%F %T `whoami` "
 ```
+
+## 修改 Linux 进程数限制
+
+用户直接执行 `ulimit -a` 就可以看到对应的自身受到的进程相关限制，可以通过修改 `/etc/security/limits.conf` 来改变这个设置。
+
+``` bash
+$ cat /etc/security/limits.conf
+# nproc 代表进程数量限制
+# nofile 代表打开文件数量限制
+user soft nproc 65536
+user hard nproc 65536
+user soft nofile 65536
+user hard nofile 65536
+
+# /etc/security/limits.conf 修改后需要确认 pam_limits.so 动态库正常加载
+# 确认以下两个配置存在 required pam_limits.so
+$ cat /etc/pam.d/sshd
+$ cat /etc/pam.d/login
+session required pam_limits.so
+```

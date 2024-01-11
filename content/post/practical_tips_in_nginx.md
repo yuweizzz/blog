@@ -520,3 +520,37 @@ $ echo | openssl s_client -status -connect www.github.com:443 2>/dev/null | grep
 * `proxy_max_temp_file_size 1024m;` ：内存缓冲区大小不足时，最大可用的磁盘缓冲文件的字节大小。
 
 使用 `proxy_buffering` ，缓冲区将由 `proxy_buffer_size` 和 `proxy_buffers` 共同构成，并且 `proxy_busy_buffers_size` 默认是这两个值中单个缓冲区的两倍大小，在整体缓冲区容量不足的情况下，需要设置 `proxy_temp_file_write_size` 和 `proxy_max_temp_file_size` 的容量大小才能使用磁盘缓冲。
+
+## acme 自动更新证书
+
+以下是通过使用 acme.sh 的 webroot 模式申请免费证书的步骤。
+
+``` bash
+# 通过 80 端口提供认证服务接口
+server {
+    listen 80;
+    server_name _;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/;
+        try_files $uri =404;
+    }
+}
+```
+
+修改完 nginx 配置后，参考的执行命令如下：
+
+``` bash
+# 安装 acme.sh
+$ curl https://get.acme.sh | sh
+# 选择 CA 登陆账号
+$ acme.sh --register-account --server letsencrypt -m your_email@email.com
+# 通过 webroot 模式签发证书
+$ acme.sh --issue -d your.domain.com -w /var/www/ --server letsencrypt
+# 签发成功后将证书安装到对应的 nginx 目录下
+$ acme.sh --install-cert \
+  -d your.domain.com \
+  --key-file /path/to/cert.key \
+  --fullchain-file /path/to/cert.pem \
+  --reloadcmd "systemctl reload nginx"
+```
