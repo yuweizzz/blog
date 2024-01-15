@@ -419,3 +419,50 @@ writef = open('/path/to/writefile', 'w')
 writef.write(trim)
 writef.close()
 ```
+
+## 使用 python 生成随机密码
+
+效果类似于执行 Linux 命令 `cat /dev/urandom | tr -dc '[:graph:]' | head -c 24; echo` 。
+
+``` python
+import string
+import secrets
+
+# string.ascii_letters 是大小写字母集合
+# string.digits 是数字集合
+# string.punctuation 是特殊字符集合
+
+alphabet = string.ascii_letters + string.digits + string.punctuation
+password = ''.join(secrets.choice(alphabet) for i in range(24))
+
+# 将所有备选字符组合字符集后，使用 secrets.choice 随机选取其中一位，循环多次得到密码
+```
+
+## 使用 python 发送邮件
+
+``` python
+import smtplib
+from email.message import EmailMessage
+
+username = "me@email.com"
+password = "password"
+stmp_address = "server.email.com"
+stmp_port = 465
+
+content = "email content"
+subject = "email subject"
+to = "someone@email.com"
+
+msg = EmailMessage()
+msg.set_content(content)
+msg['Subject'] = subject
+msg['From'] = username
+msg['To'] = to
+
+# 根据服务端是否使用加密协议来决定使用哪个函数建立 server 连接
+# 使用 25 端口一般需要使用 smtplib.SMTP
+# 使用 465 端口一般需要使用 smtplib.SMTP_SSL
+with smtplib.SMTP_SSL(stmp_address, stmp_port) as server:
+    server.login(username, password)
+    server.send_message(msg)
+```
