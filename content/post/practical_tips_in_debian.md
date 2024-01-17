@@ -303,7 +303,7 @@ ChrootDirectory /data/sftp
 $ mkdir -p /data/sftp
 $ chown root:root /data/sftp
 $ mkdir -p /data/sftp/sftp
-$ chown sftp:sftp /data/sftp
+$ chown sftp:sftp /data/sftp/sftp
 $ chmod 750 /data/sftp/sftp
 # 使用 sftp 用户登陆后会被限制在 /data/sftp 中，并且只能修改 /data/sftp/sftp 下的文件
 ```
@@ -334,4 +334,20 @@ user hard nofile 65536
 $ cat /etc/pam.d/sshd
 $ cat /etc/pam.d/login
 session required pam_limits.so
+```
+
+## 启用时间同步服务
+
+Debian 一般会默认启用这个服务，这里的主要是为了修改 ntp 服务器地址。
+
+``` bash
+$ vi /etc/systemd/timesyncd.conf
+[Time]
+NTP=ntp.aliyun.com ntp1.aliyun.com
+FallbackNTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+
+# 配置检查
+$ timedatectl show-timesync --all
+# 重启服务
+$ systemctl restart systemd-timesyncd.service
 ```
