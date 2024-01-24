@@ -145,6 +145,7 @@ $ dpkg -i mysql-apt-config_0.8.15-1_all.deb
 # 安装完成后会跳出图形界面，可以自行选择需要的镜像源，这里选择的是 mysql 5.7
 # 配置完成后想要修改的话可以通过以下命令重新打开
 $ dpkg-reconfigure mysql-apt-config
+# 执行实际的安装步骤
 $ apt update
 $ apt install mysql-community-server
 ```

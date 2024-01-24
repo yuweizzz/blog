@@ -4,6 +4,7 @@ title: TLS 协议工作原理
 tags:
   - "OpenSSL"
   - "TLS"
+  - "OCSP"
 draft: false
 ---
 
@@ -102,7 +103,7 @@ $ openssl x509 -req -sha256 -days 365 -in request.csr -signkey key.pri -out ibm.
 
 自签名意味着自身就是签发的 CA 机构，在访问使用自签名 TLS 证书的站点时，通常会显示证书不受信任的提示，手动把这个自签名证书加入到操作系统的信任链中后这个提示就不会再出现了。但是将单一站点的 TLS 证书加入到信任链中是非常少见的操作，一般只会直接信任 CA 证书。
 
-所以如果需要多个自签 TLS 证书，则自建 CA 会更方便，它与自签名 TLS 的区别在于不随意使用私钥去签名，而是固定一对密钥，把它持续用于后续 TLS 证书的签发，并且将固定公钥生成 CA 证书，那么只需要信任 CA 证书就可以自动信任它所签发的 TLS 证书。 
+所以如果需要多个自签 TLS 证书，则自建 CA 会更方便，它与自签名 TLS 的区别在于不随意使用私钥去签名，而是固定一对密钥，把它持续用于后续 TLS 证书的签发，并且将固定公钥生成 CA 证书，那么只需要信任 CA 证书就可以自动信任它所签发的 TLS 证书。
 
 ``` bash
 # 自建 CA
@@ -125,6 +126,8 @@ $ openssl req -new -sha256 -key server_key.pri \
 # CA 处理签发请求，生成证书
 $ openssl x509 -req -sha256 -days 365 -in request.csr -CA CA.crt -CAkey key.pri -CAcreateserial -out software.crt
 ```
+
+> 在签发 CA 证书时最好通过 `-extfile <(printf "basicConstraints=CA:TRUE")` 表明自身是用作 CA 证书用途。
 
 在 golang 1.15 之后的版本，进行 tls 握手时发生报错 `"x509: certificate relies on legacy Common Name field, use SANs or temporarily enable Common Name matching with GODEBUG=x509ignoreCN=0"` 是因为当前使用的证书依赖于 CN 作为域名绑定，需要使用 x509 拓展字段 Subject Alternative Name 才能进行正常验证，也就是报错信息所述的 SAN 。
 
@@ -187,29 +190,70 @@ $ openssl dgst -sha256 -verify key.pub -signature sign.txt file
 # 查看证书过期时间
 $ openssl x509 -in x509.crt -noout -enddate
 # 配合 s_client 可以通过发起 ssl 连接来测试证书是否过期
-$ echo | openssl s_client -servername www.github.com -connect "www.github.com:443" 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | awk -F '=' '{print $2}'
+$ echo | openssl s_client -servername www.github.com -connect "www.github.com:443" 2>/dev/null | \
+  openssl x509 -noout -enddate 2>/dev/null | awk -F '=' '{print $2}'
 
 # 证书格式转换
 $ openssl x509 -in x509.der -inform der -outform pem -out x509.pem
 
 # 追踪 tls 握手过程
-# -status 可以看到 ocsp 信息
+# -status 选项会在 clientHello 中带上 status_request extensions ，用于要求服务端附带 ocsp 响应信息
 # -tlsextdebug 可以看到 tls 扩展信息
 $ echo | openssl s_client -status -tlsextdebug -servername www.github.com -connect "www.github.com:443" 2>/dev/null
 
 # 指定加密算法的 tls 握手请求，主要用来测试 ECC 证书，对应前面的不同种类证书的生成命令
-# RSA 证书测试，理论上可以在输出中追踪到 PKEY: rsaEncryption
-$ echo | openssl s_client -cipher ECDHE-RSA-AES128-SHA256 -status -tlsextdebug -servername www.ibm.com -connect "127.0.0.1:443"
-# ECC 证书测试，理论上可以在输出中追踪到 PKEY: id-ecPublicKey
-$ echo | openssl s_client -cipher ECDHE-ECDSA-AES128-SHA256 -status -tlsextdebug -servername www.ibm.com -connect "127.0.0.1:443"
+# RSA 证书测试，理论上可以在输出中追踪到 rsa 的相关证书信息
+$ echo | openssl s_client -cipher ECDHE-RSA-AES128-SHA256 -status -tlsextdebug \
+  -servername www.ibm.com -connect "127.0.0.1:443"
+# ECC 证书测试，理论上可以在输出中追踪到 ecdsa 的相关证书信息
+$ echo | openssl s_client -cipher ECDHE-ECDSA-AES128-SHA256 -status -tlsextdebug \
+  -servername www.ibm.com -connect "127.0.0.1:443"
 
 # 查看 openssl 对各个版本 tls 协议的算法支持
 $ openssl ciphers -v
-# cipher 遵从对应的 RFC 命名标准，在 ECDHE-RSA-AES128-SHA256 中：
+# cipher 遵从对应的 RFC 命名标准，例如在 ECDHE-RSA-AES128-SHA256 中：
 # ECDHE 指的是 Key Exchange 算法， ECDHE 是 DH 算法基于椭圆曲线的变种
 # RSA 指的是认证算法， RSA 是非对称加密算法
 # AES128 指的是用于 session 过程中的加密算法， AES128 是 128 bit 的对称加密算法
 # SHA256 指的是摘要算法， SHA256 是 256 bit 的摘要算法
+```
+
+## 运行 OCSP Responder
+
+`openssl` 可以运行一个用于响应 OCSP 请求的服务端，能够满足一些基本的测试要求，实际中 OCSP 具体如何在 Nginx 中进行应用则可以参考[这里](https://yuweizzz.github.io/post/practical_tips_in_nginx/#%E5%BC%80%E5%90%AF-ocsp-stapling)。
+
+``` bash
+# 可以参照前面的例子生成证书签发请求，在具体签发 CA 证书时，需要主动声明证书用途
+$ openssl x509 -req -sha256 -days 3650 -in ca.csr -signkey ca.key \
+  -extfile <(printf "basicConstraints=CA:TRUE") -out ca.crt
+
+# 具体证书则应该带有 OCSP Responder 信息，这里通过 set_serial 来设置序列号，方便测试
+$ openssl x509 -req -sha256 -days 3650 -in x509.csr -CA ca.crt -CAkey ca.key -set_serial 1 \
+  -extfile <(printf "authorityInfoAccess=OCSP;URI:http://localhost:8080/") -out x509.crt
+
+# 还需要一个额外证书来签发 OCSP 响应，可以不对序列号进行要求
+$ openssl x509 -req -sha256 -days 3650 -in signer.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+  -extfile <(printf "extendedKeyUsage=OCSPSigning") -out signer.crt
+
+# 生成 CA 数据库，参考以下的 CA 数据库的格式：
+# V/R 到期时间 吊销时间 序列号 unknown CN
+# 字段之间使用 \t 隔开，即使某些字段不存在，比如吊销时间，也需要保留制表符
+# 经过实践测试，最后的 CN 字段并不一定要与对应证书中的 CN 一致，但是在 index 中每行的 CN 都必须不同
+$ cat index.txt
+V	340101075959Z		1	unknown	/C=CN/OU=IBM Software Group/CN=software.ibm.com1
+R	340101075959Z	240124135959Z	3	unknown	/C=CN/OU=IBM Software Group/CN=software.ibm.com2
+# 需要注意有效证书记录中序列号字段前的制表符数量
+$ cat -T index.txt
+V^I340101075959Z^I^I1^Iunknown^I/C=CN/OU=IBM Software Group/CN=software.ibm.com1
+R^I340101075959Z^I240124135959Z^I3^Iunknown^I/C=CN/OU=IBM Software Group/CN=software.ibm.com2
+
+# 另外标准的吊销过程应该通过相关的 CA 命令来完成，使用命令吊销会自动更新数据库，而这里只是手动更改了 CA 数据库来达到这个效果
+# 经过测试，如果你的证书没有记录在 CA 数据库中会返回 unknown 状态，否则一般是 good 或者 revoked 两种状态
+
+# 运行 OCSP Responder
+$ openssl ocsp -index index.txt -port 8080 -rsigner signer.crt -rkey signer.key -CA ca.crt
+# 可以指定响应具体的请求数量后自动退出
+$ openssl ocsp -index index.txt -port 8080 -rsigner signer.crt -rkey signer.key -CA ca.crt -nrequest 1
 ```
 
 ## TLS 协议握手过程
