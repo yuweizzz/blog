@@ -280,6 +280,19 @@ $ ssh -o Ciphers=aes128-cbc root@127.0.0.1
 $ ssh -o KexAlgorithms=diffie-hellman-group-exchange-sha1 root@127.0.0.1
 ```
 
+### 解决 rsa 密钥无法登陆
+
+在较新版本的 OpenSSH 中，使用 RSA 密钥登陆时可能会产生 `userauth_pubkey: signature algorithm ssh-rsa not in pubkeyacceptedalgorithms` 的登陆错误日志，这是因为新版本的 OpenSSH 对一些不安全算法进行了禁用，可以通过修改配置解决。
+
+``` bash
+# 修改配置
+$ cat /etc/ssh/sshd_config
+PubkeyAcceptedAlgorithms +ssh-rsa
+
+# 通过测试命令确认无误后就可以重启服务
+$ sshd -T | grep pubkeyacceptedalgorithms
+```
+
 ### 启用 sftp
 
 sshd 服务默认就会启动 sftp 服务，这里主要是对某些用户做一些额外的 sftp 适配。
