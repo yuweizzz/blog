@@ -280,7 +280,7 @@ $ ssh -o Ciphers=aes128-cbc root@127.0.0.1
 $ ssh -o KexAlgorithms=diffie-hellman-group-exchange-sha1 root@127.0.0.1
 ```
 
-### 解决 rsa 密钥无法登陆
+### 解决 rsa 密钥无法登陆的问题
 
 在较新版本的 OpenSSH 中，使用 RSA 密钥登陆时可能会产生 `userauth_pubkey: signature algorithm ssh-rsa not in pubkeyacceptedalgorithms` 的登陆错误日志，这是因为新版本的 OpenSSH 对一些不安全算法进行了禁用，可以通过修改配置解决。
 
