@@ -79,9 +79,9 @@ map $http_user_agent $mobile {
 Nginx 原生的日志格式是列出了关键信息的单行文本，我们可以创建模拟 json 格式的日志写入规则。
 
 ``` bash
-# 模拟 json 格式的纯文本
-server {
-    log_format main escape=default '{'
+# 模拟 json 的日志格式
+http {
+    log_format main escape=json '{'
         '"datetime": "$time_local",'
         '"remote_addr": "$remote_addr",'
         '"http_host": "$http_host",'
@@ -97,7 +97,10 @@ server {
         '"upstream_response_time": "$upstream_response_time",'
         '"request_time": "$request_time"'
     '}';
-    access_log  logs/access.log  main;
+
+    server {
+        access_log logs/access.log main;
+    }
 }
 ```
 
