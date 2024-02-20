@@ -365,3 +365,16 @@ $ timedatectl show-timesync --all
 # 重启服务
 $ systemctl restart systemd-timesyncd.service
 ```
+
+## 通过 dpkg 查询文件
+
+``` bash
+# 查询系统已经安装的 deb 软件包，对标 redhat 系列的 rpm -qa
+$ dpkg -l
+
+# 查询 deb 软件包安装的所有文件，对标 redhat 系列的 rpm -ql <package_name>
+$ dpkg -L <package_name>
+
+# 查询文件的 deb 软件包归属，对标 redhat 系列的 rpm -qf <filename>
+$ dpkg -S <filename>
+```
