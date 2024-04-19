@@ -38,30 +38,94 @@ lua 是一门高效的，易于嵌入其他应用程序的轻量级脚本语言�
 
 lua 的 string 类型数据是不可改变的，大部分情况下要依靠 string 库来处理。
 
+### string 拼接
+
 ``` lua
--- 字符串连接
-var_a = "a"
-var_b = "b"
-var_c = "c"
-print(var_a..var_b..var_c)
+strings_a = "a"
+strings_b = "b"
+strings_c = "c"
+print(strings_a .. strings_b .. strings_c)
 -- output:
 -- abc
+```
 
--- 字符串搜索
-var_a = "a"
-print(string.find(var_a, "a"))
+### string 替换和截取
+
+一般使用 `string.gsub` 来替换字符串内容，而 `string.sub` 是用来截取字符串。
+
+``` lua
+strings = "abcde"
+print(string.gsub(strings, "a", "z"))
+-- output:
+-- zbcde	1
+-- 返回值分别是 gsub 执行后的字符串和具体发生替换的次数，可以根据第二个参数判断是否已经执行替换
+
+strings = "aaaae"
+print(string.gsub(strings, "a", "z", 2))
+-- output:
+-- zzaae	2
+-- 可以通过传进第四个参数限制替换次数
+
+strings = "abcde"
+print(string.sub(strings, 3))
+-- output:
+-- cde
+-- 从给定位置开始截取到最后一个字符
+
+strings = "abcde"
+print(string.sub(strings, 3, 4))
+-- output:
+-- cd
+-- 截取起止位置都确定的字符串
+```
+
+### string find
+
+`string.find` 可以用来进行字符串搜索，需要注意的用法是带有特殊字符时，应该指定为 plain 模式。
+
+``` lua
+-- 普通字符串搜索
+strings = "abcde"
+print(string.find(strings, "a"))
 -- output:
 -- 1	1
--- 搜索成功则返回匹配字符的起止位置索引，失败则返回 nil 
+-- 成功则返回匹配字符的起止位置索引，失败则返回 nil
 
--- 字符串匹配
-print(string.match("  1 + 1  =2", "^%s*(.-)%s*=.*"))
+-- 带有特殊字符的字符串搜索
+strings = "abcde.*"
+print(string.find(strings, ".*"))
+-- output:
+-- 1	7
+-- 默认以正则模式进行搜索
+
+print(string.find(strings, ".*", 1, true))
+-- output:
+-- 6	7
+-- 指定为 plain 模式，不再以正则模式进行搜索
+```
+
+### string match
+
+匹配取值有 match 和 gmatch 两种，前者用于直接匹配结果，后者可以返回迭代器函数，用于循环场景。
+
+``` lua
+strings = "  1 + 1  =2"
+print(string.match(strings, "^%s*(.-)%s*=.*"))
 -- output:
 -- 1 + 1
-print(string.match("  1 + 1  =2", "^%s*.-%s*=(.*)"))
+
+print(string.match(strings, "^%s*.-%s*=(.*)"))
 -- output:
 -- 2
 -- 匹配成功则返回整个匹配的字符串，由于使用了括号进行子模式匹配，所以只返回了匹配部分，其中 .- 代表任意字符的非贪婪匹配
+
+iterator = string.gmatch(strings, "%d")
+for each in iterator do print(each) end
+-- output:
+-- 1
+-- 1
+-- 2
+-- 匹配成功则可以在每次循环中得到对应的匹配部分
 ```
 
 ## Lua Table
@@ -105,11 +169,12 @@ $ LUA_PATH="/tmp/?.lua;;" LUA_CPATH="/tmp/?.so;;" lua p.lua
 
 ``` bash
 # 使用 luarocks 下载安装 luasql
-$ luarocks install luasql-mysql --server https://luarocks.cn MYSQL_INCDIR=/usr/include/mysql/ MYSQL_LIBDIR=/usr/lib64/mysql
-# --server 可以指定 luarocks 服务器
-# 可以通过环境变量来指定某些库文件位置，这些环境变量可以在对应模块的 rockspec 查找
 
-# luasql-mysql rockspec
+# --server 可以指定 luarocks 服务器
+$ luarocks install luasql-mysql --server https://luarocks.cn MYSQL_INCDIR=/usr/include/mysql/ MYSQL_LIBDIR=/usr/lib64/mysql
+
+# 编译过程可能需要指定一些依赖路径，可以通过环境变量来指定，具体变量信息可以在对应模块的 rockspec 查找
+# luasql-mysql rockspec 
 package = "LuaSQL-MySQL"
 version = "2.3.5-1"
 source = {
@@ -148,8 +213,48 @@ build = {
 
 # 为了维持解释器环境不被污染，可以使用 --tree 指定模块的安装路径
 $ luarocks install luasql-mysql --tree $(pwd)
-# 如果不指定 --tree ，会根据当前用户决定安装路径， root 一般会安装到 /usr 这个路径中
+# 如果不指定 --tree ，会根据当前用户决定安装路径
+# root 用户一般会将 lua 文件安装到 /usr/local/share/lua/ 中，而动态库文件则是 /usr/local/lib/lua/
 
 # 删除已经安装的模块，必须指定 --tree
 $ luarocks purge luasql-mysql --tree $(pwd)
 ```
+
+## Lua Metatable
+
+lua metatable 经常用来定义模块。
+
+``` lua
+local _M = {
+  _VERSION = '1.0'
+}
+
+local mt = { __index = _M }
+
+function _M.new(left, right)
+  return setmetatable(
+     {
+       left = left,
+       right = right
+     }, mt
+   )
+end
+
+function _M:add()
+  return self.left + self.right
+end
+
+function _M:sub()
+  return self.left - self.right
+end
+
+function _M:sum(data)
+  return self.left + self.right + data
+end
+
+return _M
+```
+
+上述代码定义了一个模块，其中 `_M.new()` 函数相当于对象的实例化，而它提供的方法有 `_M:add()` ， `_M:sub()` 和 `_M:sum()` 三种。
+
+在通过 `local module = require("module_name")` 来引用模块之后，就可以使用具体的函数。其中而通过句号定义的函数会按照定义的参数内容传递参数，比如 `module.new(1, 2)` ，而通过冒号定义的函数定义默认会以自身作为第一个参数传入，比如 `module:add()` 实际上会直接返回计算结果。

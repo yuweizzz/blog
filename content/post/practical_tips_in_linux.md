@@ -665,3 +665,48 @@ if $programname == 'my-service' then {
 # 新增配置后需要重启 rsyslog
 $ systemctl restart rsyslog.service
 ```
+
+## freeradius
+
+freeradius 是 radius 协议的开源实现，包括身份验证，授权和统计三种协议。
+
+``` bash
+# 配置 freeradius 服务端以 Debug 模式运行方便排查问题
+$ freeradius -X
+
+# 测试具体用户
+$ radtest username password localhost 1812 secret
+# username 和 password 分别是对应的用户信息
+# localhost 和 1812 分别是 freeradius 服务器的地址和监听端口
+# secret 是 freeradius 对各个客户端定义的认证信息，一般定义在 freeradius 配置目录下的 clients.conf
+# 这个命令应该以 Received Access-Accept 为正常结束，否则访问即是有问题的
+```
+
+## openldap
+
+openldap 是实现了 LDAP 协议的目录数据存储服务，经常用来作身份验证。
+
+``` bash
+# 通过 admin 用户查询某个具体用户是否存在
+$ ldapsearch -h 10.0.0.1 \
+    -p 1389 \
+    -x -W \
+    -D "cn=admin,dc=example,dc=org" \
+    -b "ou=users,dc=example,dc=org" \
+    "(&(cn=username)(objectClass=Person))"
+
+# -h 和 -p 分别是 openldap 的服务器地址和监听端口
+# -x 用来声明进行简单认证， -W 用来声明密码内容
+# -D 用来声明 bind DN ，也就是当前用户的 entry ，对应的 -W 是该用户的密码
+# -b 用来声明 base DN ，也就是具体的搜索范围
+# "(&(cn=username)(objectClass=Person))" 是需要执行的 filter
+# 上述 filter 的目标内容是获取 cn=username 并且对应的 objectClass=Person 的对象
+
+# 用户自行校验密码，实际上只要不返回 Invalid credentials 即可认为校验成功
+$ ldapsearch -h 10.0.0.1 \
+    -p 1389 \
+    -x -W \
+    -D "cn=username,ou=users,dc=example,dc=org" \
+    -b "ou=users,dc=example,dc=org" \
+    "(&(cn=username)(objectClass=Person))"
+```
