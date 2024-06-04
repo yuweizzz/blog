@@ -117,25 +117,33 @@ num  target     prot opt source               destination
 # iptables 具体使用例子
 
 # 新增规则，新规则将会是表中最后一条规则
-$ iptables  -t  filter  -A  INPUT  -s  192.168.1.222  -j  REJECT
+$ iptables -t filter -A INPUT -s 192.168.1.222 -j REJECT
 # 插入规则，新规则的序号将会是 1
-$ iptables  -t  filter  -I  INPUT  -s  192.168.1.222  -j  REJECT
+$ iptables -t filter -I INPUT -s 192.168.1.222 -j  REJECT
 # 使用具体序号插入规则
-$ iptables  -t  filter  -I  INPUT  4  -s  192.168.1.222  -j  REJECT
+$ iptables -t filter -I INPUT 4 -s 192.168.1.222 -j REJECT
 # 通过详细条件匹配规则并进行删除
-$ iptables  -t  filter  -D  INPUT  -s  192.168.1.222  -j  REJECT
+$ iptables -t filter -D INPUT -s 192.168.1.222 -j REJECT
 # 通过规则序号匹配规则并进行删除
-$ iptables  -t  filter  -D  INPUT  4
+$ iptables -t filter -D INPUT  4
 # 通过规则序号匹配规则并进行规则内容替换
-$ iptables  -t  filter  -R  INPUT  4  -s  192.168.1.222  -j  REJECT
+$ iptables -t filter -R INPUT 4 -s 192.168.1.222 -j REJECT
 # 清除所有规则
 $ iptables -F
 # 设置规则链的默认策略
-$ iptables  -t  filter  -P  INPUT  DROP
+$ iptables -t filter -P INPUT DROP
+# 输出规则表中的所有规则
+$ iptables -t filter -S
 # 将当前所有规则保存到文件中
 $ iptables-save > /etc/sysconfig/iptables
 # 使用文件中保存的规则覆盖当前所有规则
 $ iptables-restore < /etc/sysconfig/iptables
+
+
+# 通过 iptables 设置端口转发
+# 源地址为 192.168.1.222:9999 ，目标地址为 192.168.1.233:10000 ，则应该在 192.168.1.222 上添加转发规则
+$ iptables -t nat -A PREROUTING -p tcp -m tcp --dport 9999 -j DNAT --to-destination 192.168.1.233:10000
+$ iptables -t nat -A POSTROUTING -d 192.168.1.233 -p tcp -m tcp --dport 10000 -j SNAT --to-source 192.168.1.222
 ```
 
 ### Iptables 规则的多种匹配条件
