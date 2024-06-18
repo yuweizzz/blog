@@ -25,7 +25,7 @@ jobs:
       - name: setup hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: '0.81.0'
+          hugo-version: '0.127.0'
           extended: true
 
       - name: generate private key and identify host 
