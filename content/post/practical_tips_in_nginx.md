@@ -6,6 +6,7 @@ tags:
   - "OCSP"
   - "HSTS"
   - "CORS"
+  - "acme"
 draft: false
 ---
 
@@ -546,7 +547,10 @@ server {
 ``` bash
 # 安装 acme.sh
 $ curl https://get.acme.sh | sh
-# 选择 CA 登陆账号
+
+# 通过 Webroot 模式自动签发证书
+
+# 设置 letsencrypt 作为签发机构，同时设置对应的账号
 $ acme.sh --register-account --server letsencrypt -m your_email@email.com
 # 通过 webroot 模式签发证书
 $ acme.sh --issue -d your.domain.com -w /var/www/ --server letsencrypt
@@ -556,4 +560,21 @@ $ acme.sh --install-cert \
   --key-file /path/to/cert.key \
   --fullchain-file /path/to/cert.pem \
   --reloadcmd "systemctl reload nginx"
+
+
+# 通过 DNS 模式手动签发证书
+
+# 使用 Google Trust Services 作为签发机构
+# 首先通过 https://console.cloud.google.com/apis/library/publicca.googleapis.com 启用 api ，同时需要创建 project
+# 在 project 中通过 Google Cloud Shell 执行 gcloud beta publicca external-account-keys create 获取 eab-kid 和 hmac-key
+$ acme.sh --register-account --server https://dv.acme-v02.api.pki.goog/directory \
+  --accountemail your_email@email.com \
+  --eab-kid <eab-kid> \
+  --eab-hmac-key <eab-hmac-key>
+# 通过 dns 模式签发证书
+$ acme.sh --server https://dv.acme-v02.api.pki.goog/directory \
+  --issue --dns -d *.domain.com --yes-I-know-dns-manual-mode-enough-go-ahead-please
+# 手动添加 DNS 记录后执行验证
+$ acme.sh --server https://dv.acme-v02.api.pki.goog/directory \
+  --renew -d *.domain.com --yes-I-know-dns-manual-mode-enough-go-ahead-please
 ```

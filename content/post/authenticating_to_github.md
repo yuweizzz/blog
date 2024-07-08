@@ -1,6 +1,6 @@
 ---
 date: 2020-07-20 23:00:00
-title: 配置 GitHub SSH Key
+title: 配置 GitHub 认证密钥
 tags:
   - "GitHub"
   - "SSH"
@@ -8,7 +8,7 @@ tags:
 draft: false
 ---
 
-通过配置 Github SSH Key 实现 GitHub 免密推送。
+通过配置 Github SSH Key 实现 GitHub 免密推送，并且使用 GPG 密钥对 commit 进行签名。
 
 <!--more-->
 
@@ -109,3 +109,22 @@ Connection to github.com closed.
 其实从这部分可以得出 Github 推送仓库是基于 OpenSSH 来实现的。
 
 更多信息可以参考 GitHub 的[官方文档](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh)。
+
+## 利用 GPG 密钥对 commit 进行签名
+
+``` bash
+# 生成 GPG 密钥
+$ gpg --full-generate-key
+
+# 查看生成后的密钥信息
+$ gpg --list-keys
+
+# 导出对应的公钥，并将它添加到对应的 Github 账户中
+$ gpg --armor --export <key-id>
+
+# 在对应仓库中设置 signingkey 后，就可以在 commit 时进行签名
+# GPG_TTY 用于交互式获取 GPG 密钥的 passphrase ，没有正常设置时可能会无法进行签名
+$ git config user.signingkey <key-id>
+$ export GPG_TTY=$(tty)
+$ git commit -S -m "..."
+```
