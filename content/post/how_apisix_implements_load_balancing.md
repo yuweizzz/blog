@@ -2,9 +2,9 @@
 date: 2023-08-03 21:16:45
 title: Apisix 的负载均衡实现
 tags:
-  - "apisix"
-  - "openresty"
-  - "lua"
+  - "Lua"
+  - "Openresty"
+  - "Apisix"
 draft: false
 ---
 

@@ -2,8 +2,8 @@
 date: 2024-05-09 16:14:45
 title: 使用 tekton 在 kubernetes 集群中运行流水线
 tags:
-  - "tekton"
-  - "kubernetes"
+  - "Tekton"
+  - "Kubernetes"
 draft: false
 ---
 

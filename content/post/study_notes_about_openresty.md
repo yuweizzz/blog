@@ -4,6 +4,7 @@ title: openresty 学习笔记
 tags:
   - "Lua"
   - "Openresty"
+  - "Apisix"
 draft: false
 ---
 
@@ -312,4 +313,122 @@ location /sub {
         ngx.say(replaced)
     }
 }
+```
+
+## 运行 apisix 测试用例
+
+关于如何搭建测试环境，这里引用 apisix 仓库文档 `docs/en/latest/building-apisix.md` 作为参考：
+
+>
+> 1. 安装 `perl` 的包管理器 [cpanminus](https://metacpan.org/pod/App::cpanminus#INSTALLATION)。
+> 2. 通过 `cpanm` 来安装 [test-nginx](https://github.com/openresty/test-nginx) 的依赖：
+> 
+>    ```shell
+>    sudo cpanm --notest Test::Nginx IPC::Run > build.log 2>&1 || (cat build.log && exit 1)
+>    ```
+> 
+> 3. 将 `test-nginx` 源码克隆到本地：
+> 
+>    ```shell
+>    git clone https://github.com/openresty/test-nginx.git
+>    ```
+> 
+> 4. 运行以下命令将当前目录添加到 Perl 的模块目录：
+> 
+>    ```shell
+>    export PERL5LIB=.:$PERL5LIB
+>    ```
+> 
+>    你可以通过运行以下命令指定 NGINX 二进制路径：
+> 
+>    ```shell
+>    TEST_NGINX_BINARY=/usr/local/bin/openresty prove -Itest-nginx/lib -r t
+>    ```
+> 
+> 5. 运行测试：
+> 
+>    ```shell
+>    make test
+>    ```
+>
+
+正常设置环境变量后，可以通过 `prove -Itest-nginx/lib -r t/plugin/file.t` 指定要运行的测试文件。其中 `TEST_NGINX_BINARY=/usr/local/bin/openresty` 可以通过主动声明 openresty 的可执行路径 `export PATH=/usr/local/openresty/nginx/sbin:$PATH` 替换，无须每次运行时再次声明。
+
+测试过程经常会涉及一些资源创建和变更，以下是控制平面的一些常用的 api 收集：
+
+``` bash
+# 在 admin key 不再使用默认值，而是运行时生成后，需要使用这个命令获取
+admin_key=$(yq '.deployment.admin.admin_key[0].key' conf/config.yaml | sed 's/"//g')
+
+# 创建 ssl 资源
+curl http://localhost:9180/apisix/admin/ssls/1 \
+-H "X-API-KEY: $admin_key" -X PUT -d '
+{
+    "cert" : "'"$(cat t/certs/apisix.crt)"'",
+    "key": "'"$(cat t/certs/apisix.key)"'",
+    "sni": "test.com",
+    "client": {
+        "ca": "'"$(cat t/certs/apisix.crt)"'",
+        "depth": 1
+    }
+}'
+
+# 创建 route 资源
+curl http://localhost:9180/apisix/admin/routes/1 \
+-H "X-API-KEY: $admin_key" -X PUT -d '
+{
+    "uri": "/*",
+    "plugins": {
+        "gzip": {}
+    },
+    "upstream": {
+        "nodes": {
+            "httpbin.org": 1
+        },
+        "type": "roundrobin"
+    }
+}'
+
+# 创建 stream route 资源
+curl http://localhost:9180/apisix/admin/stream_routes/1 \
+-H "X-API-KEY: $admin_key" -X PUT -d '
+{
+    "server_addr": "192.168.1.88",
+    "server_port": 9200,
+    "upstream": {
+        "nodes": {
+            "192.168.1.99:9200": 1
+        },
+        "type": "roundrobin"
+    }
+}'
+
+# 创建 consumer 资源
+curl http://localhost:9180/apisix/admin/consumers \
+-H "X-API-KEY: $admin_key" -X PUT -d '
+{
+    "username": "foo",
+    "plugins": {
+        "basic-auth": {
+            "username": "foo",
+            "password": "bar"
+        }
+    }
+}'
+
+# 创建关联 consumer 的 route 资源
+curl http://localhost:9180/apisix/admin/routes/2 \
+-H "X-API-KEY: $admin_key" -X PUT -d '
+{
+    "uri": "/*",
+    "plugins": {
+       "basic-auth": {}
+    },
+    "upstream": {
+        "type": "roundrobin",
+        "nodes": {
+            "httpbin.org": 1
+        }
+    }
+}'
 ```
