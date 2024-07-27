@@ -108,6 +108,10 @@ $ parted /dev/sda -s mklabel gpt
 $ parted /dev/sda -s mkpart primary 0% 100%  # 这里的 primary 为分区命名，可以自行定义
 # -s 用来屏蔽 parted 的交互信息
 $ mkfs.xfs /dev/sda1
+
+# 备份和还原 xfs 文件系统目录
+$ xfsdump -f ~/home.img /home
+$ xfsrestore -f ~/home.img /home
 ```
 
 ## curl 的基本使用
@@ -622,6 +626,21 @@ username ALL=(ALL) NOPASSWD:/usr/bin/ls
 
 # 具体用户可以查看已经允许的命令
 $ sudo -l
+```
+
+## journal 日志清理
+
+``` bash
+# 查看当前日志占用的磁盘空间
+$ journalctl --disk-usage
+
+# 保留最近两天的日志，删除其他日志
+$ journalctl --vacuum-time=2d
+
+# 保留最近 500M 大小的日志文件，删除其他日志
+$ journalctl --vacuum-size=500M
+
+# 可以通过 /etc/systemd/journald.conf 持久化参数
 ```
 
 ## rsyslog 日志重定向
