@@ -58,6 +58,8 @@ curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | INSTALL_K3S_MIR
 
 traefik 的功能由 Apisix Ingress 接管， servicelb 的功能则通过 cilium 的 L2 Announcement 实现。
 
+相应的 `--datastore-endpoint` 具体信息记录在 `/var/lib/rancher/k3s/server/db` ，而 k3s 集群创建的 local-path 类型的 PVC 则存储在 `/var/lib/rancher/k3s/storage` 。
+
 ## 安装 cilium
 
 ``` bash
