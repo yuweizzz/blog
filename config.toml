@@ -17,6 +17,7 @@ pygmentsUseClasses = true
   headerIcon = "/images/github-mark-white.png"
   location = "China"
   custom_js = "/js/CustomLive2D.js"
+  enableSearch = true
 
 [frontmatter]
   lastmod = ["lastmod", ":fileModTime", ":default"]
@@ -24,3 +25,11 @@ pygmentsUseClasses = true
 [services]
   [services.googleAnalytics]
     ID = "G-RFSQDKSFR1"
+
+[outputs]
+  home = ["html", "json"]
+
+[outputFormats.json]
+  mediaType = "application/json"
+  baseName = "index"
+  isPlainText = false
