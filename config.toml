@@ -27,7 +27,7 @@ pygmentsUseClasses = true
     ID = "G-RFSQDKSFR1"
 
 [outputs]
-  home = ["html", "json"]
+  home = ["html", "rss", "json"]
 
 [outputFormats.json]
   mediaType = "application/json"
