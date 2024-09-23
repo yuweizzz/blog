@@ -612,6 +612,24 @@ do
 done
 ```
 
+一些用户授权相关的 SQL ：
+
+``` bash
+# create database
+CREATE DATABASE dbname CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+# create user and grant privileges
+CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON dbname.* TO 'user'@'localhost' IDENTIFIED BY 'password';
+FLUSH PRIVILEGES;
+
+# alter user and grant privileges
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'password';
+FLUSH PRIVILEGES;
+```
+
 ## 添加 sudo 命令
 
 ``` bash
