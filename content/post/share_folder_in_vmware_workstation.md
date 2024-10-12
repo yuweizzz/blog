@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -35,7 +35,7 @@ draft: false
 
 接下来是虚拟机需要操作的部分：
 
-``` bash
+```bash
 # 虚拟机需要安装 open-vm-tools
 $ yum install open-vm-tools
 
@@ -48,5 +48,5 @@ $ mkdir /mnt/share
 $ vmhgfs-fuse .host:/Share /mnt/share
 
 # 开机自动挂载
-$ echo .host:/Share /mnt/share fuse.vmhgfs-fuse allow_other 0 0 >> /etc/fstab 
+$ echo .host:/Share /mnt/share fuse.vmhgfs-fuse allow_other 0 0 >> /etc/fstab
 ```

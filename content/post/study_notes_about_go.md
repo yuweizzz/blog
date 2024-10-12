@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -35,10 +35,10 @@ draft: false
 
 Go 的运行需要依赖于环境变量，以下是比较重要的环境变量：
 
-* GOPATH ： Go 项目的存放路径，也就是整体的工作空间。
-* GO111MODULE ： Go 的依赖管理系统开关。
-* GOROOT ： Go 的安装路径，包括了命令行工具，标准库和文档等。
-* GOPROXY ： Go 依赖包下载的代理地址，在国内的网络环境中非常重要，使用 `go env -w GOPROXY=https://goproxy.cn,direct` 直接更换即可。
+- GOPATH ： Go 项目的存放路径，也就是整体的工作空间。
+- GO111MODULE ： Go 的依赖管理系统开关。
+- GOROOT ： Go 的安装路径，包括了命令行工具，标准库和文档等。
+- GOPROXY ： Go 依赖包下载的代理地址，在国内的网络环境中非常重要，使用 `go env -w GOPROXY=https://goproxy.cn,direct` 直接更换即可。
 
 在我开始使用 Go 语言的时候，主线版本是 1.16 ，所以此时 Go Module 已经非常成熟了，但网上仍存在大量关于 GOPATH 的相关资料，它同样和依赖管理密切相关，在这里首先需要明确的是 Go Module 是用来替代 GOPATH 的依赖管理模式。
 
@@ -48,7 +48,7 @@ Go 的运行需要依赖于环境变量，以下是比较重要的环境变量�
 
 在使用 Go Module 的情况下，我们可以使用 `go mod` 来创建新项目和声明依赖，当前新项目的子目录就可以视为自身的子模块，在使用时就可以直接导入而不会在 GOPATH 中搜索并报错，这样就脱离了 GOPATH 的限制。如果是来自外部的模块，则需要使用 `go get package` 来导入，并且这些外部依赖的源代码会下载到 `$GOPATH/pkg/mod` 中，并在当前模块中执行严格的版本控制，这也是为什么使用 Go Module 进行依赖管理而 GOPATH 变量依旧重要的原因。
 
-``` bash
+```bash
 # go mod 常用命令
 
 # 创建项目
@@ -64,11 +64,11 @@ $ go mod edit -replace github.com/BurntSushi/toml=github.com/BurntSushi/toml@v1.
 
 使用 Go Module 的 Go 项目可以使用这两种结构：
 
-* 在整个项目的根预留 `main.go` 作为总入口，使用子目录来区分各个功能模块。
+- 在整个项目的根预留 `main.go` 作为总入口，使用子目录来区分各个功能模块。
 
-``` bash
+```bash
 # 整体的项目结构如下
-$ tree 
+$ tree
 .
 ├── submoduleA
 │   └── a.go
@@ -94,11 +94,11 @@ func A(){...}
 ...
 ```
 
-* 将整个项目视为模块，额外创建目录用于制作 `main.go` 总入口。
+- 将整个项目视为模块，额外创建目录用于制作 `main.go` 总入口。
 
-``` bash
+```bash
 # 整体的项目结构如下
-$ tree 
+$ tree
 .
 ├── submoduleA
 │   └── a.go
@@ -126,8 +126,8 @@ Golang 的数据类型和大多数编程语言相似，但有一些细微的区�
 
 这里先明确值类型和引用类型的区别：
 
-* 值类型：变量直接存储数据。
-* 引用类型：变量直接存储指针，再由指针指向实际存储的数据。
+- 值类型：变量直接存储数据。
+- 引用类型：变量直接存储指针，再由指针指向实际存储的数据。
 
 ### 值类型数据
 
@@ -153,7 +153,7 @@ slice 称为切片，和 array 类似，一般从 array 截取得到 slice 。�
 
 map 则是映射，类似于字典，声明时以 `make(map[T]T)` 的形式出现。
 
-``` golang
+```golang
 // array
 string_array := [3]string{"1", "2", "3"}
 
@@ -174,7 +174,7 @@ map_expamle := map[string]int{"a": 3, "b": 4}
 
 如果是引用类型作为参数，通常会造成比较大的迷惑，我们可以逐一分析：
 
-``` golang
+```golang
 package main
 
 import "fmt"
@@ -222,7 +222,7 @@ func main() {
 
 这里比较颠覆传统的思路是 struct 类型，要注意它实际是值类型，如果想要通过函数改变结构体的内容，直接将 struct 作为参数是不行的，应该这样做：
 
-``` go
+```go
 package main
 
 import "fmt"
@@ -254,89 +254,89 @@ func main() {
 
 以下是来自 golang 官方文档的示例代码：
 
-``` go
+```go
 package main
 
 import (
-	"io/fs"
-	"log"
-	"net/http"
-	"strings"
+ "io/fs"
+ "log"
+ "net/http"
+ "strings"
 )
 
 // containsDotFile reports whether name contains a path element starting with a period.
 // The name is assumed to be a delimited by forward slashes, as guaranteed
 // by the http.FileSystem interface.
 func containsDotFile(name string) bool {
-	parts := strings.Split(name, "/")
-	for _, part := range parts {
-		if strings.HasPrefix(part, ".") {
-			return true
-		}
-	}
-	return false
+ parts := strings.Split(name, "/")
+ for _, part := range parts {
+  if strings.HasPrefix(part, ".") {
+   return true
+  }
+ }
+ return false
 }
 
 // dotFileHidingFile is the http.File use in dotFileHidingFileSystem.
 // It is used to wrap the Readdir method of http.File so that we can
 // remove files and directories that start with a period from its output.
 type dotFileHidingFile struct {
-	http.File
+ http.File
 }
 
 // Readdir is a wrapper around the Readdir method of the embedded File
 // that filters out all files that start with a period in their name.
 func (f dotFileHidingFile) Readdir(n int) (fis []fs.FileInfo, err error) {
-	files, err := f.File.Readdir(n)
-	for _, file := range files { // Filters out the dot files
-		if !strings.HasPrefix(file.Name(), ".") {
-			fis = append(fis, file)
-		}
-	}
-	return
+ files, err := f.File.Readdir(n)
+ for _, file := range files { // Filters out the dot files
+  if !strings.HasPrefix(file.Name(), ".") {
+   fis = append(fis, file)
+  }
+ }
+ return
 }
 
 // dotFileHidingFileSystem is an http.FileSystem that hides
 // hidden "dot files" from being served.
 type dotFileHidingFileSystem struct {
-	http.FileSystem
+ http.FileSystem
 }
 
 // Open is a wrapper around the Open method of the embedded FileSystem
 // that serves a 403 permission error when name has a file or directory
 // with whose name starts with a period in its path.
 func (fsys dotFileHidingFileSystem) Open(name string) (http.File, error) {
-	if containsDotFile(name) { // If dot file, return 403 response
-		return nil, fs.ErrPermission
-	}
+ if containsDotFile(name) { // If dot file, return 403 response
+  return nil, fs.ErrPermission
+ }
 
-	file, err := fsys.FileSystem.Open(name)
-	if err != nil {
-		return nil, err
-	}
-	return dotFileHidingFile{file}, err
+ file, err := fsys.FileSystem.Open(name)
+ if err != nil {
+  return nil, err
+ }
+ return dotFileHidingFile{file}, err
 }
 
 func main() {
-	fsys := dotFileHidingFileSystem{http.Dir(".")}
-	http.Handle("/", http.FileServer(fsys))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+ fsys := dotFileHidingFileSystem{http.Dir(".")}
+ http.Handle("/", http.FileServer(fsys))
+ log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
 
 其中 `dotFileHidingFile` 和 `dotFileHidingFileSystem` 就是 struct 嵌入 interface 的实例。以下是对应的接口信息：
 
-``` go
+```go
 type File interface {
-	io.Closer
-	io.Reader
-	io.Seeker
-	Readdir(count int) ([]fs.FileInfo, error)
-	Stat() (fs.FileInfo, error)
+ io.Closer
+ io.Reader
+ io.Seeker
+ Readdir(count int) ([]fs.FileInfo, error)
+ Stat() (fs.FileInfo, error)
 }
 
 type FileSystem interface {
-	Open(name string) (File, error)
+ Open(name string) (File, error)
 }
 ```
 

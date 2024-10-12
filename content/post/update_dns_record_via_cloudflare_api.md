@@ -12,7 +12,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -33,7 +33,7 @@ draft: false
 
 ```
 
-``` python
+```python
 import urllib.parse
 import urllib.request
 import json

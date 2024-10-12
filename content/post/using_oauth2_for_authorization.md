@@ -12,7 +12,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -41,15 +41,15 @@ draft: false
 
 这里使用 dex 作为 OpenID Connect Provider 并且通过 helm 进行安装。
 
-``` bash
-$ helm repo add dex https://charts.dexidp.io
-$ helm upgrade --install dex dex/dex --create-namespace --namespace dex
-$ helm upgrade dex dex/dex --namespace dex --values dex.yaml
+```bash
+helm repo add dex https://charts.dexidp.io
+helm upgrade --install dex dex/dex --create-namespace --namespace dex
+helm upgrade dex dex/dex --namespace dex --values dex.yaml
 ```
 
 `dex.yaml` 的主要内容是 dex 的配置文件，可以在这个文件中对资源进行更多定义。
 
-``` yaml
+```yaml
 image:
   tag: v2.38.0
 
@@ -60,34 +60,34 @@ config:
 
   oauth2:
     skipApprovalScreen: true
-    responseTypes: [ "code", "id_token", "token" ]
+    responseTypes: ["code", "id_token", "token"]
     alwaysShowLoginScreen: false
 
   connectors:
-  - type: ldap
-    id: ldap
-    name: ldap
-    config:
-      host: openldap-service.openldap-namespace:1389
-      insecureNoSSL: true
-      bindDN: cn=users,dc=example,dc=com
-      bindPW: password
-      usernamePrompt: Username
-      userSearch:
-        baseDN: cn=users,dc=example,dc=com
-        filter: "(objectClass=person)"
-        username: cn
-        idAttr: uid
-        emailAttr: mail
-        nameAttr: name
-        preferredUsernameAttr: cn
+    - type: ldap
+      id: ldap
+      name: ldap
+      config:
+        host: openldap-service.openldap-namespace:1389
+        insecureNoSSL: true
+        bindDN: cn=users,dc=example,dc=com
+        bindPW: password
+        usernamePrompt: Username
+        userSearch:
+          baseDN: cn=users,dc=example,dc=com
+          filter: "(objectClass=person)"
+          username: cn
+          idAttr: uid
+          emailAttr: mail
+          nameAttr: name
+          preferredUsernameAttr: cn
 
   staticClients:
-  - id: oauth2-proxy
-    redirectURIs:
-    - 'http://app.lan/oauth2/callback'
-    name: 'oauth2-proxy'
-    secret: XltaNeGaLcEZTnDUMTsiXDYH
+    - id: oauth2-proxy
+      redirectURIs:
+        - "http://app.lan/oauth2/callback"
+      name: "oauth2-proxy"
+      secret: XltaNeGaLcEZTnDUMTsiXDYH
 ```
 
 `v2.39.1` 版本的 dex 似乎无法正常实现 `skipApprovalScreen` 配置，降级到 `v2.38.0` 版本使用，可以参考这个 [issue](https://github.com/dexidp/dex/issues/3540) 。
@@ -98,7 +98,7 @@ config:
 
 应用本身不具备 oauth2 的认证功能的情况下，需要额外部署应用来实现这部分功能。
 
-``` bash
+```bash
 helm repo add oauth2-proxy https://oauth2-proxy.github.io/manifests
 helm install oauth2-proxy oauth2-proxy/oauth2-proxy --create-namespace --namespace oauth2-proxy
 helm upgrade oauth2-proxy oauth2-proxy/oauth2-proxy --namespace oauth2-proxy --values oauth2-proxy.yml
@@ -106,7 +106,7 @@ helm upgrade oauth2-proxy oauth2-proxy/oauth2-proxy --namespace oauth2-proxy --v
 
 `oauth2-proxy.yml` 的主要内容如下：
 
-``` yaml
+```yaml
 config:
   clientID: "oauth2-proxy"
   clientSecret: "XltaNeGaLcEZTnDUMTsiXDYH"

@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -40,10 +40,10 @@ LDAP 全称为 Light Directory Access Portocol ，它是基于 X.500 标准的�
 
 由于涉及到 LDAP 有比较多的名词，在这里先给出常用的 LDAP 名词：
 
-* DN ： Distinguished Name ，区分名称，它用来表示每条记录 entry 的唯一位置。
-* DC ： Domain Component ，域名的组成部分，多个 DC 共同组成完整的域名。
-* OU ： Organization Unit ，组织单元，组织是允许多级存在的。
-* CN ： Common Name ，公共名称，也就是记录的名称。
+- DN ： Distinguished Name ，区分名称，它用来表示每条记录 entry 的唯一位置。
+- DC ： Domain Component ，域名的组成部分，多个 DC 共同组成完整的域名。
+- OU ： Organization Unit ，组织单元，组织是允许多级存在的。
+- CN ： Common Name ，公共名称，也就是记录的名称。
 
 entry 存储了实际的数据值，LDAP 使用 Objectclass 作为 entry 的基本存储对象，它和编程语言中的对象类似，在 Objectclass 内可以定义多个 Attributes 并且设定具体的值。
 
@@ -53,7 +53,7 @@ entry 是通过 DN 来定位的，由于 LDAP 的存储结构是基于层级的�
 
 假设某个 LDAP 定义了三个域名： `A.com` ， `B.com` ， `C.com` ，并且下属均各有两个组织 `dev` 和 `prd` ，而我们在 `A.com` 的 `prd` 存放了 `fileA` ，那么整个 LDAP 存储信息会像下面这样：
 
-``` bash
+```bash
 com
 ├── A
 │   ├── prd
@@ -89,13 +89,13 @@ com
 
 使用以下代码前需要先安装依赖：
 
-``` bash
-$ pip install ldap3
+```bash
+pip install ldap3
 ```
 
 实际代码内容：
 
-``` python
+```python
 from ldap3 import Server, Connection
 
 class LDAP(object):
