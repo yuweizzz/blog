@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -43,16 +43,16 @@ Nginx 是应用广泛的服务器软件，在 Nginx 的官方文档中可以看�
 
 在下载源码包并进行解压后，可以看到几个关键的文件和目录：
 
-* configure : 配置编译环境的脚本文件，执行这个脚本后会生成 Makefile 文件。 
-* src : nginx 源代码目录。
-* auto : configure 脚本需要调用 auto 中的各个脚本文件完成配置工作。
+- configure : 配置编译环境的脚本文件，执行这个脚本后会生成 Makefile 文件。
+- src : nginx 源代码目录。
+- auto : configure 脚本需要调用 auto 中的各个脚本文件完成配置工作。
 
 Nginx 源码包使用 autoconf 生成 configure 脚本，这种源码包的使用方式一般都是通过 configure 文件配置编译选项并生成 Makefile ，再通过 Makefile 进行编译和安装。
 
-``` bash
+```bash
 # 由 autoconf 生成配置脚本的源码包编译时的一般步骤
 $ ./configure
-$ make 
+$ make
 $ make install
 ```
 
@@ -66,12 +66,12 @@ Nginx 默认作为 HTTP 服务器工作，所以 HTTP 模块是 Nginx 的核心�
 
 HTTP 服务模块包括以下几个常用模块，它们都是默认编译的：
 
-* ngx_http_autoindex_module : 常用于下载服务器，启用这个模块可以自动建立下载目录页面。
-* ngx_http_fastcgi_module/ngx_http_uwsgi_module/ngx_http_scgi_module : 对各类通用网关接口协议的支持模块，启用这些模块后可以对接其他程序的接口。
-* ngx_http_gzip_module : 用于压缩响应结果，可以减小传输数据的体积。
-* ngx_http_rewrite_module : 用于 url 重写和返回重定向。
-* ngx_http_proxy_module : 用于设置代理。
-* ngx_http_upstream_module : 用于设置负载均衡。
+- ngx_http_autoindex_module : 常用于下载服务器，启用这个模块可以自动建立下载目录页面。
+- ngx_http_fastcgi_module/ngx_http_uwsgi_module/ngx_http_scgi_module : 对各类通用网关接口协议的支持模块，启用这些模块后可以对接其他程序的接口。
+- ngx_http_gzip_module : 用于压缩响应结果，可以减小传输数据的体积。
+- ngx_http_rewrite_module : 用于 URL 重写和返回重定向。
+- ngx_http_proxy_module : 用于设置代理。
+- ngx_http_upstream_module : 用于设置负载均衡。
 
 还有一个特殊的 HTTP 模块 `ngx_http_ssl_module` ，随着 https 的流行，它已经是不可或缺的模块，尤其是在生产环境中，但是它不是默认编译选项，在安装时需要额外指定。
 
@@ -81,7 +81,7 @@ HTTP 服务模块包括以下几个常用模块，它们都是默认编译的：
 
 下面给出最小的编译参考例子。
 
-``` bash
+```bash
 # rewrite 模块使用 prce 正则表达式，依赖 pcre 库
 $ yum install pcre-devel pcre
 # gzip 模块依赖 zlib 库
@@ -97,7 +97,7 @@ $ ./configure --prefix=/opt -user=nginx -group=nginx --with-http_ssl_module
 # 执行编译并安装
 $ make && make install
 # 直接启动服务
-$ /opt/nginx/sbin/nginx 
+$ /opt/nginx/sbin/nginx
 ```
 
 ## 使用 Nginx
@@ -108,7 +108,7 @@ Nginx 通过 nginx.conf 文件来配置各项服务。
 
 以下的例子是 Nginx 安装时提供的配置。
 
-``` bash
+```bash
 $ cat nginx.conf
 worker_processes  1;
 events {
@@ -140,7 +140,7 @@ Nginx 是通过 master process 和 worker process 协同工作的，其中 maste
 
 在 conf 文件中的 http 域用来配置具体的 HTTP 服务，它的下一级主要是通过 server 来划分不同的作用域。 http 域可以设置 HTTP 一些共有的服务配置，比如列出的 default_type 和 include ，它们主要定义 HTTP 服务的支持传输的类型相关内容， keepalive_timeout 设置长连接的超时时间。
 
-单个 Nginx http 域可以配置多个 server ，这些 server 甚至可以使用相同的 listen 端口，但需要至少保持不同 server_name 。 server_name 用来配置域名， loaction 用来匹配 url ，它们共同组合定位资源。
+单个 Nginx http 域可以配置多个 server ，这些 server 甚至可以使用相同的 listen 端口，但需要至少保持不同 server_name 。 server_name 用来配置域名， loaction 用来匹配 URL ，它们共同组合定位资源。
 
 error_page 用来导向 http 响应错误的返回页面，如果它放在 server 域中，则所有的 location 都会受到它的影响。
 
@@ -148,7 +148,7 @@ error_page 用来导向 http 响应错误的返回页面，如果它放在 serve
 
 ### loaction 实现资源匹配
 
-location 通过 url 来匹配目标资源。
+location 通过 URL 来匹配目标资源。
 
 具体的匹配方式有 prefix string 和 regular expression ，也就是前缀匹配和正则匹配，还有比较特殊的完整匹配，可以参考 location 的语法规则。
 
@@ -156,15 +156,15 @@ location 通过 url 来匹配目标资源。
 
 各个匹配符号的含义如下：
 
-* `=` 用来代表完整匹配，只有 url 完全一致才会被这个 location 所匹配，这是最高优先级的规则。
-* `^~` 表示从头开始匹配，开头的符号和普通正则的符号一致，这是前缀匹配的一种。
-* 不带任何修饰符也是一种前缀匹配。
-* `~` 和 `~*` 代表 location 采用正则匹配，带 `*` 不区分大小写，不带 `*` 则需要匹配大小写。
+- `=` 用来代表完整匹配，只有 URL 完全一致才会被这个 location 所匹配，这是最高优先级的规则。
+- `^~` 表示从头开始匹配，开头的符号和普通正则的符号一致，这是前缀匹配的一种。
+- 不带任何修饰符也是一种前缀匹配。
+- `~` 和 `~*` 代表 location 采用正则匹配，带 `*` 不区分大小写，不带 `*` 则需要匹配大小写。
 
 一个请求到达 Nginx 时的具体匹配过程由 server 中所有的 location 共同参与，一般的匹配规则如下：
 
-1. 拿到请求 url ，进行解码，去除重复的 `/` 符号等规范化处理。
-2. 对 url 进行精准匹配，如果匹配成功，立即返回结果并结束匹配过程。
+1. 拿到请求 URL ，进行解码，去除重复的 `/` 符号等规范化处理。
+2. 对 URL 进行精准匹配，如果匹配成功，立即返回结果并结束匹配过程。
 3. 进行前缀匹配，如果成功匹配到带 `^~` 修饰符的最长匹配，立即返回结果并结束匹配过程。
 4. 在第二步没有直接结束匹配的情况下，继续寻找最长匹配的前缀匹配，并临时存储这个匹配。
 5. 由上至下逐一进行正则匹配。
@@ -175,13 +175,13 @@ location 通过 url 来匹配目标资源。
 
 在匹配进入到某个 location 中后，匹配资源的工作就由关键字 alias 和 root 来定义，它们用来指向资源在服务器中的位置，一直以来，网上对 alias 和 root 的说法有很多，这里给出一些我的测试过的结论以供参考：
 
-* root 和 index 已经被隐式定义在整个 server 域中，默认位置和前面给出的默认配置实例一致，如果不进行覆写，隐式地址为 Nginx 安装后自带的 html 目录， index 默认为目录下的 index.html 。
-> 这个结果可以通过去除所有 location 和 server 的关键字定义，并在 html 下随意写入一个 index.html 文件得出。
-* 在不配置任何错误定向页面时， Nginx 会使用默认的 404 和 50x 的页面。
-* 如果你在 location 中重定义 root ，则这个 root 只能在当前 location 域中生效。这种配置方式除了要匹配 location ，还需要 url 在配置的 root 中准确命中资源才不会返回 404 错误。
-> 使用这类配置的常见情况是 url 匹配了 location ，但是无法找到正确的资源路径，比如 `location /cn { root country/cn; }` 这种写法的寻找目录实际为 `country/cn/cn/` ，这是我个人在一开始使用 Nginx 时经常犯的错误，如果要在 location 中使用 root ，最好在 root 这个目录下拥有和 location 匹配条件一致的同名子目录。
-* alias 只能位于 location 块中， root 可以放在 location 和 server 中， Nginx 自带的配置语法检查可以帮助我们避免这种错误。
-> 对比 root 和 alias ， alias 的使用会更加灵活，它不会被匹配条件限定，可以自由地指定资源目录，而 root 已经在 url 匹配时隐式限定了固有的资源目录，所以推荐在 location 中使用 alias 。
+- root 和 index 已经被隐式定义在整个 server 域中，默认位置和前面给出的默认配置实例一致，如果不进行覆写，隐式地址为 Nginx 安装后自带的 HTML 目录， index 默认为目录下的 index.html 。
+  > 这个结果可以通过去除所有 location 和 server 的关键字定义，并在 html 下随意写入一个 index.html 文件得出。
+- 在不配置任何错误定向页面时， Nginx 会使用默认的 404 和 50x 的页面。
+- 如果你在 location 中重定义 root ，则这个 root 只能在当前 location 域中生效。这种配置方式除了要匹配 location ，还需要 URL 在配置的 root 中准确命中资源才不会返回 404 错误。
+  > 使用这类配置的常见情况是 url 匹配了 location ，但是无法找到正确的资源路径，比如 `location /cn { root country/cn; }` 这种写法的寻找目录实际为 `country/cn/cn/` ，这是我个人在一开始使用 Nginx 时经常犯的错误，如果要在 location 中使用 root ，最好在 root 这个目录下拥有和 location 匹配条件一致的同名子目录。
+- alias 只能位于 location 块中， root 可以放在 location 和 server 中， Nginx 自带的配置语法检查可以帮助我们避免这种错误。
+  > 对比 root 和 alias ， alias 的使用会更加灵活，它不会被匹配条件限定，可以自由地指定资源目录，而 root 已经在 url 匹配时隐式限定了固有的资源目录，所以推荐在 location 中使用 alias 。
 
 ### rewrite 实现重定向功能
 
@@ -193,29 +193,29 @@ rewrite 模块提高了 rewrite 关键字， rewrite 只能放在 server ， loc
 
 一个请求的重写过程一般有如下几步：
 
-1. url 按照正常流程进行 location 匹配。
+1. URL 按照正常流程进行 location 匹配。
 2. 进入到某个包含了 rewrite 指令的 location 中。
-3. 直接执行 rewrite ，根据定义的 regex 执行 url replace 。
-4. 根据 flag 决定替换后 url 的走向。
+3. 直接执行 rewrite ，根据定义的 regular expression 执行 URL replace 。
+4. 根据 flag 决定替换后 URL 的走向。
 
 flag 定义的走向结果有以下几个：
 
-* last ： 替换 url 之后终止后续的 rewrite 行为，直接返回替换后 url ，并使用它重新匹配 location 。
-* break ： 替换 url 之后终止所有 rewrite 行为，包括 rewrite ， return ， if 等，然后使用替换后 url 在当前的 location 中匹配资源。
-* redirect ： 302 临时重定向。
-* permanent ： 301 永久重定向。
+- last ： 替换 URL 之后终止后续的 rewrite 行为，直接返回替换后 URL ，并使用它重新匹配 location 。
+- break ： 替换 URL 之后终止所有 rewrite 行为，包括 rewrite ， return ， if 等，然后使用替换后 URL 在当前的 location 中匹配资源。
+- redirect ： 302 临时重定向。
+- permanent ： 301 永久重定向。
 
-如果因为重写配置导致了替换后的 url 进行了多次匹配，匹配次数不能超过 10 次，否则会停止匹配并触发 500 Internal Server Error 的 http 响应。
+如果因为重写配置导致了替换后的 URL 进行了多次匹配，匹配次数不能超过 10 次，否则会停止匹配并触发 500 Internal Server Error 的 http 响应。
 
-rewrite 的最常见写法是 `rewrite ^/(.*)$ url/$1/ last ;` ，利用正则匹配式的括号取出需要的部分，再根据需要以变量的形式构造新的 url 并定义 flag 。
+rewrite 的最常见写法是 `rewrite ^/(.*)$ url/$1/ last ;` ，利用正则匹配式的括号取出需要的部分，再根据需要以变量的形式构造新的 URL 并定义 flag 。
 
-除了 rewrite 模块， try_file 关键字也提供了重定向的功能，但 try_file 是来自 ngx_http_core_module 的关键字。  
+除了 rewrite 模块， try_file 关键字也提供了重定向的功能，但 try_file 是来自 ngx_http_core_module 的关键字。
 
 > Syntax: try_files file ... uri;
 
 try_files 用于 location 中，可以指定多个 file ，它按顺序检查文件是否存在，并使用第一个找到的文件进行请求处理。
 
-try_files 的一般写法是 `try_files urlA urlB urlC` ， urlA 将会直接在当前 location 的 root 或 alias 中寻找匹配资源，后续的 urlB 也是相似的做法，如果它们依次都无法找到资源，才会使用最后的 urlC 执行新一轮的 location 匹配，整个过程和 url 重写非常相似，可以看做是简化版本的 rewrite 。
+try_files 的一般写法是 `try_files urlA urlB urlC` ， urlA 将会直接在当前 location 的 root 或 alias 中寻找匹配资源，后续的 urlB 也是相似的做法，如果它们依次都无法找到资源，才会使用最后的 urlC 执行新一轮的 location 匹配，整个过程和 URL 重写非常相似，可以看做是简化版本的 rewrite 。
 
 ### proxy 实现代理功能
 
@@ -225,7 +225,7 @@ proxy 模块提供了代理功能，代理实际上就是对请求的转发。
 
 一个普通的 http 正向代理配置如下：
 
-``` bash
+```bash
 location / {
     # 特殊指定的 dns 服务器
     resolver 8.8.8.8;
@@ -238,7 +238,7 @@ location / {
 
 一个普通的 http 反向代理配置如下：
 
-``` bash
+```bash
 location / {
     # 指向上游服务器，可以配合 upstream 使用
     proxy_pass        http://localhost;
@@ -256,7 +256,7 @@ upstream 提供负载均衡功能，一般配合 proxy 模块使用，可以将�
 
 一个普通的 http 反向代理和负载均衡配置如下：
 
-``` bash
+```bash
 upstream servers {
     server server1.com;
     server server2.com;
@@ -274,13 +274,13 @@ location / {
 
 upstream 用来定义上游集群， server 为集群内的具体节点，而且在这些 server 之间， upstream 还提供了多种负载均衡策略，现有的负载均衡策略如下：
 
-* round-robin ：将请求轮询到负载集群中。
-* least-connected ：基于最小连接数决定负载对象。
-* ip-hash ：基于请求 IP 地址的散列算法。
+- round-robin ：将请求轮询到负载集群中。
+- least-connected ：基于最小连接数决定负载对象。
+- ip-hash ：基于请求 IP 地址的散列算法。
 
 具体的配置方法也非常简单，可以参考下面的例子：
 
-``` bash
+```bash
 # 默认使用轮询策略，所有子节点没有优先级之分
 upstream servers {
     server server1.com;

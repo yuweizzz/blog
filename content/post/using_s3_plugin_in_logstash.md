@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -35,7 +35,7 @@ draft: false
 
 以下 Logstash 配置可以在写入 Elasticsearch 集群的同时，将日志保存一份到对象存储中：
 
-``` bash
+```bash
 # 消费 Kafka 消息
 input {
     kafka {
@@ -92,16 +92,17 @@ output {
 ```
 
 比较常用的 S3 对象存储类型有：
-* `S3 Standard` ：标准存储，也是通用型的存储类型，对应 S3 插件 `storage_class` 中的 `STANDARD` 。
-* `S3 Standard-IA` ：低频存储，用于访问量较低的存储类型，对应 S3 插件 `storage_class` 中的 `STANDARD_IA` 。
-* `S3 One Zone-IA` ：单 Zone 的低频存储，它的 Availability Zones 比 `S3 Standard-IA` 少，对应 S3 插件 `storage_class` 中的 `ONEZONE_IA` 。
-* `S3 Reduced Redundancy Storage` ：低冗余性，非关键性的高频访问存储类型，对应 S3 插件 `storage_class` 中的 `REDUCED_REDUNDANCY` 。
+
+- `S3 Standard` ：标准存储，也是通用型的存储类型，对应 S3 插件 `storage_class` 中的 `STANDARD` 。
+- `S3 Standard-IA` ：低频存储，用于访问量较低的存储类型，对应 S3 插件 `storage_class` 中的 `STANDARD_IA` 。
+- `S3 One Zone-IA` ：单 Zone 的低频存储，它的 Availability Zones 比 `S3 Standard-IA` 少，对应 S3 插件 `storage_class` 中的 `ONEZONE_IA` 。
+- `S3 Reduced Redundancy Storage` ：低冗余性，非关键性的高频访问存储类型，对应 S3 插件 `storage_class` 中的 `REDUCED_REDUNDANCY` 。
 
 当使用 S3 插件作为 Logstash 的 `input` 时，需要将对象存储中的存储类型恢复为 `STANDARD` 才能正常读取，因为云厂商提供的对象存储服务通常会在一定的时间后将它们转化为归档存储。
 
 以下 Logstash 配置可以将对象存储中日志文件还原到 Elasticsearch 集群：
 
-``` bash
+```bash
 # 消费对象存储中的存储文件，输出到 Elasticsearch 集群
 input {
     s3 {
