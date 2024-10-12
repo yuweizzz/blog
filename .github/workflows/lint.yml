@@ -17,3 +17,5 @@ jobs:
 
       - name: lint docs
         uses: github/super-linter@v4
+        env:
+          FILTER_REGEX_INCLUDE: ^content/
