@@ -38,7 +38,7 @@ draft: false
 
 后续内容均使用以下 metrics 作为例子：
 
-```
+```text
 http_requests_total{code="200",handler="query",instance="localhost:9090",job="prometheus",method="get"}  1
 http_requests_total{code="200",handler="query_range",instance="localhost:9090",job="prometheus",method="get"}  0
 ```
@@ -82,7 +82,7 @@ label_replace 的具体用法可以参考这个公式： `label_replace(v instan
 
 主要用来替换某些标签内容，实际用例参考：
 
-```
+```text
 before:
 http_requests_total{code="200",handler="query",instance="localhost:9090",job="prometheus",method="get"}  1
 http_requests_total{code="200",handler="query_range",instance="localhost:9090",job="prometheus",method="get"}  0
@@ -99,7 +99,7 @@ http_requests_total{code="200",handler="query_range",instance="prometheus",job="
 
 increase 用来计算区间向量的增长量，以区间向量的第一个元素和最后一个元素进行计算，实际用例参考：
 
-```
+```text
 before:
 http_requests_total{code="200"} 100375 @1708045914.967
 http_requests_total{code="200"} 100377 @1708045924.967
@@ -129,7 +129,7 @@ group_left 和 group_right 是用于向量匹配的关键字，允许不同向�
 
 参考公式：
 
-```
+```text
 <vector expr> <bin-op> ignoring(<label list>) group_left(<label list>) <vector expr>
 <vector expr> <bin-op> ignoring(<label list>) group_right(<label list>) <vector expr>
 <vector expr> <bin-op> on(<label list>) group_left(<label list>) <vector expr>
@@ -138,7 +138,7 @@ group_left 和 group_right 是用于向量匹配的关键字，允许不同向�
 
 实际用例参考：
 
-```
+```text
 before:
 method_code:http_errors:rate5m{method="get", code="500"}  24
 method_code:http_errors:rate5m{method="get", code="404"}  30
@@ -166,7 +166,7 @@ on 或者 ignoring 是对多所指的对象而言的， ignoring 用来忽略这
 
 group_left 实际上还可以声明额外的标签，以允许使用一对象中的标签覆盖最终结果。由于这个例子中，只有单一的 method 标签，可以通过下面这里扩展例子来理解：
 
-```
+```text
 before:
 method_code:http_errors:rate5m{method="get", code="500", url="endpoint/500"}  24
 method_code:http_errors:rate5m{method="get", code="404", url="endpoint/404"}  30

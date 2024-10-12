@@ -35,7 +35,7 @@ draft: false
 
 Linux 各类发行版图形界面的理论支持就是大名鼎鼎的 X Window System ，它是基于 Server/Clinet 架构的一套复杂软件，主要的工作组件是 X Server 和 X Client 。
 
-```
+```text
 #  X Window System 架构:
 
 +----------+        +----------+        +----------+
@@ -72,7 +72,7 @@ X Server 是相对固定的一套软件，和硬件交互的主要是各类硬�
 
 此外还有一种情况就是和 HTTP 服务类似， X Server 和 X Client 不在同一台机器上运行，而是通过网络通信，但这种 X Window System 应用情况会比较少。
 
-```
+```text
 #  运行在网络上的 X Window System 架构:
 
 
@@ -220,7 +220,7 @@ $ ssh -X user@remotehost  # -X 启动 X11 Forwarding 功能，远端此时应该
 
 ---
 
-### 运行时分析
+### 基于网络的运行时分析
 
 按照以上的步骤，可以建立起两台机器之间的 X Window System 通信。下面进行简单的分析：
 
