@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -40,7 +40,7 @@ lua 的 string 类型数据是不可改变的，大部分情况下要依靠 stri
 
 ### string 拼接
 
-``` lua
+```lua
 strings_a = "a"
 strings_b = "b"
 strings_c = "c"
@@ -53,17 +53,17 @@ print(strings_a .. strings_b .. strings_c)
 
 一般使用 `string.gsub` 来替换字符串内容，而 `string.sub` 是用来截取字符串。
 
-``` lua
+```lua
 strings = "abcde"
 print(string.gsub(strings, "a", "z"))
 -- output:
--- zbcde	1
+-- zbcde 1
 -- 返回值分别是 gsub 执行后的字符串和具体发生替换的次数，可以根据第二个参数判断是否已经执行替换
 
 strings = "aaaae"
 print(string.gsub(strings, "a", "z", 2))
 -- output:
--- zzaae	2
+-- zzaae 2
 -- 可以通过传进第四个参数限制替换次数
 
 strings = "abcde"
@@ -83,24 +83,24 @@ print(string.sub(strings, 3, 4))
 
 `string.find` 可以用来进行字符串搜索，需要注意的用法是带有特殊字符时，应该指定为 plain 模式。
 
-``` lua
+```lua
 -- 普通字符串搜索
 strings = "abcde"
 print(string.find(strings, "a"))
 -- output:
--- 1	1
+-- 1 1
 -- 成功则返回匹配字符的起止位置索引，失败则返回 nil
 
 -- 带有特殊字符的字符串搜索
 strings = "abcde.*"
 print(string.find(strings, ".*"))
 -- output:
--- 1	7
+-- 1 7
 -- 默认以正则模式进行搜索
 
 print(string.find(strings, ".*", 1, true))
 -- output:
--- 6	7
+-- 6 7
 -- 指定为 plain 模式，不再以正则模式进行搜索
 ```
 
@@ -108,7 +108,7 @@ print(string.find(strings, ".*", 1, true))
 
 匹配取值有 match 和 gmatch 两种，前者用于直接匹配结果，后者可以返回迭代器函数，用于循环场景。
 
-``` lua
+```lua
 strings = "  1 + 1  =2"
 print(string.match(strings, "^%s*(.-)%s*=.*"))
 -- output:
@@ -132,7 +132,7 @@ for each in iterator do print(each) end
 
 lua table 是一种异于其他编程语言的数据类型，它是动态增长的字典类容器，同时具有数组的特性，如果仔细研究它的内部结构，可以发现它是有两者混合构成的。
 
-``` lua
+```lua
 t = {a="A", "B", c="C", D}
 print(t[0])    -- output: nil
 print(t["a"])  -- output: A
@@ -150,7 +150,7 @@ print(t[3])    -- output: nil
 
 常规的 lua 脚本需要依靠两个重要变量 `package.path` 和 `package.cpath` 来获取一些运行模块信息，它们主要区别在于模块是由 lua 语言实现还是由 c 语言实现。
 
-``` bash
+```bash
 $ cat p.lua
 print(package.path)
 print(package.cpath)
@@ -167,14 +167,14 @@ $ LUA_PATH="/tmp/?.lua;;" LUA_CPATH="/tmp/?.so;;" lua p.lua
 
 我们如果想使用别人写好的 lua 脚本，通常需要自己去对应的发布地址下载并自行安装，但是 lua 也有类似于模块管理器一样的软件 luarocks ，使用它我们可以更方便管理我们需要用到的模块，也可以把我们自己写好的脚本提供给他人下载使用。
 
-``` bash
+```bash
 # 使用 luarocks 下载安装 luasql
 
 # --server 可以指定 luarocks 服务器
 $ luarocks install luasql-mysql --server https://luarocks.cn MYSQL_INCDIR=/usr/include/mysql/ MYSQL_LIBDIR=/usr/lib64/mysql
 
 # 编译过程可能需要指定一些依赖路径，可以通过环境变量来指定，具体变量信息可以在对应模块的 rockspec 查找
-# luasql-mysql rockspec 
+# luasql-mysql rockspec
 package = "LuaSQL-MySQL"
 version = "2.3.5-1"
 source = {
@@ -224,7 +224,7 @@ $ luarocks purge luasql-mysql --tree $(pwd)
 
 lua metatable 经常用来定义模块。
 
-``` lua
+```lua
 local _M = {
   _VERSION = '1.0'
 }

@@ -13,7 +13,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -40,7 +40,7 @@ kaniko 是 Google 开发的镜像构建工具，它的特点在于不需要守�
 
 我们可以编写相关的 yaml 文件直接应用到 Kubernetes 集群中。
 
-``` yaml
+```yaml
 # from https://github.com/GoogleContainerTools/kaniko
 apiVersion: v1
 kind: Pod
@@ -69,9 +69,9 @@ spec:
 
 主要通过容器参数来定义构建内容，主要的参数信息参考：
 
-* `--context` ：容器构建的上下文信息，一般就是源代码路径。
-* `--dockerfile` ： dockerfile 文件所在路径，一般来说保持 dockerfile 在源代码目录并且命名为 `Dockerfile` 可以不需要这个参数。
-* `--destination` ：镜像的命名相关信息。
+- `--context` ：容器构建的上下文信息，一般就是源代码路径。
+- `--dockerfile` ： dockerfile 文件所在路径，一般来说保持 dockerfile 在源代码目录并且命名为 `Dockerfile` 可以不需要这个参数。
+- `--destination` ：镜像的命名相关信息。
 
 可以看到这个 pod 还额外挂载了 secret ，这部分其实是用来存放拉取源码和构建完成后推送镜像的一些认证信息。
 
@@ -79,7 +79,7 @@ spec:
 
 以下是用来做本地测试时的 yaml 文件，需要注意只是用来测试 kaniko 的功能，在实际使用时应该确保 pod 可以正常调度到对应存放着源代码的节点上。
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -105,14 +105,14 @@ spec:
 
 新出现的参数信息参考：
 
-* `--no-push` ：构建镜像完成后不进行推送。
-* `--tar-path` ：通过指定路径将镜像通过 tar 文件进行保存。
+- `--no-push` ：构建镜像完成后不进行推送。
+- `--tar-path` ：通过指定路径将镜像通过 tar 文件进行保存。
 
 虽然这里没有涉及 docker 镜像构建中的 `--build-arg` ，但是它在 kaniko 中同样支持，具体用法和 `docker build` 相似。
 
 {{<details "使用 `--build-arg` 的 yaml 文件参考">}}
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -122,7 +122,7 @@ spec:
     - name: kaniko
       image: gcr.io/kaniko-project/executor:latest
       env:
-      # for build arg with space
+        # for build arg with space
         - name: IFS
           value: ""
       args:
@@ -147,7 +147,7 @@ spec:
 
 编辑完成后直接通过 kubectl 启动 pod 来执行构建。
 
-``` bash
+```bash
 # 保存 yaml 文件后就可以直接执行构建
 kubectl apply -f kaniko.yaml
 
@@ -165,8 +165,8 @@ ctr i ls
 
 {{<details "搭建 `docker registry` 的资源文件">}}
 
-``` yaml
-# docker registry 
+```yaml
+# docker registry
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -184,11 +184,11 @@ spec:
         app: registry
     spec:
       containers:
-      - image: registry:latest
-        name: registry
-        volumeMounts:
-        - name: configfile
-          mountPath: /etc/docker/registry/
+        - image: registry:latest
+          name: registry
+          volumeMounts:
+            - name: configfile
+              mountPath: /etc/docker/registry/
       volumes:
         - name: configfile
           configMap:
@@ -224,7 +224,7 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-    name: registry
+  name: registry
 spec:
   selector:
     app: registry
@@ -238,14 +238,14 @@ spec:
 
 docker registry 搭建完成后，我们只需要对前面的本地构建所使用的 yaml 做出一些小修改就可以，主要还是 kaniko 的运行参数：
 
-* 不再需要 `"--no-push"` 。
-* 保存 tar 文件的参数 `"--tar-path=/source/image.tar"` 是可选项，按需选择保留或者去除。
-* 将目标镜像 `"--destination=gcr.io/project/image:latest"` 修改为 `"--destination=registry:5000/project/image:latest"` 指向本地镜像仓库。
-* 由于搭建的 docker registry 没有启用 https ，所以需要增加 `"--insecure"` 参数，这样 kaniko 才能正常进行镜像推送。
+- 不再需要 `"--no-push"` 。
+- 保存 tar 文件的参数 `"--tar-path=/source/image.tar"` 是可选项，按需选择保留或者去除。
+- 将目标镜像 `"--destination=gcr.io/project/image:latest"` 修改为 `"--destination=registry:5000/project/image:latest"` 指向本地镜像仓库。
+- 由于搭建的 docker registry 没有启用 https ，所以需要增加 `"--insecure"` 参数，这样 kaniko 才能正常进行镜像推送。
 
 {{<details "修改后的 `kaniko` 具体实例">}}
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -272,11 +272,11 @@ spec:
 
 以下是一些可能用到的 docker registry api ：
 
-``` bash
+```bash
 # 查看仓库中的镜像信息
 curl "<registry:5000>/v2/_catalog"
 
-# 根据仓库给出的镜像信息，可以查到某个镜像所有的 tags 
+# 根据仓库给出的镜像信息，可以查到某个镜像所有的 tags
 curl "<registry:5000>/v2/<project/image>/tags/list"
 
 # 删除镜像时需要查询具体签名才能执行
@@ -301,10 +301,10 @@ distroless 系列镜像主要有几个类型的基础镜像，应该根据这些
 
 distroless-static 是适用于静态编译运行的镜像，根据官方文档，它只包括了以下资源：
 
-* ca-certificates
-* A /etc/passwd entry for a root user
-* A /tmp directory
-* tzdata
+- ca-certificates
+- A /etc/passwd entry for a root user
+- A /tmp directory
+- tzdata
 
 所以在 distroless-static 作为基础镜像时，不再需要更新证书和时区内容，只需要传入对应的 TZ 变量就可以。
 
@@ -318,7 +318,7 @@ distroless-cc 则是在 distroless-base 的基础上支持 libgcc1 and its depen
 
 以下是一个适用于 go 程序的 dockerfile 例子：
 
-``` dockerfile
+```dockerfile
 FROM golang:1.20 as build
 
 WORKDIR /src

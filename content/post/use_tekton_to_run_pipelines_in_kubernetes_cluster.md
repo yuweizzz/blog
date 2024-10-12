@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -34,7 +34,7 @@ draft: false
 
 ## 安装 tekton
 
-``` bash
+```bash
 # install tekton pipeline
 curl https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml -o pipeline.yaml
 kubectl apply -f pipeline.yaml
@@ -50,13 +50,13 @@ kubectl apply -f triggers.yaml
 kubectl apply -f interceptors.yaml
 ```
 
-## 使用 task 和 taskrun 运行单次任务  
+## 使用 task 和 taskrun 运行单次任务
 
 最基本的运行资源是由 task 和 taskrun 组成的，比如我们可以通过 tekton hub 提供的 git-clone task ，来执行单次代码克隆。
 
 {{<details "`git-clone.yaml`">}}
 
-``` yaml
+```yaml
 # git-clone v0.7
 # https://hub.tekton.dev/tekton/task/git-clone
 apiVersion: tekton.dev/v1beta1
@@ -179,52 +179,52 @@ spec:
     - name: clone
       image: "$(params.gitInitImage)"
       env:
-      - name: HOME
-        value: "$(params.userHome)"
-      - name: PARAM_URL
-        value: $(params.url)
-      - name: PARAM_REVISION
-        value: $(params.revision)
-      - name: PARAM_REFSPEC
-        value: $(params.refspec)
-      - name: PARAM_SUBMODULES
-        value: $(params.submodules)
-      - name: PARAM_DEPTH
-        value: $(params.depth)
-      - name: PARAM_SSL_VERIFY
-        value: $(params.sslVerify)
-      - name: PARAM_CRT_FILENAME
-        value: $(params.crtFileName)
-      - name: PARAM_SUBDIRECTORY
-        value: $(params.subdirectory)
-      - name: PARAM_DELETE_EXISTING
-        value: $(params.deleteExisting)
-      - name: PARAM_HTTP_PROXY
-        value: $(params.httpProxy)
-      - name: PARAM_HTTPS_PROXY
-        value: $(params.httpsProxy)
-      - name: PARAM_NO_PROXY
-        value: $(params.noProxy)
-      - name: PARAM_VERBOSE
-        value: $(params.verbose)
-      - name: PARAM_SPARSE_CHECKOUT_DIRECTORIES
-        value: $(params.sparseCheckoutDirectories)
-      - name: PARAM_USER_HOME
-        value: $(params.userHome)
-      - name: WORKSPACE_OUTPUT_PATH
-        value: $(workspaces.output.path)
-      - name: WORKSPACE_SSH_DIRECTORY_BOUND
-        value: $(workspaces.ssh-directory.bound)
-      - name: WORKSPACE_SSH_DIRECTORY_PATH
-        value: $(workspaces.ssh-directory.path)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND
-        value: $(workspaces.basic-auth.bound)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
-        value: $(workspaces.basic-auth.path)
-      - name: WORKSPACE_SSL_CA_DIRECTORY_BOUND
-        value: $(workspaces.ssl-ca-directory.bound)
-      - name: WORKSPACE_SSL_CA_DIRECTORY_PATH
-        value: $(workspaces.ssl-ca-directory.path)
+        - name: HOME
+          value: "$(params.userHome)"
+        - name: PARAM_URL
+          value: $(params.url)
+        - name: PARAM_REVISION
+          value: $(params.revision)
+        - name: PARAM_REFSPEC
+          value: $(params.refspec)
+        - name: PARAM_SUBMODULES
+          value: $(params.submodules)
+        - name: PARAM_DEPTH
+          value: $(params.depth)
+        - name: PARAM_SSL_VERIFY
+          value: $(params.sslVerify)
+        - name: PARAM_CRT_FILENAME
+          value: $(params.crtFileName)
+        - name: PARAM_SUBDIRECTORY
+          value: $(params.subdirectory)
+        - name: PARAM_DELETE_EXISTING
+          value: $(params.deleteExisting)
+        - name: PARAM_HTTP_PROXY
+          value: $(params.httpProxy)
+        - name: PARAM_HTTPS_PROXY
+          value: $(params.httpsProxy)
+        - name: PARAM_NO_PROXY
+          value: $(params.noProxy)
+        - name: PARAM_VERBOSE
+          value: $(params.verbose)
+        - name: PARAM_SPARSE_CHECKOUT_DIRECTORIES
+          value: $(params.sparseCheckoutDirectories)
+        - name: PARAM_USER_HOME
+          value: $(params.userHome)
+        - name: WORKSPACE_OUTPUT_PATH
+          value: $(workspaces.output.path)
+        - name: WORKSPACE_SSH_DIRECTORY_BOUND
+          value: $(workspaces.ssh-directory.bound)
+        - name: WORKSPACE_SSH_DIRECTORY_PATH
+          value: $(workspaces.ssh-directory.path)
+        - name: WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND
+          value: $(workspaces.basic-auth.bound)
+        - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
+          value: $(workspaces.basic-auth.path)
+        - name: WORKSPACE_SSL_CA_DIRECTORY_BOUND
+          value: $(workspaces.ssl-ca-directory.bound)
+        - name: WORKSPACE_SSL_CA_DIRECTORY_PATH
+          value: $(workspaces.ssl-ca-directory.path)
       script: |
         #!/usr/bin/env sh
         set -eu
@@ -301,7 +301,7 @@ spec:
 
 添加 task 后，需要通过 taskrun 对这个 task 进行引用，除了 taskrun 之外还需要配置其他的 resource 和 git clone 密钥。
 
-``` yaml
+```yaml
 # taskrun.yaml
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
@@ -325,7 +325,7 @@ spec:
 
 执行以下步骤：
 
-``` bash
+```bash
 # 用来存放代码内容的 pvc 资源
 $ cat pvc.yaml
 apiVersion: v1
@@ -369,7 +369,7 @@ kubectl create -f taskrun.yaml
 
 pipeline 是基于 task 编排组成的流水线，而 pipelinerun 是 pipeline 的具体执行，就像 task 与 taskrun 之间的关系一样。
 
-``` yaml
+```yaml
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -381,30 +381,30 @@ spec:
     - name: source-code
     - name: ssh-directory
   tasks:
-  - name: clone
-    taskRef:
-      name: git-clone
-    params:
-    - name: url
-      value: $(params.git-url)
-    workspaces:
-    - name: output
-      workspace: source-code
-    - name: ssh-directory
-      workspace: ssh-directory
-  - name: check
-    taskSpec:
-      steps:
-      - name: ls-file
-        image: cgr.dev/chainguard/busybox:latest
-        script: ls $(workspaces.source-code.path)
-    runAfter:
-      - clone
+    - name: clone
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)
+      workspaces:
+        - name: output
+          workspace: source-code
+        - name: ssh-directory
+          workspace: ssh-directory
+    - name: check
+      taskSpec:
+        steps:
+          - name: ls-file
+            image: cgr.dev/chainguard/busybox:latest
+            script: ls $(workspaces.source-code.path)
+      runAfter:
+        - clone
 ```
 
 这个 pipelinerun 中的 output workspace 不再使用固定的 PersistentVolumeClaim 资源，而是声明了 Template 并在每次运行时遵循这个 Template 来创建新的 PersistentVolumeClaim 资源。而 Secret 则延用了原先的 deploy-ssh-credentials 。
 
-``` yaml
+```yaml
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
@@ -443,7 +443,7 @@ tekton trigger 可以提供相关的 web 接口，使得外部服务可以通过
 
 此外还可以通过 Interceptors 对请求内容进行一些校验和转换处理，但这里暂时只用到了简单的参数映射，所以没有用上 Interceptors 。
 
-``` yaml
+```yaml
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
@@ -460,22 +460,22 @@ spec:
         pipelineRef:
           name: my-pipeline
         params:
-        - name: git-url
-          value: $(tt.params.git-url)
+          - name: git-url
+            value: $(tt.params.git-url)
         workspaces:
-        - name: source-code
-          volumeClaimTemplate:
-            spec:
-              accessModes:
-              - ReadWriteOnce
-              resources:
-                requests:
-                  storage: 50Mi
-              storageClassName: local-path
-              volumeMode: Filesystem
-        - name: ssh-directory
-          secret:
-            secretName: deploy-ssh-credentials
+          - name: source-code
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 50Mi
+                storageClassName: local-path
+                volumeMode: Filesystem
+          - name: ssh-directory
+            secret:
+              secretName: deploy-ssh-credentials
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -494,14 +494,14 @@ spec:
   serviceAccountName: my-tekton-triggers-sa
   triggers:
     - bindings:
-      - ref: my-triggerbinding
+        - ref: my-triggerbinding
       template:
         ref: my-triggertemplate
 ```
 
 因为执行过程会触发资源创建，所以需要赋予特定的 rbac 权限， tekton triggers 安装时默认生成了相关的 ClusterRole ，我们只需要创建对应的 ServiceAccount 来引用它们就可以了。
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -512,8 +512,8 @@ kind: RoleBinding
 metadata:
   name: my-eventlistener-rolebinding
 subjects:
-- kind: ServiceAccount
-  name: my-tekton-triggers-sa
+  - kind: ServiceAccount
+    name: my-tekton-triggers-sa
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -524,8 +524,8 @@ kind: ClusterRoleBinding
 metadata:
   name: my-eventlistener-clusterrolebinding
 subjects:
-- kind: ServiceAccount
-  name: my-tekton-triggers-sa
+  - kind: ServiceAccount
+    name: my-tekton-triggers-sa
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -534,7 +534,7 @@ roleRef:
 
 {{<details "具体 ClusterRole 的 yaml 文件参考">}}
 
-``` yaml
+```yaml
 kind: ClusterRole
 metadata:
   labels:
@@ -542,47 +542,47 @@ metadata:
     app.kubernetes.io/part-of: tekton-triggers
   name: tekton-triggers-eventlistener-roles
 rules:
-- apiGroups:
-  - triggers.tekton.dev
-  resources:
-  - eventlisteners
-  - triggerbindings
-  - interceptors
-  - triggertemplates
-  - triggers
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - tekton.dev
-  resources:
-  - pipelineruns
-  - pipelineresources
-  - taskruns
-  verbs:
-  - create
-- apiGroups:
-  - ""
-  resources:
-  - serviceaccounts
-  verbs:
-  - impersonate
-- apiGroups:
-  - ""
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
+  - apiGroups:
+      - triggers.tekton.dev
+    resources:
+      - eventlisteners
+      - triggerbindings
+      - interceptors
+      - triggertemplates
+      - triggers
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - tekton.dev
+    resources:
+      - pipelineruns
+      - pipelineresources
+      - taskruns
+    verbs:
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - serviceaccounts
+    verbs:
+      - impersonate
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -592,23 +592,23 @@ metadata:
     app.kubernetes.io/part-of: tekton-triggers
   name: tekton-triggers-eventlistener-clusterroles
 rules:
-- apiGroups:
-  - triggers.tekton.dev
-  resources:
-  - clustertriggerbindings
-  - clusterinterceptors
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
+  - apiGroups:
+      - triggers.tekton.dev
+    resources:
+      - clustertriggerbindings
+      - clusterinterceptors
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
 ```
 
 {{</details>}}

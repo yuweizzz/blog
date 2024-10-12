@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -44,7 +44,7 @@ draft: false
 
 **进行分区操作时，一定要小心谨慎，做好数据备份，对根分区的错误操作可能是无法挽救的。**
 
-``` bash
+```bash
 # 首先观察根分区情况，这时可以使用 fdisk 或 parted
 # 这个硬盘来自我的虚拟机
 
@@ -69,7 +69,7 @@ Model: VMware, VMware Virtual S (scsi)
 Disk /dev/sda: 10.7GB
 Sector size (logical/physical): 512B/512B
 Partition Table: msdos
-Disk Flags: 
+Disk Flags:
 
 Number  Start   End     Size    Type     File system     Flags
  1      1049kB  525MB   524MB   primary  xfs             boot
@@ -81,7 +81,7 @@ Number  Start   End     Size    Type     File system     Flags
 
 虽然很多分区工具在操作 msdos 硬盘时会保留一些起始扇区，默认从 1 MB 开始分区，以便后续兼容 GPT 格式，但一般不会对末尾扇区做保留。所以在转换 GPT 时，处于硬盘头部的分区通常可以无损转换，而处于硬盘尾部的分区会遭遇文件系统受损。
 
-``` bash
+```bash
 # 尝试对这个无法无损转换的硬盘进行操作
 $ gdisk /dev/sda
 GPT fdisk (gdisk) version 0.8.10
@@ -150,14 +150,14 @@ Partition number (1-3): 3
 Command (? for help): n
 Partition number (3-128, default 3): 3
 First sector (34-976773168, default = 904110080) or {+-}size{KMGTP}: 34
-Last sector (34-2047, default = 2047) or {+-}size{KMGTP}: 
+Last sector (34-2047, default = 2047) or {+-}size{KMGTP}:
 Current type is 'Linux filesystem'
 Hex code or GUID (L to show codes, Enter = 8300): ef02
 Changed type of partition to 'BIOS boot partition'
 
 Command (? for help): n
 Partition number (4-128, default 4): 4
-First sector (904110080-976773168, default = 904110080) or {+-}size{KMGTP}: 
+First sector (904110080-976773168, default = 904110080) or {+-}size{KMGTP}:
 Last sector (904110080-976773168, default = 976773168) or {+-}size{KMGTP}: +500M
 Current type is 'Linux filesystem'
 Hex code or GUID (L to show codes, Enter = 8300): ef00
@@ -191,7 +191,7 @@ Number  Start (sector)    End (sector)  Size       Code  Name
 
 接下来需要挂载 ESP ，也就是刚才新增的 EFI System 分区，它的全称是 EFI System Partition ，是预留给 UEFI 启动存放引导文件的分区。
 
-``` bash
+```bash
 # 格式化 ESP ，注意它的文件系统是 FAT 格式
 $ mkfs.vfat /dev/sda4
 # 如果命令不存在，安装新的软件包后重试
@@ -213,7 +213,7 @@ grub2 在安装时有两个重要镜像 boot.img 和 core.img ，它们协作完
 
 由于我们将 MBR 转换为 GPT 格式，原有的 MBR gap 的位置会被 GPT 头所占据，按照 grub2 官方文档对 GPT 分区格式的使用指引，我们需要新的分区来替代 MBR gap ，这就是之前在分区时额外划分 BIOS Boot Partition 的原因。
 
-``` bash
+```bash
 # 1.以 UEFI 引导为目标重装 grub2 ，需要提前挂载 ESP 分区
 $ grub2-install --target=x86_64-efi --efi-directory=/boot/efi /dev/sda
 # 此时应该可以在 ESP 分区， /boot/efi 子目录下找到 grubx64.efi 文件
@@ -244,7 +244,7 @@ $ sed -i 's/initrd16/initrdefi/g' /boot/grub2/grub.cfg
 
 为了后续的使用方便，进入系统后我们还要修改 UEFI 启动项。
 
-``` bash
+```bash
 # 安装 efibootmgr
 $ yum install efibootmgr
 

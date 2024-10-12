@@ -13,7 +13,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -38,29 +38,29 @@ draft: false
 
 在 Linux 系统中一般通过 iproute2 对路由进行管理。
 
-``` bash
+```bash
 $ ip route
-default via 10.233.0.1 dev ens33 
+default via 10.233.0.1 dev ens33
 10.233.0.0/16 dev ens33 proto kernel scope link src 10.233.0.2
 ```
 
 虽然通过 `ip route` 大部分情况就可以满足基本的场景需求，但是可以使用多张路由表来实现更复杂的流量控制。
 
-``` bash
+```bash
 # Linux 系统默认定义的路由表，其中 ip route 默认使用的就是 main ，也是大多数情况下默认使用的路由表
 # /etc/iproute2/rt_tables 用来定义 route table 和 id 的映射关系
 $ cat /etc/iproute2/rt_tables
 #
 # reserved values
 #
-255	local
-254	main
-253	default
-0	unspec
+255 local
+254 main
+253 default
+0 unspec
 #
 # local
 #
-#1	inr.ruhep
+#1 inr.ruhep
 
 # 路由表有优先级定义，一般来说 local 表的优先级应该是最高的
 # 注意这里的数字表示的是 prio 而不是 table id
@@ -102,7 +102,7 @@ $ ip rule del table custom  # 有映射关系的可以使用 id 或者名称
 
 多张路由表可以用在多网络出口和特殊子网管理的场景，使用单独的路由表来控制对应的流量，在网络情况复杂的时候会很有用。
 
-``` bash
+```bash
 # 通过 iptables 标记流量来指定处理的路由表，在容器网络管理方面经常使用
 $ iptables -t mangle -A FORWARD -i ens33 -j MARK --set-mark 1
 $ iptables -t mangle -S
@@ -115,7 +115,7 @@ $ iptables -t mangle -S
 
 # 添加处理对应流量标记的路由表
 $ ip rule add fwmark 1 table 103 prio 103
-$ ip rule show 
+$ ip rule show
 0:      from all lookup local
 101:    from 10.10.10.0/24 lookup custom
 102:    from 10.10.11.0/24 lookup 102
@@ -125,17 +125,17 @@ $ ip rule show
 
 # cilium 实际上也使用到了流量标记，以下输出是来自一台运行了 cilium 的系统
 $ ip rule show
-9:	from all fwmark 0x200/0xf00 lookup 2004
-100:	from all lookup local
-32766:	from all lookup main
-32767:	from all lookup default
+9: from all fwmark 0x200/0xf00 lookup 2004
+100: from all lookup local
+32766: from all lookup main
+32767: from all lookup default
 ```
 
 ## MTU 和 MSS
 
 在使用 openconnect 搭建 VPN 服务时，比较有意思的地方就是 tunnel 的 MTU 设定。
 
-``` bash
+```bash
 # 搭建 VPN 服务时用到的防火墙配置，其中 10.10.10.0/24 是 VPN 服务所使用的网段
 $ iptables -t filter -A FORWARD -s 10.10.10.0/24 -j ACCEPT
 $ iptables -t filter -A FORWARD -o vpns+ -j ACCEPT

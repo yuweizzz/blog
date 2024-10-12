@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -60,13 +60,13 @@ GitHub Actions 是 GitHub 提供的一项服务，可以通过自定义 workflow
 
 workflow 文件是使用 YAML 编写的配置文件，它会涉及以下列出的名词：
 
-* workflow : 一个完整的 CI 和 CD 工作流程认为是一个 workflow ，每个 workflow 以后缀命名为 .yml 的文件保存在代码仓库的 .github/workflows 目录中。一个库允许拥有多个 workflow 。
+- workflow : 一个完整的 CI 和 CD 工作流程认为是一个 workflow ，每个 workflow 以后缀命名为 .yml 的文件保存在代码仓库的 .github/workflows 目录中。一个库允许拥有多个 workflow 。
 
-* jobs : 一个 workflow 由一个或多个 job 构成，job 是可以自由命名的，比较常见的命名有 lint ， test ， build ， deploy 等。 job 默认是并行运行的，可以使用 needs 来规定依赖关系以实现顺序运行。
+- jobs : 一个 workflow 由一个或多个 job 构成，job 是可以自由命名的，比较常见的命名有 lint ， test ， build ， deploy 等。 job 默认是并行运行的，可以使用 needs 来规定依赖关系以实现顺序运行。
 
-* step : 一个 job 由一个或多个 step 构成， step 是按照顺序关系执行的。 
+- step : 一个 job 由一个或多个 step 构成， step 是按照顺序关系执行的。
 
-* action : 一个 step 由一个或多个 action 构成， action 也是按照顺序关系执行的。 action 规定了细节工作，基本上由 shell 命令构成，可以自行编写 action 或使用 GitHub 社区提供的 action 。
+- action : 一个 step 由一个或多个 action 构成， action 也是按照顺序关系执行的。 action 规定了细节工作，基本上由 shell 命令构成，可以自行编写 action 或使用 GitHub 社区提供的 action 。
 
 YAML 语法比较简单，这里会跳过相关介绍，直接通过实例来学习 workflow 编写。
 
@@ -160,7 +160,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: generate key and identify host 
+      - name: generate key and identify host
         run: |
           mkdir ~/.ssh/
           echo "$MY_SECRET" | tr -d '\r'  > ~/.ssh/id_rsa
@@ -180,7 +180,7 @@ jobs:
           git add --all
           message=$(date '+%Y-%m-%d %H:%M:%S')
           git commit -m "$message UTC"
-          git push -f origin master 
+          git push -f origin master
           echo deploy complete.
 ```
 

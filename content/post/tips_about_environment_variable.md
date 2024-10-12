@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -42,7 +42,7 @@ draft: false
 
 除了 `export` 之外，还有 `source` 也可以用来设置一些环境变量， python 的虚拟环境 venv 就用到了 `source` 来设置一些环境变量，实际上 `export` 和 `source` 都是 bash 的内置命令。
 
-``` bash
+```bash
 # 以下出自 bash 的相关文档
 $ man bash
 ...
@@ -53,19 +53,19 @@ SHELL BUILTIN COMMANDS
               The supplied names are marked for automatic export to the environment of subsequently executed commands.
               If the -f option is given, the names refer to functions.If no names are given, or if the -p option is
               supplied, a list of all names that are exported in this shell is printed.  The -n option causes the export
-              property to be removed from each name.  If a variable name is followed by =word, the value of the variable 
-              is set to word.  export returns an exit status of 0 unless an invalid option is encountered, one of the 
+              property to be removed from each name.  If a variable name is followed by =word, the value of the variable
+              is set to word.  export returns an exit status of 0 unless an invalid option is encountered, one of the
               names is not a valid shell variable name, or -f is supplied with a name that is not a function.
 ...
         .  filename [arguments]
        source filename [arguments]
-              Read and execute commands from filename in the current shell environment and return the exit status of 
-              the last command executed from filename.  If filename does not  contain a slash, file names in PATH are 
+              Read and execute commands from filename in the current shell environment and return the exit status of
+              the last command executed from filename.  If filename does not  contain a slash, file names in PATH are
               used to find the directory containing filename.  The file searched for in PATH need not be executable.
-              When bash is not in posix mode, the current directory is searched if no file is found in PATH.  If the 
-              sourcepath option to the shopt builtin command is turned off, the  PATH is not searched.If any arguments 
-              are  supplied, they become the positional parameters when filename is executed.  Otherwise the positional 
-              parameters are unchanged.The return status is the status of the last command exited within the script 
+              When bash is not in posix mode, the current directory is searched if no file is found in PATH.  If the
+              sourcepath option to the shopt builtin command is turned off, the  PATH is not searched.If any arguments
+              are  supplied, they become the positional parameters when filename is executed.  Otherwise the positional
+              parameters are unchanged.The return status is the status of the last command exited within the script
               (0 if no commands are executed), and false if filename is not found or cannot be read.
 ...
 ```
@@ -86,7 +86,7 @@ bash 的机制比表面看上去的复杂得多，它隐藏了很多的属性设
 
 根据登录相关的属性分为登录式 login shell 和非登录式 non-login shell ，根据交互相关的属性分为交互式 interactive shell 和非交互式 non-interactive shell ，将两种属性组合起来可以将 shell 分为四个种类。
 
-``` bash
+```bash
 # 以下结果由直接登录系统后的 shell 中执行得出
 
 # 是否为登录式 shell
@@ -108,7 +108,7 @@ hB
 
 关于登录属性的判断比较直观，关于交互属性则需要通过特殊变量去获取， `-` 变量可以获取 shell 的部分设置选项，每个字母代表一种属性，其中 `i` 正是关于交互属性的字段。 在 `-` 变量包含的各字段意义如下：
 
-``` bash
+```bash
 $ man bash
 ...
 OPTIONS
@@ -120,10 +120,10 @@ OPTIONS
 SHELL BUILTIN COMMANDS
        set [--abefhkmnptuvxBCEHPT] [-o option-name] [arg ...]
        set [+abefhkmnptuvxBCEHPT] [+o option-name] [arg ...]
-              Without options, the name and value of each shell variable are displayed in a format that can be reused 
+              Without options, the name and value of each shell variable are displayed in a format that can be reused
               as input for setting or resetting the currently-set variables.Read-only variables cannot be reset.
               In posix mode, only shell variables are listed.  The output is sorted according to the current locale.
-              When options are specified, they set or unset shell attributes.  Any arguments remaining after option 
+              When options are specified, they set or unset shell attributes.  Any arguments remaining after option
               processing are treated as values for the positional  parameters and are assigned,
               in order, to $1, $2, ...  $n.  Options, if specified, have the following meanings:
 ...
@@ -132,7 +132,7 @@ SHELL BUILTIN COMMANDS
                       # 缓存执行过的二进制命令的路径，以便下次调用省去搜索时间
               -B      The shell performs brace expansion (see Brace Expansion above).  This is on by default.
                       # 允许使用 shell 的花括号扩展
-              -m      Monitor mode.  Job control is enabled.  This option is on by default for interactive shells on 
+              -m      Monitor mode.  Job control is enabled.  This option is on by default for interactive shells on
                       systems that support it (see JOB CONTROL above).  Back‐ground processes run in a separate process
                       group and a line containing their exit status is printed upon their completion.
                       # 允许作业控制和后台运行
@@ -145,7 +145,7 @@ SHELL BUILTIN COMMANDS
 
 bash 使用了 profile 和 rc 来完成一些 bash 环境的设置工作，环境变量的设置会在这一步完成。
 
-``` bash
+```bash
 # 以下出自 bash 的相关文档
 $ man bash
 ...
@@ -193,7 +193,7 @@ INVOCATION
 
 根据上述文档，只要是登录式 shell ，不论是否带有交互属性，它的显式预加载链为 `/etc/profile --> ~/.bash_profile` ，可以通过 `bash -i -l -x` 进行验证，读取整体链条文件可以知道完整的预加载链为：
 
-``` bash
+```bash
 /etc/profile    -->    ~/.bash_profile
       |                       |
       V                       V
@@ -208,7 +208,7 @@ INVOCATION
 
 如果是非登陆交互式 shell ，它的显式预加载链为 `~/.bashrc` 。通过 `bash -i -x` 或者 `bash -x` 进行验证，效果是一致的，完整的预加载链为：
 
-``` bash
+```bash
 ~/.bashrc
      |
      V
@@ -234,9 +234,9 @@ INVOCATION
 
 由于本文涉及了 `source` ，为了更好理解，这里记录了一些常用的脚本执行方式，隐藏在它们背后的实际调用方式如下：
 
-* `./xx.sh` 要求文件有执行权限，它直接执行了文件，实际上生成新的非登录非交互式 shell 去执行文件内容，执行后 shell 消亡。
-* `source xx.sh` 没有文件权限要求，它会在当前 shell 执行并返回执行结果。
-* `. xx.sh` 执行方式等同于 `source xx.sh` 。
-* `. ./xx.sh` 执行方式等同于 `source xx.sh` ，加上 `./` 是为了指明文件路径。
-* `bash xx.sh` 没有文件权限要求，执行方式等同于 `./xx.sh` 。
-* `bash ./xx.sh` 执行方式等同于 `./xx.sh` ，加上 `./` 是为了指明文件路径。
+- `./xx.sh` 要求文件有执行权限，它直接执行了文件，实际上生成新的非登录非交互式 shell 去执行文件内容，执行后 shell 消亡。
+- `source xx.sh` 没有文件权限要求，它会在当前 shell 执行并返回执行结果。
+- `. xx.sh` 执行方式等同于 `source xx.sh` 。
+- `. ./xx.sh` 执行方式等同于 `source xx.sh` ，加上 `./` 是为了指明文件路径。
+- `bash xx.sh` 没有文件权限要求，执行方式等同于 `./xx.sh` 。
+- `bash ./xx.sh` 执行方式等同于 `./xx.sh` ，加上 `./` 是为了指明文件路径。
