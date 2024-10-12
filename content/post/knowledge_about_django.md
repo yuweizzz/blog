@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -36,11 +36,11 @@ draft: false
 
 在虚拟环境中创建 Django 项目。
 
-``` bash
+```bash
 # 激活虚拟环境
 $ source project/bin/activate
 
-# 安装 Django 3.2 
+# 安装 Django 3.2
 (project) $ pip install django
 
 # 初始化 Django 项目
@@ -60,7 +60,7 @@ $ source project/bin/activate
 
 Django 默认的后端存储是 sqlite3 ，可以用更强大的 MySQL 或者 PostgreSQL 代替。
 
-``` bash
+```bash
 # 安装依赖
 (project) $ pip install mysqlclient
 
@@ -92,7 +92,7 @@ mysql > CREATE DATABASE database_name
 
 如果因为已有数据库的字符集不是 utf8 而导致的中文字符乱码，可以这样做：
 
-``` bash
+```bash
 # 查看表的详细信息
 mysql > SHOW CREATE TABLE table_name;
 
@@ -109,7 +109,7 @@ mysql > ALTER TABLE table_name CONVERT TO CHARACTER SET utf8 COLLATE utf8_genera
 
 可选的 Redis 扩展有很多，比较推荐使用 django-redis 和 python-redis-lock 的组合应用。
 
-``` bash
+```bash
 # 只使用 django-redis
 (project) $ pip install django-redis
 
@@ -170,7 +170,7 @@ Celery 通过消息机制进行通信，生产者将消息发布到 Broker 中�
 
 在已有的 Djnago 项目中使用 Celery 只需要简单添加修改几个文件即可。
 
-``` python
+```python
 # 在 Django 项目中配置 Celery
 
 # 假设已有项目名为 project ，那么应该在 project 配置文件的目录中新增这个文件
@@ -235,8 +235,8 @@ def add(x, y):
 
 除了必要的 Broker ，你还需要手动启动 Worker 。
 
-``` bash
-# 启动输出 INFO 级别日志的 worker 
+```bash
+# 启动输出 INFO 级别日志的 worker
 (project) $ celery -A project worker -l INFO
 ```
 
@@ -244,7 +244,7 @@ def add(x, y):
 
 Celery 提供了 beat 来实现任务的定时调度，我们可以将 shared_task 注册到 Celery 实例的 beat_schedule 中，它就会作为定时任务被自动调度执行。
 
-``` bash
+```bash
 $ cat project/project/celery.py
 ...
 # Register period task
@@ -261,7 +261,7 @@ app.conf.beat_schedule = {
 
 使用 beat 会产生 celerybeat-schedule 文件，它会存储任务的最后运行时间，我们需要在启动 Worker 的同时额外启动 beat 进程。
 
-``` bash
+```bash
 # 启动 beat 进程
 (project) $ celery -A project beat
 
@@ -278,7 +278,7 @@ Celery 提供了一些任务编排的基本函数，我们可以通过这些函�
 
 首先需要先对具体的 shared_task 任务函数进行签名，然后对签名使用编排函数构建工作流，比较常用的有 chain 任务链， group 并行任务组和 chord 回调。
 
-``` python
+```python
 # project/appA/tasks.py
 from celery import shared_task
 
@@ -313,7 +313,7 @@ chord_instance()
 
 使用 flower 可以对 Celery 队列运行情况提供 web 界面监控面板。
 
-``` bash
+```bash
 # 安装 flower
 (project) $ pip install flower
 
@@ -335,7 +335,7 @@ chord_instance()
 
 通常情况下会使用 Django REST framework 提供的 serializers 来替代原生的序列化器， Django REST framework 是非常强大的 Django 扩展库，在 Django 原有的基础类上做了增强封装，它的 serializers 拥有更丰富的内置函数，可以轻松实现序列化和反序列化。
 
-``` python
+```python
 from django.core import serializers
 from rest_framework import serializers as drf_serializers
 from apps.models import DBModel
@@ -357,7 +357,7 @@ pyobjs = serializer.data
 
 反序列化则是将原生的数据格式转换为 Model Object ，是序列化的相反过程，这个过程使用 Django REST framework serializers 比使用原生 Django serializers 更加简单直接，并且支持数据合法性验证。
 
-``` python
+```python
 from django.core import serializers
 from rest_framework import serializers as drf_serializers
 from apps.models import DBModel
@@ -387,7 +387,7 @@ serializer.save()
 
 可以通过 Model 直接 `add` 或者 `remove` 来修改关联关系，但是也可以通过直接操作这张关系表来修改 Model 之间的关系。
 
-``` python
+```python
 from django.db import models
 
 class Publication(models.Model):
@@ -418,7 +418,7 @@ relation = m2m_model.objects.all()
 
 Django 内置支持 Signal ，原生支持的 Signal 主要有 Model 变动相关的信号和请求相关的信号，同时支持自定义信号。
 
-``` python
+```python
 from django.dispatch import receiver
 # 自定义信号
 signal = django.dispatch.Signal()
@@ -436,7 +436,7 @@ def signal_callback(sender, **kwargs):
 
 内置的信号通过搭配 `partial` 使用，这样在参数传递时会更加简洁。
 
-``` python
+```python
 from functools import partial
 from django.db.models.signals import m2m_changed
 from django.db import models

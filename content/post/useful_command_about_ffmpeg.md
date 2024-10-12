@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -35,7 +35,7 @@ draft: false
 
 ffmpeg 可以用来处理音视频，以下是一些常用的处理命令：
 
-``` bash
+```bash
 # 按照给定时间长度从头截取视频或音频，不做转码
 $ ffmpeg -i input.mp3 -t 03:30 -c:v copy -c:a copy output.mp3
 

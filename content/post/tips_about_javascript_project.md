@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -38,8 +38,8 @@ Node.js 提供了二进制预编译的安装包，在[官网](https://nodejs.org
 
 这里以 LTS 14.15.4 为例:
 
-``` bash
-$ curl -o /usr/local/src/node-v14.15.4-linux-x64.tar.xz 
+```bash
+$ curl -o /usr/local/src/node-v14.15.4-linux-x64.tar.xz
     https://nodejs.org/download/release/v14.15.4/node-v14.15.4-linux-x64.tar.xz
 $ tar -xvJf /usr/local/src/node-v14.15.4-linux-x64.tar.xz -C /usr/local/
 $ echo 'export PATH="$PATH":/usr/local/node-v14.15.4-linux-x64/bin/' >> /etc/profile
@@ -49,9 +49,9 @@ $ echo 'export PATH="$PATH":/usr/local/node-v14.15.4-linux-x64/bin/' >> /etc/pro
 
 ## 修改 npm 镜像地址
 
-npm 是 Node.js 的依赖包管理工具，类似于 python 的 pip ， npm 在国内的网络环境会有下载速度慢的现象，可以将镜像地址修改为国内的镜像地址来解决这个问题。 
+npm 是 Node.js 的依赖包管理工具，类似于 python 的 pip ， npm 在国内的网络环境会有下载速度慢的现象，可以将镜像地址修改为国内的镜像地址来解决这个问题。
 
-``` bash
+```bash
 # 检查 npm 基本配置：
 $ npm config list
 ; cli configs
@@ -65,13 +65,13 @@ user-agent = "npm/6.14.10 node/v14.15.4 linux x64"
 ; "npm config ls -l" to show all defaults.
 
 # 修改为淘宝 npm 镜像以加快访问速度：
-# 只修改当前用户的配置，非全局修改会生成 $HOME/.npmrc 
+# 只修改当前用户的配置，非全局修改会生成 $HOME/.npmrc
 $ npm config set registry http://registry.npm.taobao.org/
 $ cat ~/.npmrc  # 只影响当前用户
 registry=http://registry.npm.taobao.org/
 
-# 使用 -g 修改全局配置，全局修改会生成 $PREFIX/etc/npmrc 
-$ npm -g config set registry http://registry.npm.taobao.org/ 
+# 使用 -g 修改全局配置，全局修改会生成 $PREFIX/etc/npmrc
+$ npm -g config set registry http://registry.npm.taobao.org/
 $ cat /usr/local/node-v14.15.4-linux-x64/etc/npmrc  # 生成于 node 安装目录下的 etc 目录中
 registry=http://registry.npm.taobao.org/
 ```
@@ -82,7 +82,7 @@ registry=http://registry.npm.taobao.org/
 
 生成 package.json 是一个项目的开始，无论使用的依赖包管理工具是 npm 或是 yarn 。我选用了 npm ，实际可以按照个人喜好来选择。
 
-``` bash
+```bash
 $ mkdir myproject
 $ cd myproject
 $ npm init  # 交互式生成 package.json
@@ -96,15 +96,15 @@ Use `npm install <pkg>` afterwards to install a package and
 save it as a dependency in the package.json file.
 
 Press ^C at any time to quit.
-package name: (myproject) 
-version: (1.0.0) 
+package name: (myproject)
+version: (1.0.0)
 description: my project
 entry point: (index.js) src/index.js
 test command: node -v; npm -v;  # 这里是为了测试，实际使用时可以按需修改
-git repository: 
-keywords: 
+git repository:
+keywords:
 author: me
-license: (ISC) 
+license: (ISC)
 About to write to /tmp/myproject/package.json:
 
 {
@@ -125,16 +125,16 @@ Is this OK? (yes) yes
 
 生成 package.json 后，我们可以按照需要安装一些项目模块和开发模块工具。
 
-``` bash
+```bash
 # 安装项目需要的模块
-$ npm install <dependency> 
+$ npm install <dependency>
 # 使用 -D 安装项目需要的开发模块工具
 $ npm install -D webpack  # 打包工具
 $ npm install -D webpack-cli
 $ npm install -D eslint  # 语法检查工具
 
 # 检查配置文件，可以看到新的依赖项已经被安装
-$ cat package.json 
+$ cat package.json
 {
   "name": "myproject",
   "version": "1.0.0",
@@ -159,7 +159,7 @@ $ cat package.json
 
 虽然可以通过指明路径调用一些可用的脚本和命令，但我们一般把这些常用的命令写入到 package.json 的 scripts 中去，方便后续使用。
 
-``` bash
+```bash
 # package.json 中 scripts 的基本使用：
 # scripts 通常使用 build ， lint ， run 等常用命名来配置对应的一系列命令
 # npm run 可以执行这些配置好的命令
@@ -180,7 +180,7 @@ v14.15.4
 
 使用 webpack 作为打包工具。
 
-``` bash
+```bash
 # 配置 webpack ：
 # 手工生成 webpack.config.js ，文件位于项目根目录
 $ cat webpack.config.js
@@ -198,14 +198,14 @@ const config = {
 
 module.exports = config;
 // end
-# 生成 webpack.config.js 后配置 webpack 打包命令到 npm scripts 
+# 生成 webpack.config.js 后配置 webpack 打包命令到 npm scripts
 $ npm set-script "build" "webpack --mode production --config webpack.config.js"
 # 添加完成后可以直接调用 npm run build 执行打包
 ```
 
 使用 eslint 作为语法检查工具。
 
-``` bash
+```bash
 # 配置 eslint ：
 # 直接调用可执行脚本进行语法相关的配置初始化
 $ ./node_modules/.bin/eslint --init
@@ -217,4 +217,3 @@ Successfully created .eslintrc.json file in /tmp/myproject
 $ npm set-script "lint" "eslint src/"
 # 添加后可以直接调用 npm run lint 执行语法检查
 ```
-

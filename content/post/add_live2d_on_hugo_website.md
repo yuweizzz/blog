@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -60,13 +60,13 @@ This allows a theme’s end user to copy a partial’s contents into a file of t
 
 以下是具体的操作步骤：
 
-``` bash
-# 修改 config.toml 
+```bash
+# 修改 config.toml
 # 使用变量控制自定义部分
 $ vi config.toml
 .....  # 新增变量
 [params]
-custom_js = "js/custom_live2d.js"  
+custom_js = "js/custom_live2d.js"
 .....
 
 
@@ -97,7 +97,7 @@ $ vi layouts/partials/script.html
 
 首先需要了解的是现有的模型资源分类，现有的 Live2D 模型资源有 Cubism 2 ， Cubism 4 和 Cubism 3 三个版本，其中 3 和 4 之间是互相兼容，所以基本上可以认为只有两个版本。 2 和 3 之间还是有很大区别的，在个人项目中我只使用到了 Cubism 3 。
 
-``` bash
+```bash
 # Cubism 3 Model 基本结构：
 .
 ├── Name.moc3

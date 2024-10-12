@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -38,7 +38,7 @@ draft: false
 
 我们通常会使用 tar 对一系列文件进行归档打包，生成一个新的文件，但是新生成的打包文件我们可以自行决定是否压缩。所以归档打包和压缩不是同一概念，只是它们通常是紧密结合在一起的。
 
-``` bash
+```bash
 # 归档实例：
 
 # 打包目录
@@ -75,13 +75,13 @@ $ tar -xvJf output.tar.xz -C /mydir
 
 硬盘需要进行分区和格式化之后才能使用，现阶段主流的硬盘分区方式是 GPT ，小容量的硬盘和系统盘还经常会使用 msdos 。常用的分区工具有 parted ， fdisk ， gdisk 这几个，文件系统格式化一般使用 mkfs 命令。
 
-``` bash
+```bash
 # fdisk 只能支持 msdos 分区
 # gdisk 在 fdisk 的基础上扩展 gpt 的功能
 # 推荐使用 parted ，它拥有更全面的功能
 
 # 查看已有分区信息
-$ parted /dev/sda print     
+$ parted /dev/sda print
 
 # 以下命令具有一定危险，需要注意数据安全
 # 设置分区表格式
@@ -118,7 +118,7 @@ $ xfsrestore -f ~/home.img /home
 
 curl 在 Linux 代替了浏览器的工作，经常用来调试接口。
 
-``` bash
+```bash
 # 经典 curl 用例
 $ curl -X POST -d '{"key":"value"}' -H 'Content-Type: application/json' 'http://....'
 # -X HTTP 请求方法，通常有 GET,POST,PUT,DELETE
@@ -148,7 +148,7 @@ $ cat data.json | curl -X POST -H 'Content-Type: application/json' --data-binary
 
 curl 可以结合 bash 变量，实现更灵活的 url 请求。
 
-``` bash
+```bash
 # 结合 bash 变量的简单实例
 $ keyA=AAA
 $ keyB=BBB
@@ -157,11 +157,11 @@ $ curl -X POST -H 'Content-Type: application/json' -d '{"keyA": "'"$keyA"'","key
 
 可以看到，这个过程使用了大量的 `'` 和 `"` ，可以将其细分为五块：
 
-* `'{"keyA": "'`
-* `"$keyA"`
-* `'","keyA": "'`
-* `"$keyB"`
-* `'"}'`
+- `'{"keyA": "'`
+- `"$keyA"`
+- `'","keyA": "'`
+- `"$keyB"`
+- `'"}'`
 
 其中 `'` 包围的文本不会被 bash 转义，所以 `{}` 会以源文本的格式保留而不被转义。而变量总是以 `"$keyA"` 的形式出现，保证它被 bash 正确转义并获取变量内容。所以文本块就是 `'` 包围的部分和变量转义后的组合文本，注意 `"$keyA"` 和任意 `'` 包围的部分之间不能有空格，这样它们就会被认为是完整的 `-d` 选项的内容，发起请求时就不会报错了。
 
@@ -169,7 +169,7 @@ $ curl -X POST -H 'Content-Type: application/json' -d '{"keyA": "'"$keyA"'","key
 
 sed 可以很简单快速去除空白行，首尾空白字符，注释行。
 
-``` bash
+```bash
 # 删除空白行
 $ sed '/^$/d'
 
@@ -197,7 +197,7 @@ $ sed '/^#/d'
 
 ## 快速生成随机强密码
 
-``` bash
+```bash
 # 随机生成含有特殊字符，数字，大小写字母的强密码
 # head -c 可以设置密码长度
 $ cat /dev/urandom | tr -dc '[:graph:]' | head -c 24; echo
@@ -211,7 +211,7 @@ $ cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 24; echo
 
 ## 快速转换进制
 
-``` bash
+```bash
 # 将数值快速转换成目标进制表示
 
 # 十进制转十六进制
@@ -228,7 +228,7 @@ $ printf "%e" 12345
 
 bash 4 原生支持一维数组，在某些情况下可能会使用到这种数据结构。
 
-``` bash
+```bash
 #!/bin/bash
 # 使用之前需要先声明数组
 declare -a array
@@ -298,7 +298,7 @@ file
 
 ## awk 内置函数 split()
 
-``` bash
+```bash
 #!/bin/bash
 # awk 内置函数 split() 的用法：
 
@@ -315,7 +315,7 @@ split("A;B;C;D",array,';')
 
 ## awk 导入外部数据
 
-``` bash
+```bash
 #!/bin/bash
 # awk 可以导入外部数据，通常会用来导入 shell 变量进行进一步处理
 # 灵活利用导入可以实现多样的数据处理
@@ -342,12 +342,12 @@ echo 'begin' | awk -v foreign='1#A#2#B#3#C' \
 
 在 Linux 中经常需要批量执行命令，需要一些限制避免占用大量资源，下面提供一些简单的循环用例。
 
-``` bash
+```bash
 #!/bin/bash
 # 限制同一时间内循环的进程数量
 
 # 总运行次数，数据源存放在 file 中
-number=$(cat file | wc -l) 
+number=$(cat file | wc -l)
 # 单次并发进程数量控制
 size=20
 
@@ -361,7 +361,7 @@ do
     {
         # 主循环体，数据取自于 file
     }&
-    done 
+    done
 
     begin=$( expr $end + 1 )
     end=$( expr $end + $size )
@@ -383,9 +383,9 @@ done < file
 
 rpm 是红帽软件包工具，是红帽系发行版使用的基本软件管理工具。除了安装卸载软件，它可以提供一些额外的功能。
 
-``` bash
+```bash
 # 直接安装已有的 rpm 包
-$ rpm -ivh package.rpm  
+$ rpm -ivh package.rpm
 # -i 用来表示安装
 # -v 用来显示详细信息
 # -h 用来显示安装进度
@@ -413,7 +413,7 @@ $ rpm -qf filename
 
 有时候会有下载 rpm 包的需求，可以通过 yum 实现。
 
-``` bash
+```bash
 $ yum install package --downloadonly --downloaddir=/your/dir
 # 可以只下载 rpm 包而不进行安装
 # 不指定下载目录，则下载后文件保存在 /var/cache/yum/ 下的子目录中
@@ -424,9 +424,9 @@ $ yum install package --downloadonly --downloaddir=/your/dir
 
 yum 是 Fedora 和 RedHat 以及 SUSE 中使用的软件包管理器，它的使用比直接使用 rpm 更加方便简单。
 
-``` bash
+```bash
 # yum 的全局配置
-$ cat /etc/yum.conf 
+$ cat /etc/yum.conf
 [main]
 cachedir=/var/cache/yum/$basearch/$releasever  # 指定缓存软件包和依赖信息的目录
 keepcache=0  # 指定缓存是否会在使用后保留
@@ -442,10 +442,10 @@ distroverpkg=centos-release  # 指定用来获取系统的发行版信息的软�
 
 全局配置基本上不用做修改，更多情况下只需要自行添加需要的镜像源。
 
-``` bash
+```bash
 # 参考具体的镜像源配置
 $ cd /etc/yum.repos.d
-$ cat CentOS-Base.repo 
+$ cat CentOS-Base.repo
 [base]
 name=CentOS-$releasever - Base
 mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra
@@ -453,7 +453,7 @@ mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
-# rerpmleased updates 
+# rerpmleased updates
 [updates]
 name=CentOS-$releasever - Updates
 mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
@@ -472,12 +472,12 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
 在 `/etc/yum.repos.d` 目录中以 repo 结尾的文件会被识别为镜像源的配置文件，一个镜像源配置文件内可以配置多个 Repository ，每个 Repository 的唯一标识用 `[xxxx]` 表示，它们的具体内容如下：
 
-* `name` 是对 Repository 的描述。
-* `enable` 规定对应 Repository 是否启用，可以使用这个选项屏蔽 Repository 。
-* `baseurl` 是指向 Repository 的 repodata 目录的地址，里面存放了软件包和他们的依赖关系。它可以指向本地和云端，本地文件以 `file://` 来指定，云端可以使用 http，ftp 等工具。
-* `mirrorlist` 是 `baseurl` 的一种集合形式，可以说 `mirrorlist` 指向的是一系列的 `baseurl` ，配合 fastestmirror 插件能找到响应速度最快的 Repository 。
-* `gpgcheck` 规定是否进行签名检查。
-* `gpgkey` 指定了签名检查的合法签名数据源。
+- `name` 是对 Repository 的描述。
+- `enable` 规定对应 Repository 是否启用，可以使用这个选项屏蔽 Repository 。
+- `baseurl` 是指向 Repository 的 repodata 目录的地址，里面存放了软件包和他们的依赖关系。它可以指向本地和云端，本地文件以 `file://` 来指定，云端可以使用 http，ftp 等工具。
+- `mirrorlist` 是 `baseurl` 的一种集合形式，可以说 `mirrorlist` 指向的是一系列的 `baseurl` ，配合 fastestmirror 插件能找到响应速度最快的 Repository 。
+- `gpgcheck` 规定是否进行签名检查。
+- `gpgkey` 指定了签名检查的合法签名数据源。
 
 现有国内网络环境下，原始镜像速度很慢，可以使用公开的国内镜像源，它们大部分提供了相关的配置方法，如果是自建的镜像源，那么至少需要自行配置 `name` 和 `baseurl` 才能正常使用。
 
@@ -485,7 +485,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
 rpm 包可以视为一个特殊的归档文件，如果需要提取这个档案中的内容，一般通过 rpm2cpio 和 cpio 去实现。
 
-``` bash
+```bash
 # 常用的实例命令
 $ rpm2cpio package.rpm | cpio -divm
 
@@ -501,7 +501,7 @@ $ rpm2cpio package.rpm | cpio -divm
 
 xfs 文件系统可以通过命令来备份和还原。
 
-``` bash
+```bash
 # 指定路径进行备份
 $ xfsdump -f /tmp/home.img /home
 
@@ -513,9 +513,9 @@ $ xfsrestore -f /tmp/home.img /data
 
 在 Linux 系统中，我们一般可以在 `/boot` 目录中找到 initramfs 镜像文件，它们是引导系统的必要组件。如果需要使用到的系统命令没有编译到镜像中，可以使用 dracut 命令进行镜像更新。
 
-``` bash
+```bash
 # 使用 file 命令可以看到 CentOS 7.4 的 initramfs 镜像是由 gunzip 压缩的文件
-# initramfs-3.10.0-693.el7.x86_64.img: gzip compressed data, from Unix, 
+# initramfs-3.10.0-693.el7.x86_64.img: gzip compressed data, from Unix,
 # last modified: Sat Mar 16 15:51:25 2019, max compression
 
 # 以常规思路去处理这个文件
@@ -547,7 +547,7 @@ $ dracut -v -I '/usr/sbin/xfsdump /usr/sbin/xfsrestore' -f [initramfs.img]
 
 ## tcpdump 基本用法
 
-``` bash
+```bash
 # 使用 tcpdump 抓包
 $ tcpdump -n -v -s0 -i lo port 8080 -w tcpdump.pcap
 # -n 不解析域名
@@ -564,7 +564,7 @@ $ tcpdump -n -v -s0 -i lo port 8080 -w tcpdump.pcap
 
 1. 源数据导出：
 
-``` bash
+```bash
 # db_name 是需要备份的数据库名称
 $ mysqldump -u root -p db_name > backup.sql
 ```
@@ -573,7 +573,7 @@ $ mysqldump -u root -p db_name > backup.sql
 
 2. 导入到新的 mysql 服务中：
 
-``` bash
+```bash
 # 在导入 sql 语句前应该在创建新库并且显示使用这个库
 $ sed -i '1i create database db_name;' backup.sql
 $ sed -i '2i use db_name;' backup.sql
@@ -582,7 +582,7 @@ $ mysql -u root -p < backup.sql
 
 批量备份参考脚本：
 
-``` bash
+```bash
 #!/bin/bash
 
 # db_names 文件内容可以通过 show databases 获取，并且应该去掉默认内置的数据库：
@@ -614,7 +614,7 @@ done
 
 一些用户授权相关的 SQL ：
 
-``` bash
+```bash
 # create database
 CREATE DATABASE dbname CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -632,7 +632,7 @@ FLUSH PRIVILEGES;
 
 ## 添加 sudo 命令
 
-``` bash
+```bash
 # 通过 visudo 去编辑 /etc/sudoers 文件
 $ visudo
 
@@ -648,7 +648,7 @@ $ sudo -l
 
 ## journal 日志清理
 
-``` bash
+```bash
 # 查看当前日志占用的磁盘空间
 $ journalctl --disk-usage
 
@@ -669,7 +669,7 @@ $ journalctl --vacuum-size=500M
 
 如果想把某个服务中的日志文件独立出来，除了服务自身实现的日志管理，可以将日志输出到 rsyslog 中再做处理，但是这样做的前提是系统运行着 rsyslog 服务并且对应服务配置了 `StandardOutput=syslog` 和 `StandardError=syslog` 。
 
-``` bash
+```bash
 # 简单的 systemd service 示例
 $ cat /etc/systemd/system/my-service.service
 [Unit]
@@ -707,7 +707,7 @@ $ systemctl restart rsyslog.service
 
 freeradius 是 radius 协议的开源实现，包括身份验证，授权和统计三种协议。
 
-``` bash
+```bash
 # 配置 freeradius 服务端以 Debug 模式运行方便排查问题
 $ freeradius -X
 
@@ -723,7 +723,7 @@ $ radtest username password localhost 1812 secret
 
 openldap 是实现了 LDAP 协议的目录数据存储服务，经常用来作身份验证。
 
-``` bash
+```bash
 # 通过 admin 用户查询某个具体用户是否存在
 $ ldapsearch -h 10.0.0.1 \
     -p 1389 \

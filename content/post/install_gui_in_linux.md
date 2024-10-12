@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -45,8 +45,8 @@ Linux 各类发行版图形界面的理论支持就是大名鼎鼎的 X Window S
 
 X Window System 的两个主要组件的工作内容如下：
 
-* X Server：和硬件层面对接，从输入设备(键盘，鼠标)获取输入数据并告知 Client ，在输出设备(显示器)上绘制从 Client 获取的绘图数据。
-* X Client：从 Server 获取到硬件的输入数据，处理它们得出对应的绘图数据返回给 Server 。
+- X Server：和硬件层面对接，从输入设备(键盘，鼠标)获取输入数据并告知 Client ，在输出设备(显示器)上绘制从 Client 获取的绘图数据。
+- X Client：从 Server 获取到硬件的输入数据，处理它们得出对应的绘图数据返回给 Server 。
 
 X Server 是相对固定的一套软件，和硬件交互的主要是各类硬件驱动的使用和管理。
 
@@ -82,7 +82,7 @@ X Server 是相对固定的一套软件，和硬件交互的主要是各类硬�
      |                                                        |
      |                 +---------------------+                |
      v                 |  remote workstation |                v
-+----------+  Network  +----------+----------+  Network  +----------+ 
++----------+  Network  +----------+----------+  Network  +----------+
 | X Server |<--------->| X Client | X Client |<--------->| X Server |
 +----------+           +----------+----------+           +----------+
      |                 |     ...........     |                |
@@ -113,7 +113,7 @@ CentOS 如果没有安装过图形界面，需要先安装 X Window System ，�
 
 还需要安装 X Client ，可以选择只安装个人需要的 X Clinet，但一般会都会安装主流的桌面套件提供完整的支持，我的个人选择的桌面套件是 xfce 。
 
-``` bash
+```bash
 #  前置的软件安装工作：
 
 $ yum group install 'x window system' -y
@@ -123,7 +123,7 @@ $ init 5
 $ systemctl isolate graphical.target
 
 # 安装完成后，可以设置默认启动环境为图形界面
-$ systemctl get-default  # 默认应该为多用户界面 
+$ systemctl get-default  # 默认应该为多用户界面
 multi-user.target
 $ systemctl set-default graphical.target
 $ reboot  # 修改设置后重启生效
@@ -133,18 +133,18 @@ $ reboot  # 修改设置后重启生效
 
 如果安装没有报错，我们在执行切换命令后就会自动切换到图形界面。
 
-> 在某些版本中，可能会出现无法立即切换图形的情况，解决办法一般是先切换为原来的运行等级，在终端界面会产生文本模式的会话，选择接受 licence 后再尝试切换。 
+> 在某些版本中，可能会出现无法立即切换图形的情况，解决办法一般是先切换为原来的运行等级，在终端界面会产生文本模式的会话，选择接受 licence 后再尝试切换。
 
 为了更好地了解运行的原理，我们可以抓取进程信息进行分析，看看服务是如何运行的。
 
-``` bash
+```bash
 #  切换图形界面后的进程信息：
 
 $ ps aux | grep X
-root       1002  0.0  0.2 225840  4812 ?        Ss   16:55   0:00 /usr/bin/abrt-watch-log -F Backtrace 
+root       1002  0.0  0.2 225840  4812 ?        Ss   16:55   0:00 /usr/bin/abrt-watch-log -F Backtrace
   /var/log/Xorg.0.log -- /usr/bin/abrt-dump-xorg -xD
-root       1597  0.5  2.4 340104 49876 tty1     Ssl+ 16:56   0:01 /usr/bin/X :0 -background none -noreset 
-  -audit 4 -verbose -auth /run/gdm/auth-for-gdm-VsIE6S/database 
+root       1597  0.5  2.4 340104 49876 tty1     Ssl+ 16:56   0:01 /usr/bin/X :0 -background none -noreset
+  -audit 4 -verbose -auth /run/gdm/auth-for-gdm-VsIE6S/database
   -seat seat0 -nolisten tcp vt1  # X server 的进程详情
 root       2060  0.0  0.0 112812   948 pts/1    S+   17:00   0:00 grep --color=auto X
 ```
@@ -155,13 +155,13 @@ root       2060  0.0  0.0 112812   948 pts/1    S+   17:00   0:00 grep --color=a
 
 关于 DISPLAY 这个环境变量，我们可以在 X Server 的文档中查到相关的信息：
 
-* hostname 如果是为空，那么它默认会使用本地 X Server 中的最高效通信方式 Unix Socket ，实际使用中这个值经常留空。
-* displaynumber 用来界定显示器和输入设备的集合，用于区分不同的显示界面，是不能为空的。
-* screennumber 用来界定某个集合中不同的显示器，比如多显示器使用主副屏的情况。考虑到现实情况中，用户通常只有一个显示器， screennumber 留空则默认 0 。
+- hostname 如果是为空，那么它默认会使用本地 X Server 中的最高效通信方式 Unix Socket ，实际使用中这个值经常留空。
+- displaynumber 用来界定显示器和输入设备的集合，用于区分不同的显示界面，是不能为空的。
+- screennumber 用来界定某个集合中不同的显示器，比如多显示器使用主副屏的情况。考虑到现实情况中，用户通常只有一个显示器， screennumber 留空则默认 0 。
 
-所以可以看到实际中的 DISPLAY 一般是类似于 :0 ， :1 ， :10 这样的值，系统默认启动的 X 进程 DISPLAY 就是 :0 ，符合前面所描述的使用习惯。此外 displaynumber 一般还会作为这个 X Server 监听的端口号偏移量。 
+所以可以看到实际中的 DISPLAY 一般是类似于 :0 ， :1 ， :10 这样的值，系统默认启动的 X 进程 DISPLAY 就是 :0 ，符合前面所描述的使用习惯。此外 displaynumber 一般还会作为这个 X Server 监听的端口号偏移量。
 
-X Server 的默认监听端口是 6000 ，如果是指定了 DISPLAY 的 X Server ，那么除了端口已被占用的情况，一般会在 6000 的 displaynumber 偏移端口上进行监听，当指定 DISPLAY 为 :1 会监听在 6001 端口，指定 DISPLAY 为 :10 会监听在 6010 端口，这个部分可以通过 netstat 查看系统的监听情况。 
+X Server 的默认监听端口是 6000 ，如果是指定了 DISPLAY 的 X Server ，那么除了端口已被占用的情况，一般会在 6000 的 displaynumber 偏移端口上进行监听，当指定 DISPLAY 为 :1 会监听在 6001 端口，指定 DISPLAY 为 :10 会监听在 6010 端口，这个部分可以通过 netstat 查看系统的监听情况。
 
 再说回系统默认启动的 X 进程，我们可以在这个进程参数中看到 DISPLAY 的值为 :0 。如果依前面所述，此时应该可以查询到监听在 6000 端口的 X 进程。但是这时我们通过 netstat 检查端口，会发现这个端口并不会被占用。出现这种现象的原因是系统默认启动的 X 进程带有 -nolisten tcp 参数，禁用了 tcp 监听功能。
 
@@ -181,15 +181,15 @@ X Server 的默认监听端口是 6000 ，如果是指定了 DISPLAY 的 X Serve
 
 ---
 
-* 远端需要完成的工作
+- 远端需要完成的工作
 
 首先需要为远端机器安装 X Client ，可以自行选择安装需要的桌面套件或者只安装需要的 X Client ，然后开启 SSH daemon 的 X11 Forwarding 支持。
 
-``` bash 
-$ yum group install xfce -y  # 安装 X Client 
-$ vi /etc/ssh/sshd_config 
+```bash
+$ yum group install xfce -y  # 安装 X Client
+$ vi /etc/ssh/sshd_config
 ......
-X11Forwarding yes  # 开启 X11 Forwarding 
+X11Forwarding yes  # 开启 X11 Forwarding
 ......
 $ systemctl restart sshd  # 开启后重启 daemon 使配置生效
 ```
@@ -198,34 +198,35 @@ $ systemctl restart sshd  # 开启后重启 daemon 使配置生效
 
 ---
 
-* 本地需要完成的工作
+- 本地需要完成的工作
 
 为了不与现有的图形环境冲突，启动一个新的 X 进程。
 
-``` bash
-$ X :1 &  # 指定 DISPLAY 运行 X ，这里 DISPLAY 可以任意取值，尽量避免端口冲突
+```bash
+X :1 &  # 指定 DISPLAY 运行 X ，这里 DISPLAY 可以任意取值，尽量避免端口冲突
 ```
 
 然后设置 DISPLAY 环境变量，这个是必须的步骤，它会作为 ssh 设置端口转发的依据。
 
 设置完成后直接发起带 X11 Forwarding 的 ssh 登录请求，在登录成功后就可以启动远程 X Client 了。
 
-``` bash
+```bash
 $ export DISPLAY=:1  # 这里的值和前面 X 的 DISPLAY 值需要保持一致，这个变量设置错误会导致转发出错
 $ ssh -X user@remotehost  # -X 启动 X11 Forwarding 功能，远端此时应该已经开启 X11Forwarding yes
 ......  # 进入远程连接
 [user@remotehost ~]$ startxfce4  # 启动 xfce 桌面，此时会在本地 X Server 中显示远程的 xfce 桌面
 [user@remotehost ~]$ firefox  # 启动单一的 X Client 而不是桌面套件，此时会在本地 X Server 中开启 firefox 浏览器
 ```
+
 ---
 
 ### 运行时分析
 
 按照以上的步骤，可以建立起两台机器之间的 X Window System 通信。下面进行简单的分析：
 
-* 在 X Server 端所在的机器，如果启动 X 进程而且不关闭 tcp 监听，通过 netstat 抓取到的端口号为 DISPLAY 的 6000 加上 displaynumber 。如果启动的 X 进程关闭了 tcp 监听，就无法抓取到监听端口，作为替换的结果是你可以追踪到一个打开的 Unix Socket 。
+- 在 X Server 端所在的机器，如果启动 X 进程而且不关闭 tcp 监听，通过 netstat 抓取到的端口号为 DISPLAY 的 6000 加上 displaynumber 。如果启动的 X 进程关闭了 tcp 监听，就无法抓取到监听端口，作为替换的结果是你可以追踪到一个打开的 Unix Socket 。
 
-* 在本地使用 startxfce4 启动图形界面后，使用命令行可以输出得到 DISPLAY 值为 6000 加上 X11DisplayOffset 。 X11DisplayOffset 和 X11Forwarding 一样定义在 X Client 所在的机器的 /etc/ssh/sshd_config 中。
+- 在本地使用 startxfce4 启动图形界面后，使用命令行可以输出得到 DISPLAY 值为 6000 加上 X11DisplayOffset 。 X11DisplayOffset 和 X11Forwarding 一样定义在 X Client 所在的机器的 /etc/ssh/sshd_config 中。
 
 我们可以知道大概的运行过程是这样：在设置了 DISPLAY 环境变量的 shell 启动 ssh -X 会话后，这个会话启动时会把 DISPLAY 的值进行端口映射，远程的映射信息是在远程的 /etc/ssh/sshd_config 中设置的。 ssh 连接成功就意味着端口转发的建立，在远程机器上的 X Client 并不感知这个端口已经被转发，它会正常地进行通信，并被本地的 X Server 显示。
 
@@ -236,4 +237,3 @@ X Window System 是 Linux 上运行图形界面的基础，这个是使用图形
 在本地使用图形界面比较简单，大部分情况下可以之间安装对应软件即可之间使用。比较特殊还是在远程运行图形界面，需要进行一些配置的修改才能成功，但是 X Window System 的性能比较一般，对图形界面有更高的要求一般不使用。
 
 所以这篇笔记适用于最小安装的本地环境或者简单的内网环境。
-
