@@ -395,7 +395,7 @@ OCSP Request Data:
         Certificate ID:
           Hash Algorithm: sha1
           Issuer Name Hash: 2B1D1E98CCF37604D6C1C8BD15A224C804130038
-          Issuer Key Hash: 0ABC0829178CA5396D7A0ECE33C72EB3EDFBC37A
+          Issuer Key Hash: REDACTED
           Serial Number: 05189A54EBE8C7E903E0AB0D925545DE
 OCSP Response Data:
     OCSP Response Status: successful (0x0)
@@ -407,7 +407,7 @@ OCSP Response Data:
     Certificate ID:
       Hash Algorithm: sha1
       Issuer Name Hash: 2B1D1E98CCF37604D6C1C8BD15A224C804130038
-      Issuer Key Hash: 0ABC0829178CA5396D7A0ECE33C72EB3EDFBC37A
+      Issuer Key Hash: REDACTED
       Serial Number: 05189A54EBE8C7E903E0AB0D925545DE
     Cert Status: good
     This Update: Nov 10 13:15:02 2022 GMT

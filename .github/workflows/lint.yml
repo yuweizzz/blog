@@ -36,9 +36,19 @@ jobs:
           FIX_MARKDOWN: true
           FIX_MARKDOWN_PRETTIER: true
 
+      - name: setup node
+        uses: actions/setup-node@v4
+        if: ${{ failure() }}
+        with:
+          node-version: 20
+
+      - name: fix NATURAL_LANGUAGE
+        run: |
+          npm install -g textlint textlint-rule-terminology
+          textlint --rule terminology  --fix  content/*
+
       - name: create pull request
         uses: peter-evans/create-pull-request@v7
-        if: ${{ failure() }}
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           commit-message: "chore: Auto lint docs"

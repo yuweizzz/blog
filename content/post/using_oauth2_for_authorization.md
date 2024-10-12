@@ -87,7 +87,7 @@ config:
     redirectURIs:
     - 'http://app.lan/oauth2/callback'
     name: 'oauth2-proxy'
-    secret: XltaNeGaLcEZTnDUMTsiXDYH
+    secret: REDACTED
 ```
 
 `v2.39.1` 版本的 dex 似乎无法正常实现 `skipApprovalScreen` 配置，降级到 `v2.38.0` 版本使用，可以参考这个 [issue](https://github.com/dexidp/dex/issues/3540) 。
@@ -109,7 +109,7 @@ helm upgrade oauth2-proxy oauth2-proxy/oauth2-proxy --namespace oauth2-proxy --v
 ``` yaml
 config:
   clientID: "oauth2-proxy"
-  clientSecret: "XltaNeGaLcEZTnDUMTsiXDYH"
+  clientSecret: "REDACTED"
   configFile: |-
     redirect_url = "http://app.lan/oauth2/callback"
     provider = "oidc"
@@ -117,7 +117,7 @@ config:
     upstreams = [ "http://app-service.app-namespace:8080" ]
     email_domains = [ "*" ]
     cookie_secure = false
-    cookie_secret = "XLgkh_0hkftnJdtGY3L9YEZpBzp5ITtlwWQ4Vuf-Q-U="
+    cookie_secret = "REDACTED"
     proxy_websockets = true
 ```
 
