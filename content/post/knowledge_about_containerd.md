@@ -48,7 +48,7 @@ containerd 守护进程管理着运行中的容器，与容器具体的交互功
 
 但是 containerd 并不是直接调用 runc ，而是采用了垫片的方式，由 containerd-shim 去调用 runc ，而 containerd 只需要和 shim 交互，无需直接和更底层的 runc 交互，垫片机制在容器技术中很常见， Kubernetes 使用 dokcer 作为容器运行时也是通过 shim 来实现的。
 
-```
+```text
 #    containerd 和 docker 的关系
 
           docker daemon
@@ -93,7 +93,8 @@ mybusybox    2973    RUNNING
 
 根据 OCI Runtime Spec ，正常的容器会经过以下几种运行状态：
 
-```
+
+```text
 # OCI Runtime Spec
 
           init     ->    creating
