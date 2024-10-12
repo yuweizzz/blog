@@ -10,10 +10,13 @@ jobs:
     name: lint docs
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      # contents: read
       packages: read
       # To report GitHub Actions status checks
       statuses: write
+      # Allow to create Pull Request
+      contents: write  # write includes read
+      pull-requests: write
 
     steps:
       - name: checkout
@@ -30,6 +33,7 @@ jobs:
 
       - name: create pull request
         uses: peter-evans/create-pull-request@v7
+        if: ${{ failure() }}
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           commit-message: "chore: lint"
