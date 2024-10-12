@@ -5,6 +5,8 @@ on:
       - main
   workflow_dispatch:
 
+permissions: read-all
+
 jobs:
   build:
     name: lint docs
@@ -17,6 +19,7 @@ jobs:
       # Allow to create Pull Request
       contents: write  # write includes read
       pull-requests: write
+      issues: write
 
     steps:
       - name: checkout
@@ -30,7 +33,6 @@ jobs:
           FILTER_REGEX_INCLUDE: ^/github/workspace/content/
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           VALIDATE_JSCPD: false
-          SAVE_SUPER_LINTER_SUMMARY: false
           FIX_MARKDOWN: true
           FIX_MARKDOWN_PRETTIER: true
 
@@ -39,14 +41,12 @@ jobs:
         if: ${{ failure() }}
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
-          commit-message: "chore: lint"
+          commit-message: "chore: Auto lint docs"
           branch: lint-patch
           branch-suffix: timestamp
           delete-branch: true
-          title: '[lint] Update report'
+          title: 'chore: Auto lint docs'
           body: |
-            Update lint report
-          labels: |
-            report
+            chore: Auto lint docs
           milestone: 1
           draft: false
