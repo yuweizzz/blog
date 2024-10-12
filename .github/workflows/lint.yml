@@ -34,9 +34,14 @@ jobs:
           FIX_MARKDOWN: true
           FIX_MARKDOWN_PRETTIER: true
 
+      - name: clean
+        if: ${{ failure() }}
+        run: |
+          rm -rf github_conf/branch_protection_rules.json
+          rm -rf super-linter-output/super-linter-summary.md
+
       - name: create pull request
         uses: peter-evans/create-pull-request@v7
-        if: ${{ failure() }}
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           commit-message: "chore: lint"
