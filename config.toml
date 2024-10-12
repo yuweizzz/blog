@@ -20,7 +20,7 @@ pygmentsUseClasses = true
   enableSearch = true
 
 [frontmatter]
-  lastmod = ["lastmod", ":fileModTime", ":default"]
+  lastmod = [":fileModTime", "lastmod", ":default"]
 
 [services]
   [services.googleAnalytics]
