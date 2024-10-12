@@ -79,13 +79,12 @@ name: Python package
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -145,10 +144,10 @@ jobs:
   build:
     name: Build and deploy blog
     env:
-      MY_SECRET   : ${{secrets.commit_secret}}
-      USER_NAME   : username
-      USER_EMAIL  : username@mail.com
-      PUBLISH_DIR : ./public
+      MY_SECRET: ${{secrets.commit_secret}}
+      USER_NAME: username
+      USER_EMAIL: username@mail.com
+      PUBLISH_DIR: ./public
     runs-on: ubuntu-latest
     strategy:
       matrix:
