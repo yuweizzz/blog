@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -44,12 +44,12 @@ fio 是比较常用的硬盘性能测试工具，它可以模拟不同读写场�
 
 fio 可以指定具体的读写模式来模拟现实场景，比较常用的有下面几个：
 
-* read 顺序读
-* write 顺序写
-* randread 随机读
-* randwrite 随机写
-* readwrite 顺序读写
-* randrw 随机读写
+- read 顺序读
+- write 顺序写
+- randread 随机读
+- randwrite 随机写
+- readwrite 顺序读写
+- randrw 随机读写
 
 一般来说，机械硬盘的强项是顺序读写，而随机读写是机械硬盘的弱项；固态硬盘的强项是随机读写，顺序读写虽然表现也不错但是并不占优势，因为固态硬盘的价格比机械硬盘更高。
 
@@ -65,19 +65,19 @@ fio 可以指定具体的读写模式来模拟现实场景，比较常用的有�
 
 下面是一些重要的 fio 命令参数：
 
-* `-name` 可以命名当前进行的测试任务。
-* `-filename` 用来指定测试对象，如果是类似于 `/dev/sdb` 这样的设备则说明测试对象是裸盘，如果是类似于 `/home/file.img` 这样的文件路径则说明测试对象是基于文件系统的。如果是裸盘测试很有可能把原有的文件系统写坏，使用时要注意数据安全。
-* `-ioengine` 用来指定进行测试的 IO 函数库，也就是前述的 sync 或者 libaio 。
-* `-rw` 用来指定具体的读写模式，也就是前述的 io pattern 。
-* `-direct` 决定使用 buffered IO 或者是 non-buffered IO ，其中 buffered IO 是大多数操作系统的默认 IO 方式，数据会先被内核从硬盘中读取到缓冲中，再由用户层将内核缓冲作为第一层来读取，使用 `-direct=1` 可以屏蔽内核缓冲的使用，使用 non-buffered IO 来直接读取硬盘，大部分情况下应该使用 non-buffered IO 进行测试。
-* `-iodepth` 主要作用于异步 IO 库，也就是 libaio ，它可以决定并发性地发起多少个 IO 请求，这个选项在使用 buffered IO 和同步 IO 库时基本不起作用。
-* `-bs` 用来指定读写的 IO 块大小。
-* `-size` 用来指定读写内容的大小，在读写给定大小内容完成后就会结束任务，如果不指定 `-size` 还会根据 `-runtime` 决定任务的运行时间。
-* `-numjobs` 和 `-thread` 是控制测试任务的并发方式，如果使用 `-thread` 则使用单进程多线程的方式来运行，如果不使用 `-thread` 则使用多进程的方式来运行，而 `-numjobs` 则用来控制线程数量，在使用并发的情况下，可以使用 `-group_reporting` 来综合所有执行结果以输出测试报告。
+- `-name` 可以命名当前进行的测试任务。
+- `-filename` 用来指定测试对象，如果是类似于 `/dev/sdb` 这样的设备则说明测试对象是裸盘，如果是类似于 `/home/file.img` 这样的文件路径则说明测试对象是基于文件系统的。如果是裸盘测试很有可能把原有的文件系统写坏，使用时要注意数据安全。
+- `-ioengine` 用来指定进行测试的 IO 函数库，也就是前述的 sync 或者 libaio 。
+- `-rw` 用来指定具体的读写模式，也就是前述的 io pattern 。
+- `-direct` 决定使用 buffered IO 或者是 non-buffered IO ，其中 buffered IO 是大多数操作系统的默认 IO 方式，数据会先被内核从硬盘中读取到缓冲中，再由用户层将内核缓冲作为第一层来读取，使用 `-direct=1` 可以屏蔽内核缓冲的使用，使用 non-buffered IO 来直接读取硬盘，大部分情况下应该使用 non-buffered IO 进行测试。
+- `-iodepth` 主要作用于异步 IO 库，也就是 libaio ，它可以决定并发性地发起多少个 IO 请求，这个选项在使用 buffered IO 和同步 IO 库时基本不起作用。
+- `-bs` 用来指定读写的 IO 块大小。
+- `-size` 用来指定读写内容的大小，在读写给定大小内容完成后就会结束任务，如果不指定 `-size` 还会根据 `-runtime` 决定任务的运行时间。
+- `-numjobs` 和 `-thread` 是控制测试任务的并发方式，如果使用 `-thread` 则使用单进程多线程的方式来运行，如果不使用 `-thread` 则使用多进程的方式来运行，而 `-numjobs` 则用来控制线程数量，在使用并发的情况下，可以使用 `-group_reporting` 来综合所有执行结果以输出测试报告。
 
 参考命令如下：
 
-``` bash
+```bash
 # 顺序读
 $ fio -name=read -filename=/dev/sdb -rw=read -ioengine=libaio -direct=1 -iodepth=32 -bs=256k -size=8G \
   -numjobs=4 -thread -group_reporting
@@ -103,7 +103,7 @@ stream 是内存带宽性能的测试工具，主要通过内存运算操作来�
 
 实际使用可以参考下面的过程：
 
-``` bash
+```bash
 # 获取机器的 CPU 信息
 $ lscpu | grep -E 'Socket|L3'
 Socket(s):           1
@@ -119,7 +119,7 @@ $ gcc -O3 -fopenmp -DSTREAM_ARRAY_SIZE=8500000 -DNTIMES=10 stream.c -o stream
 # -O3 指定编译优化级别为最高
 # -fopenmp 启用多核支持，这样 stream 会默认以核心数量来启动线程
 # -DNTIMES 用来改变 stream 的运行次数， stream 默认会多次执行计算并取出最好的运行结果，默认值为 10
-# -DSTREAM_ARRAY_SIZE 就是我们需要指定的数组大小，默认值为 10000000 
+# -DSTREAM_ARRAY_SIZE 就是我们需要指定的数组大小，默认值为 10000000
 # 如果 STREAM_ARRAY_SIZE 默认值已经大于通过机器的三级缓存总和计算的结果，则可以直接保持这个默认值
 
 # 源代码部分参考：

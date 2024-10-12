@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -45,7 +45,7 @@ http_requests_total{code="200",handler="query_range",instance="localhost:9090",j
 
 查询相关的 API 有即时查询和范围查询两种：
 
-``` bash
+```bash
 # 即时查询
 curl http://localhost:8428/prometheus/api/v1/query \
   -d 'query=http_requests_total'
@@ -65,7 +65,7 @@ curl http://localhost:8428/prometheus/api/v1/query_range \
 
 删除相关的 API ：
 
-``` bash
+```bash
 curl http://localhost:8428/api/v1/admin/tsdb/delete_series \
   -d 'match[]=http_requests_total'
 ```
@@ -101,12 +101,12 @@ increase 用来计算区间向量的增长量，以区间向量的第一个元�
 
 ```
 before:
-http_requests_total{code="200"} 100375	@1708045914.967	
-http_requests_total{code="200"} 100377	@1708045924.967
-http_requests_total{code="200"} 100378	@1708045934.967
-http_requests_total{code="200"} 100379	@1708045944.967
-http_requests_total{code="200"} 100381	@1708045954.967
-http_requests_total{code="200"} 100381	@1708045964.967
+http_requests_total{code="200"} 100375 @1708045914.967
+http_requests_total{code="200"} 100377 @1708045924.967
+http_requests_total{code="200"} 100378 @1708045934.967
+http_requests_total{code="200"} 100379 @1708045944.967
+http_requests_total{code="200"} 100381 @1708045954.967
+http_requests_total{code="200"} 100381 @1708045964.967
 
 expr:
 increase(http_requests_total{code="200"}[1m])

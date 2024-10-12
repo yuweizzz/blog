@@ -14,7 +14,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -43,43 +43,43 @@ Nginx 可以轻松获取 HTTP 请求头，使用 `$http_xxxx` 来获取，比如
 
 还有一些比较重要的内置变量：
 
-* `$remote_addr` ：请求的来源 IP 地址，这里是指直接和当前 Nginx 交互的对端地址，所以它有可能只是源请求的一个代理地址。
-* `$server_name` ： Nginx 虚拟主机中的 `server_name` 。
-* `$request` ：原始的请求 url 。
-* `$scheme` ：请求的协议，通常是 http 和 https 。
-* `$request_method` ：请求的方法，也就是 HTTP 的请求方法 GET ， POST 等。
-* `$request_uri` ：原始的请求路径和完整参数，是不可修改的。
-* `$uri` ：来自 `$request_uri` 中的路径部分，在经过重写行为后可能会与原来不同。
-* `$args` ：来自 `$request_uri` 中的参数部分。
-> `$request_uri` 可以拆解为 `$uri$is_args$args` ，其中 `$is_args` 就是 uri 请求中的 `?` ，在实际请求没有参数的时候， `$is_args` 和 `$args` 都为空。
-* `$host` ：以下出自官方文档的解释，可以看到取值优先级来源于以下三个值：请求 url 中的主机部分；请求头中 `Host` 的部分，同 `$http_host` ； Nginx 虚拟主机中匹配命中的 `server_name` 。
-> $host：in this order of precedence: host name from the request line, or host name from the "Host" request header field, or the server name matching a request
+- `$remote_addr` ：请求的来源 IP 地址，这里是指直接和当前 Nginx 交互的对端地址，所以它有可能只是源请求的一个代理地址。
+- `$server_name` ： Nginx 虚拟主机中的 `server_name` 。
+- `$request` ：原始的请求 URL 。
+- `$scheme` ：请求的协议，通常是 http 和 https 。
+- `$request_method` ：请求的方法，也就是 HTTP 的请求方法 GET ， POST 等。
+- `$request_uri` ：原始的请求路径和完整参数，是不可修改的。
+- `$uri` ：来自 `$request_uri` 中的路径部分，在经过重写行为后可能会与原来不同。
+- `$args` ：来自 `$request_uri` 中的参数部分。
+  > `$request_uri` 可以拆解为 `$uri$is_args$args` ，其中 `$is_args` 就是 uri 请求中的 `?` ，在实际请求没有参数的时候， `$is_args` 和 `$args` 都为空。
+- `$host` ：以下出自官方文档的解释，可以看到取值优先级来源于以下三个值：请求 URL 中的主机部分；请求头中 `Host` 的部分，同 `$http_host` ； Nginx 虚拟主机中匹配命中的 `server_name` 。
+  > $host：in this order of precedence: host name from the request line, or host name from the "Host" request header field, or the server name matching a request
 
 和请求时间相关的变量，更多用于排查问题和性能分析：
 
-* `$request_time` ：本地响应请求所使用的时间，从客户端读取第一个字节开始计时，单位精确到毫秒，这个值计算的时间已经包括了 `$upstream_response_time` 。
-* `$upstream_response_time` ：使用代理的情况下，上游响应代理请求所使用的时间，单位精确到毫秒，这个值可以直观反应具体程序对请求的处理所需时间。
-* `$time_local` ：输出当前时间值，通常用于日志记录。
+- `$request_time` ：本地响应请求所使用的时间，从客户端读取第一个字节开始计时，单位精确到毫秒，这个值计算的时间已经包括了 `$upstream_response_time` 。
+- `$upstream_response_time` ：使用代理的情况下，上游响应代理请求所使用的时间，单位精确到毫秒，这个值可以直观反应具体程序对请求的处理所需时间。
+- `$time_local` ：输出当前时间值，通常用于日志记录。
 
 ## 使用 map 映射变量
 
 `map` 是 Nginx 模块 ngx_http_map_module 提供的关键字，可以基于某个变量的现有值制定一定规则，从而设置新的变量。
 
-``` bash
+```bash
 # 来自 Nginx 官方文档的示例
 map $http_user_agent $mobile {
     default       0;
     "~Opera Mini" 1;
 }
 
-# 获取 HTTP 请求头 User-Agent 的值，如果使用正则匹配到 Opera Mini 则设置变量 mobile 为 1 ，其他情况默认为 0 
+# 获取 HTTP 请求头 User-Agent 的值，如果使用正则匹配到 Opera Mini 则设置变量 mobile 为 1 ，其他情况默认为 0
 ```
 
 ## 设置 json 格式日志
 
 Nginx 原生的日志格式是列出了关键信息的单行文本，我们可以创建模拟 json 格式的日志写入规则。
 
-``` bash
+```bash
 # 模拟 json 的日志格式
 http {
     log_format main escape=json '{'
@@ -109,7 +109,7 @@ http {
 
 生产环境的 Nginx 日志应该定时切割和归档，否则可能会将存储空间占满，一般通过 `logrotate` 或者 `crontab` 完成这项工作。
 
-``` bash
+```bash
 # Nginx 切割日志实例
 $ cat /etc/logrotate.d/nginx
 /usr/local/openresty/nginx/logs/*.log {
@@ -121,7 +121,7 @@ $ cat /etc/logrotate.d/nginx
     compress
     delaycompress            # 启用日志压缩，并在下次轮转时，压缩上一份历史日志
     notifempty               # 空文件则不执行轮转
-    sharedscripts            # 使用 *.log 说明目录可能存在多种日志，这个关键字用来声明所有日志都需要执行 postrotate 脚本 
+    sharedscripts            # 使用 *.log 说明目录可能存在多种日志，这个关键字用来声明所有日志都需要执行 postrotate 脚本
     postrotate               # 轮转工作完成后需要执行脚本
         [ -e /usr/local/openresty/nginx/logs/nginx.pid ] && kill -USR1 `cat /usr/local/openresty/nginx/logs/nginx.pid`
     endscript
@@ -142,7 +142,7 @@ WebSocket 的握手请求带有重要的两个请求头 `Upgrade: websocket` 和
 
 通常 WebSocket 代理是这样做的：
 
-``` bash
+```bash
 http {
     map $http_upgrade $connection_upgrade {
         default upgrade;
@@ -171,7 +171,7 @@ http {
 
 跨域访问是浏览器对 Web 资源访问的安全限制，通过特定的请求头响应来确认是否允许访问非同源的资源。
 
-``` bash
+```bash
 # 简单的跨域请求
 GET /resource HTTP/1.1         # 请求资源路径： /resource
 Origin: http://web.domain.com  # 所在的请求页面： web.domain.com
@@ -180,7 +180,7 @@ Host: api.domain.com           # 完整请求： api.domain.com/resource
 
 所有的跨域请求都需要带上 `Origin` 作为来源标识，此外可能还额外带有一些额外的请求头，通常会以 `OPTIONS` 方法进行预检测服务端是否响应跨域请求。
 
-``` bash
+```bash
 # Preflight Request from MDN Docs
 
 # Request
@@ -210,16 +210,16 @@ Connection: Keep-Alive
 
 比较重要的响应 Header 有：
 
-* `Access-Control-Allow-Origin` ：允许跨域的来源，可以使用 `Access-Control-Allow-Origin: *` 代表公开资源。
-* `Access-Control-Allow-Methods` ：允许跨域请求所使用的 HTTP 方法。
-* `Access-Control-Allow-Headers` ：允许跨域请求所携带的 Header 。
-* `Access-Control-Max-Age` ：预检跨域请求的缓存时间。
-* `Access-Control-Allow-Credentials` ：允许跨域请求携带 cookies Header 信息，通过用于实现不同子域的 cookies 共享。当这个 Header 设置为 `true` 时， `Access-Control-Allow-Origin` 不允许设置为 `*` 。
-* `Access-Control-Expose-Headers` ：允许浏览器额外获取的 Header ， `XMLHttpRequest` 对象的方法 `getResponseHeader()` 就可以获取到 `Access-Control-Expose-Headers` 中设置的 Header 。
+- `Access-Control-Allow-Origin` ：允许跨域的来源，可以使用 `Access-Control-Allow-Origin: *` 代表公开资源。
+- `Access-Control-Allow-Methods` ：允许跨域请求所使用的 HTTP 方法。
+- `Access-Control-Allow-Headers` ：允许跨域请求所携带的 Header 。
+- `Access-Control-Max-Age` ：预检跨域请求的缓存时间。
+- `Access-Control-Allow-Credentials` ：允许跨域请求携带 cookies Header 信息，通过用于实现不同子域的 cookies 共享。当这个 Header 设置为 `true` 时， `Access-Control-Allow-Origin` 不允许设置为 `*` 。
+- `Access-Control-Expose-Headers` ：允许浏览器额外获取的 Header ， `XMLHttpRequest` 对象的方法 `getResponseHeader()` 就可以获取到 `Access-Control-Expose-Headers` 中设置的 Header 。
 
 除了在业务端实现跨域请求 Header 响应，还可以在 Nginx 中设置。
 
-``` bash
+```bash
 location / {
     add_header 'Access-Control-Allow-Origin' $http_origin;
     add_header 'Access-Control-Max-Age' '86400';
@@ -237,7 +237,7 @@ location / {
 
 Nginx 可以通过 SNI 获取到请求的域名信息，我们可以根据这个信息分发对应的证书，适合用于同站点多域名的情况。
 
-``` bash
+```bash
 # 需要确认 nginx 版本是否支持 SNI
 $ nginx -V
 ......
@@ -263,7 +263,7 @@ TLS 握手成功后会在服务端创建 session 并返回 session ID 给到客�
 
 在 nginx 中通过使用 ssl_session_cache 关键字来启用 TLS session 。
 
-``` bash
+```bash
 $ cat nginx.conf
 ......
 server {
@@ -271,7 +271,7 @@ server {
     server_name $ssl_server_name;
     ssl_certificate $ssl_server_name.crt;
     ssl_certificate_key $ssl_server_name.pri;
-    
+
     # 使用 shared 会由所有工作进程共享 session ， 1m 代表共享空间的内存大小为 1MB
     ssl_session_cache shared:SSL:1m;
     # ssl_session_tickets 是 tls 复用的另一种机制
@@ -290,7 +290,7 @@ server {
 
 为了将访问 HTTP 的 80 端口流量导向 HTTPS 的 443 端口，通过会额外配置一个虚拟主机用于重定向。
 
-``` bash
+```bash
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -304,7 +304,7 @@ server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
 
-    # Enable HSTS 
+    # Enable HSTS
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
 }
 ```
@@ -319,7 +319,7 @@ OCSP 全称 Online Certificate Status Protocol ，也就是在线证书状态协
 
 OCSP Stapling 是基于 OCSP 的 TLS 协议扩展，和 OCSP 不同的是，服务端预先通过缓存 OCSP 结果，将这些信息一步到位返回给请求端浏览器，省去浏览器调用证书签发机构验证接口的时间。
 
-``` bash
+```bash
 # 以 github.com 为测试站点，首先获取证书链
 $ echo | openssl s_client -showcerts -connect www.github.com:443 2>/dev/null | sed -n '/BEGIN/,/END/p'
 -----BEGIN CERTIFICATE-----
@@ -422,13 +422,13 @@ OCSP Response Data:
          0c:f4:68:6d:eb:0b:ea:da:fa:63:4c:eb
 Response verify OK
 github.pem: good
-	This Update: Nov 10 13:15:02 2022 GMT
-	Next Update: Nov 17 12:30:02 2022 GMT
+ This Update: Nov 10 13:15:02 2022 GMT
+ Next Update: Nov 17 12:30:02 2022 GMT
 ```
 
 在 Nginx 中可以通过 ssl 模块中的相关指令来开启 OCSP 支持。
 
-``` bash
+```bash
 # 开启 OCSP 支持
 http {
     server {
@@ -501,14 +501,14 @@ $ echo | openssl s_client -status -connect www.github.com:443 2>/dev/null | grep
 
 ### ngx_http_core_module 配置
 
-* `client_header_buffer_size 1k;` ：这个配置用来定义请求的 Header 缓冲区大小，如果 Header 内容大于这个值，会使用 `large_client_header_buffers` 的配置。
-* `large_client_header_buffers 4 8k;` ：这个配置用来限制请求 URL 和 Header 字段大小，虽然定义了多个缓冲区，但是 URL 和单个 Header 不能超过单个缓冲区的最大限制，而且总大小应该保持在多个缓冲区总和内，否则都会返回请求错误。
+- `client_header_buffer_size 1k;` ：这个配置用来定义请求的 Header 缓冲区大小，如果 Header 内容大于这个值，会使用 `large_client_header_buffers` 的配置。
+- `large_client_header_buffers 4 8k;` ：这个配置用来限制请求 URL 和 Header 字段大小，虽然定义了多个缓冲区，但是 URL 和单个 Header 不能超过单个缓冲区的最大限制，而且总大小应该保持在多个缓冲区总和内，否则都会返回请求错误。
 
 ### ngx_http_proxy_module 超时时间配置
 
-* `proxy_connect_timeout 60s;` ：这个配置用来定义请求与上游建立连接的超时时间。
-* `proxy_read_timeout 60s;` ：这个配置用来定义读取连接的超时时间，是指相邻两次读操作之间的最长时间间隔，达到超时时间连接将会关闭。
-* `proxy_send_timeout 60s;` ：这个配置用来定义写入连接的超时时间，和 `proxy_read_timeout` 的定义类似，只不过它是基于写操作的。
+- `proxy_connect_timeout 60s;` ：这个配置用来定义请求与上游建立连接的超时时间。
+- `proxy_read_timeout 60s;` ：这个配置用来定义读取连接的超时时间，是指相邻两次读操作之间的最长时间间隔，达到超时时间连接将会关闭。
+- `proxy_send_timeout 60s;` ：这个配置用来定义写入连接的超时时间，和 `proxy_read_timeout` 的定义类似，只不过它是基于写操作的。
 
 ### ngx_http_proxy_module 缓冲设置
 
@@ -518,10 +518,10 @@ $ echo | openssl s_client -status -connect www.github.com:443 2>/dev/null | grep
 
 如果使用 `proxy_buffering` ，那么如下关键字就可以被有效使用：
 
-* `proxy_buffers 8 4k|8k;` ：定义缓冲区的数量和字节大小。
-* `proxy_busy_buffers_size 8k|16k;` ：在上游响应未完全读取的情况下，当缓冲的内容超过这个定义的大小时，就开始向客户端返回数据。
-* `proxy_temp_file_write_size 8k|16k;` ：内存缓冲区大小不足时，单次写入磁盘缓冲文件的字节大小。
-* `proxy_max_temp_file_size 1024m;` ：内存缓冲区大小不足时，最大可用的磁盘缓冲文件的字节大小。
+- `proxy_buffers 8 4k|8k;` ：定义缓冲区的数量和字节大小。
+- `proxy_busy_buffers_size 8k|16k;` ：在上游响应未完全读取的情况下，当缓冲的内容超过这个定义的大小时，就开始向客户端返回数据。
+- `proxy_temp_file_write_size 8k|16k;` ：内存缓冲区大小不足时，单次写入磁盘缓冲文件的字节大小。
+- `proxy_max_temp_file_size 1024m;` ：内存缓冲区大小不足时，最大可用的磁盘缓冲文件的字节大小。
 
 使用 `proxy_buffering` ，缓冲区将由 `proxy_buffer_size` 和 `proxy_buffers` 共同构成，并且 `proxy_busy_buffers_size` 默认是这两个值中单个缓冲区的两倍大小，在整体缓冲区容量不足的情况下，需要设置 `proxy_temp_file_write_size` 和 `proxy_max_temp_file_size` 的容量大小才能使用磁盘缓冲。
 
@@ -529,7 +529,7 @@ $ echo | openssl s_client -status -connect www.github.com:443 2>/dev/null | grep
 
 以下是通过使用 acme.sh 的 webroot 模式申请免费证书的步骤。
 
-``` bash
+```bash
 # 通过 80 端口提供认证服务接口
 server {
     listen 80;
@@ -544,7 +544,7 @@ server {
 
 修改完 nginx 配置后，参考的执行命令如下：
 
-``` bash
+```bash
 # 安装 acme.sh
 $ curl https://get.acme.sh | sh
 

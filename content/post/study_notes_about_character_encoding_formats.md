@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -52,8 +52,8 @@ codepage 是 Windows 系统用来转换编码格式的重要依据，在业务�
 
 以二进制数据 `0x1234` 为例子，此时高字节是 `0x12` ，而低字节是 `0x34` ，大小端的数据处理情况是这样的：
 
-* 大端：高字节存放在内存低地址，低字节存放在内存高地址，假设从左到右表示内存地址增长，那么数据会是 `0x1234` 。
-* 小端：高字节存放在内存高地址，低字节存放在内存低地址，假设从左到右表示内存地址增长，那么数据会是 `0x3412` 。
+- 大端：高字节存放在内存低地址，低字节存放在内存高地址，假设从左到右表示内存地址增长，那么数据会是 `0x1234` 。
+- 小端：高字节存放在内存高地址，低字节存放在内存低地址，假设从左到右表示内存地址增长，那么数据会是 `0x3412` 。
 
 所以实际使用的 utf-16 还分为 utf-16 LE 和 utf-16 BE 两种，对应小端和大端的不同处理场景。
 
@@ -61,96 +61,96 @@ codepage 是 Windows 系统用来转换编码格式的重要依据，在业务�
 
 utf-8 和 utf-16 的 BOM 会出现在文件开头，然后才是真正的文件内容， BOM 的具体内容是这样的：
 
-* utf-8 ： `0xEFBBBF`
-* utf-16 BE ： `0xFEFF`
-* utf-16 LE ： `0xFFFE`
+- utf-8 ： `0xEFBBBF`
+- utf-16 BE ： `0xFEFF`
+- utf-16 LE ： `0xFFFE`
 
 使用 utf-16 编码的文件必须带有 BOM ，否则会读取错误，而 utf-8 实际上可以不需要 BOM ，因为它是字节序无关的，但是使用 utf-8 编码格式的文件依然可以添加 BOM 作为标记。在 Windows 系统和 Linux 系统对 utf-8 BOM 的处理方式不同，在跨系统处理文件的时候可能要注意这个问题。
 
 utf-8 编码可以使用一到四个字节来表示单个字符，英文字符只需要用到一个字节，而中文字符一般要用到三个字节，这样看起来中文字符或者使用多字节表示的字符似乎会受到大小端问题的影响，实际上 utf-8 虽然也用到了多字节，但是不同于 utf-16 这样的编码方式， utf-16 因为用到了两个字节和四个字节来表示字符，在使用两个字节的情况下相当于直接使用类似于 `U+0000` 的 Unicode 码位，此时字节序就会明显影响读取值所指向的具体码位。而 utf-8 在多字节的情况下，则需要通过第一个字节判断出具体的使用的字节数量，然后顺序读取后续的数据将它们当作整块数据来处理。
 
-``` go
+```go
 // from Standard library unicode/utf8
 func DecodeRune(p []byte) (r rune, size int) {
-	n := len(p)
-	if n < 1 {
-		return RuneError, 0
-	}
-	// as 和 first 都是常量
-	// const as = 0xF0
-	// first 是记录了 utf-8 第一个字节编码情况的数组
-	p0 := p[0]
-	x := first[p0]
-	// 判断是否使用英文字符，即使用单个字节的情况
-	if x >= as {
-		// The following code simulates an additional check for x == xx and
-		// handling the ASCII and invalid cases accordingly. This mask-and-or
-		// approach prevents an additional branch.
-		mask := rune(x) << 31 >> 31 // Create 0x0000 or 0xFFFF.
-		return rune(p[0])&^mask | RuneError&mask, 1
-	}
-	// 使用多字节的情况
-	// 通过第一个字节判断具体使用的字节数量
-	sz := int(x & 7)
-	accept := acceptRanges[x>>4]
-	if n < sz {
-		return RuneError, 1
-	}
-	b1 := p[1]
-	if b1 < accept.lo || accept.hi < b1 {
-		return RuneError, 1
-	}
-	// 使用两个字节的情况
-	if sz <= 2 { // <= instead of == to help the compiler eliminate some bounds checks
-		return rune(p0&mask2)<<6 | rune(b1&maskx), 2
-	}
-	b2 := p[2]
-	if b2 < locb || hicb < b2 {
-		return RuneError, 1
-	}
-	// 使用三个字节的情况
-	if sz <= 3 {
-		return rune(p0&mask3)<<12 | rune(b1&maskx)<<6 | rune(b2&maskx), 3
-	}
-	b3 := p[3]
-	if b3 < locb || hicb < b3 {
-		return RuneError, 1
-	}
-	// 使用四个字节的情况
-	return rune(p0&mask4)<<18 | rune(b1&maskx)<<12 | rune(b2&maskx)<<6 | rune(b3&maskx), 4
+ n := len(p)
+ if n < 1 {
+  return RuneError, 0
+ }
+ // as 和 first 都是常量
+ // const as = 0xF0
+ // first 是记录了 utf-8 第一个字节编码情况的数组
+ p0 := p[0]
+ x := first[p0]
+ // 判断是否使用英文字符，即使用单个字节的情况
+ if x >= as {
+  // The following code simulates an additional check for x == xx and
+  // handling the ASCII and invalid cases accordingly. This mask-and-or
+  // approach prevents an additional branch.
+  mask := rune(x) << 31 >> 31 // Create 0x0000 or 0xFFFF.
+  return rune(p[0])&^mask | RuneError&mask, 1
+ }
+ // 使用多字节的情况
+ // 通过第一个字节判断具体使用的字节数量
+ sz := int(x & 7)
+ accept := acceptRanges[x>>4]
+ if n < sz {
+  return RuneError, 1
+ }
+ b1 := p[1]
+ if b1 < accept.lo || accept.hi < b1 {
+  return RuneError, 1
+ }
+ // 使用两个字节的情况
+ if sz <= 2 { // <= instead of == to help the compiler eliminate some bounds checks
+  return rune(p0&mask2)<<6 | rune(b1&maskx), 2
+ }
+ b2 := p[2]
+ if b2 < locb || hicb < b2 {
+  return RuneError, 1
+ }
+ // 使用三个字节的情况
+ if sz <= 3 {
+  return rune(p0&mask3)<<12 | rune(b1&maskx)<<6 | rune(b2&maskx), 3
+ }
+ b3 := p[3]
+ if b3 < locb || hicb < b3 {
+  return RuneError, 1
+ }
+ // 使用四个字节的情况
+ return rune(p0&mask4)<<18 | rune(b1&maskx)<<12 | rune(b2&maskx)<<6 | rune(b3&maskx), 4
 }
 ```
 
 这是用来测试的 utf-16 LE 编码转换为 utf-8 编码的代码：
 
-``` go
+```go
 package main
 
 import (
-	"bufio"
-	"os"
+ "bufio"
+ "os"
 
-	"golang.org/x/text/encoding/unicode"
-	"golang.org/x/text/transform"
+ "golang.org/x/text/encoding/unicode"
+ "golang.org/x/text/transform"
 )
 
 func main() {
-	filename := os.Args[1]
-	file, err := os.Open(filename)
-	if err != nil {
-		panic(err)
-	}
+ filename := os.Args[1]
+ file, err := os.Open(filename)
+ if err != nil {
+  panic(err)
+ }
 
-	f, err := os.Create("./convert_" + filename)
-	defer f.Close()
-	w := bufio.NewWriter(f)
+ f, err := os.Create("./convert_" + filename)
+ defer f.Close()
+ w := bufio.NewWriter(f)
 
-	scanner := bufio.NewScanner(transform.NewReader(file, unicode.UTF16(unicode.LittleEndian, unicode.UseBOM).NewDecoder()))
-	for scanner.Scan() {
-		line := append(scanner.Bytes(), []byte("\n")...)
-		w.Write(line)
-	}
-	w.Flush()
+ scanner := bufio.NewScanner(transform.NewReader(file, unicode.UTF16(unicode.LittleEndian, unicode.UseBOM).NewDecoder()))
+ for scanner.Scan() {
+  line := append(scanner.Bytes(), []byte("\n")...)
+  w.Write(line)
+ }
+ w.Flush()
 }
 ```
 
@@ -164,7 +164,7 @@ Shift JIS 则是日文字符编码，也就是 CP932 所使用的编码格式。
 
 Big5 是繁体中文字符编码，对应的 codepage 是 CP950 ，多用于港澳台地区，而 GBK 主要是简体中文字符。
 
-``` python
+```python
 # 不同编码格式的读写测试
 
 # 通过二进制编辑器来读取文件内容

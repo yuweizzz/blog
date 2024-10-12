@@ -1,6 +1,6 @@
 `Hello World!`
 
-## Repo
+## Repository
 
 - [Custom-live2d](https://github.com/yuweizzz/custom-live2d) ：一个在 Web 页面上运行 live2D 模型的简易插件
 - [Sidecar](https://github.com/yuweizzz/sidecar) ：基于 mitm 的 https 代理

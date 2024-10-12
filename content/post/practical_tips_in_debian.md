@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -36,7 +36,7 @@ draft: false
 
 dpkg 和 apt 是 Debian 系列 Linux 发行版的软件包管理器，其中 dpkg 是比较底层的软件包工具，而 apt 则是更高层级的管理工具，两者之间的关系类似于 rpm 和 yum 的关系。
 
-``` bash
+```bash
 # 修改 Debian 10 buster 镜像源
 $ echo 'deb http://mirrors.ustc.edu.cn/debian buster main contrib non-free
 deb http://mirrors.ustc.edu.cn/debian buster-updates main contrib non-free
@@ -52,7 +52,7 @@ $ apt update
 
 为了能够使用一些版本比较高的软件，有时候可能需要将镜像源配置为不稳定版本，在 Debian 中不稳定版本的镜像源代号为 sid ，这个镜像源通常包括了一些最新版本但是还不稳定的软件。
 
-``` bash
+```bash
 # 添加 Debian sid 镜像源
 $ echo deb https://mirrors.aliyun.com/debian/ sid main contrib non-free non-free-firmware \
   > /etc/apt/sources.list.d/sid.list
@@ -65,9 +65,9 @@ $ apt update
 
 虽然可以通过添加 sid 镜像源来获取最新软件，但是这个操作是有一定危险性的，所以在添加 sid 源后千万不要使用 `apt upgrade` 更新所有软件，最好在安装完需要的某部分软件后，把 sid 源的优先级降低。
 
-``` bash
+```bash
 # 添加镜像源的优先级配置
-$ cat /etc/apt/preferences.d/sid 
+$ cat /etc/apt/preferences.d/sid
 Package: *
 Pin: release o=Debian,a=unstable,n=sid
 Pin-Priority: 50
@@ -108,7 +108,7 @@ Package files:
 
 这里会记录一些重要软件的独立镜像源，以便需要时能够快速安装。
 
-``` bash
+```bash
 # jenkins Debian LTS release
 $ curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key \
   > /usr/share/keyrings/jenkins-keyring.asc
@@ -154,7 +154,7 @@ $ apt install mysql-community-server
 
 Debian 系统使用的网卡配置文件是 `/etc/network/interfaces` 和 `/etc/network/interfaces.d/*` ，一般会在这里调整网卡的 IP 地址获取行为。
 
-``` bash
+```bash
 # 默认的 /etc/network/interfaces 配置文件
 $ cat /etc/network/interfaces
 # This file describes the network interfaces available on your system
@@ -194,7 +194,7 @@ dns-nameservers 192.168.1.1
 
 在 Debian 的一些版本中默认安装的编辑器是 vim-tiny ，可能会出现比如上下左右方向键变成 ABCD 的字符输入，退格键不能正常删除字符，或者文本粘贴出现异常缩进，可以通过修改 `vimrc` 来解决。
 
-``` bash
+```bash
 $ cat ~/.vimrc
 "解决文本粘贴出现异常缩进"
 set paste
@@ -208,7 +208,7 @@ set backspace=2
 
 sshd 基本上是 Linux 系统必定会运行的服务，一般会增加一些相关的安全配置。
 
-``` bash
+```bash
 # 修改 sshd 服务的配置
 $ cat /etc/ssh/sshd_config
 # 禁止 root 用户登陆
@@ -232,7 +232,7 @@ DenyUsers userB
 
 sshd 用到的一些算法可能已经不安全，所以需要手动禁用。
 
-``` bash
+```bash
 # 查看默认支持的加密算法
 $ ssh -Q cipher
 # 查看默认支持的 mac 算法
@@ -285,7 +285,7 @@ $ ssh -o KexAlgorithms=diffie-hellman-group-exchange-sha1 root@127.0.0.1
 
 在较新版本的 OpenSSH 中，使用 RSA 密钥登陆时可能会产生 `userauth_pubkey: signature algorithm ssh-rsa not in pubkeyacceptedalgorithms` 的登陆错误日志，这是因为新版本的 OpenSSH 对一些不安全算法进行了禁用，可以通过修改配置解决。
 
-``` bash
+```bash
 # 修改配置
 $ cat /etc/ssh/sshd_config
 PubkeyAcceptedAlgorithms +ssh-rsa
@@ -298,7 +298,7 @@ $ sshd -T | grep pubkeyacceptedalgorithms
 
 sshd 服务默认就会启动 sftp 服务，这里主要是对某些用户做一些额外的 sftp 适配。
 
-``` bash
+```bash
 # 增加 sftp 用户并修改密码
 $ useradd sftp -s /sbin/nologin -M
 $ passwd sftp
@@ -324,7 +324,7 @@ $ chmod 750 /data/sftp/sftp
 
 ## 增加 history 时间戳
 
-``` bash
+```bash
 # 追加环境变量到 /etc/profile.d/history_timestamp.sh 文件中
 $ cat /etc/profile.d/history_timestamp.sh
 export HISTTIMEFORMAT="%F %T `whoami` "
@@ -334,7 +334,7 @@ export HISTTIMEFORMAT="%F %T `whoami` "
 
 用户直接执行 `ulimit -a` 就可以看到对应的自身受到的进程相关限制，可以通过修改 `/etc/security/limits.conf` 来改变这个设置。
 
-``` bash
+```bash
 $ cat /etc/security/limits.conf
 # nproc 代表进程数量限制
 # nofile 代表打开文件数量限制
@@ -354,7 +354,7 @@ session required pam_limits.so
 
 Debian 一般会默认启用这个服务，这里的主要是为了修改 ntp 服务器地址。
 
-``` bash
+```bash
 $ vi /etc/systemd/timesyncd.conf
 [Time]
 NTP=ntp.aliyun.com ntp1.aliyun.com
@@ -368,7 +368,7 @@ $ systemctl restart systemd-timesyncd.service
 
 ## 通过 dpkg 查询文件
 
-``` bash
+```bash
 # 查询系统已经安装的 deb 软件包，对标 redhat 系列的 rpm -qa
 $ dpkg -l
 

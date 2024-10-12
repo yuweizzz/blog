@@ -12,7 +12,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -50,8 +50,8 @@ draft: false
 
 在第四步的进行上游信息处理中，具体工作交由函数 `handle_upstream()` 中来完成，可以看到其中有两个非常重要的调用：
 
-* `set_upstream()` 根据 `Route` 找到对应的 `Upstream` ，这里 `set_upstream()` 是来自模块 `apisix/upstream.lua` 中的函数。
-* `load_balancer.pick_server()` 会根据 `Upstream` 中的配置选出具体的上游节点，这里的 `load_balancer` 模块实际就是 `apisix/balancer.lua` 。
+- `set_upstream()` 根据 `Route` 找到对应的 `Upstream` ，这里 `set_upstream()` 是来自模块 `apisix/upstream.lua` 中的函数。
+- `load_balancer.pick_server()` 会根据 `Upstream` 中的配置选出具体的上游节点，这里的 `load_balancer` 模块实际就是 `apisix/balancer.lua` 。
 
 在 `handle_upstream()` 的最后阶段，选中的上游节点会写入到上下文 `api_ctx.picked_server` 之中，整个 `apisix.http_access_phase()` 过程也就基本结束了。
 
@@ -59,7 +59,7 @@ draft: false
 
 下面是 `apisix/balancer.lua` 的代码片段，主要有 `create_server_picker()` ， `pick_server()` 和 `run()` 三个函数的具体内容。
 
-``` lua
+```lua
 local function create_server_picker(upstream, checker)
     -- 根据 upstream 中定义的 type 选择具体的负载均衡算法
     local picker = pickers[upstream.type]
@@ -80,7 +80,7 @@ local function create_server_picker(upstream, checker)
 
         local up_nodes = fetch_health_nodes(upstream, checker)
 
-        -- _priority_index 和 upstream 中定义的 priority 有关 
+        -- _priority_index 和 upstream 中定义的 priority 有关
         if #up_nodes._priority_index > 1 then
             core.log.info("upstream nodes: ", core.json.delay_encode(up_nodes))
             -- 这里的 priority_balancer 就是 apisix/balancer/priority.lua
@@ -258,11 +258,11 @@ end
 
 根据 Apisix 的源代码，我们可以看到有以下不同的 `balancer` ：
 
-* `apisix/balancer/roundrobin.lua` ：对应的是 `round-robin` ，即轮询算法。
-* `apisix/balancer/chash.lua` ：对应的是 `consistent hash` ，即一致性哈希算法。
-* `apisix/balancer/least_conn.lua` ：对应的是 `least connected` ，即最小连接数算法。
-* `apisix/balancer/ewma.lua` ：对应的是 `EWMA` ，即指数加权移动平均算法。
-* `apisix/balancer/priority.lua` ：这个 `balancer` 应该是基于 `Upstream` 中自定义的优先级来实现的算法。
+- `apisix/balancer/roundrobin.lua` ：对应的是 `round-robin` ，即轮询算法。
+- `apisix/balancer/chash.lua` ：对应的是 `consistent hash` ，即一致性哈希算法。
+- `apisix/balancer/least_conn.lua` ：对应的是 `least connected` ，即最小连接数算法。
+- `apisix/balancer/ewma.lua` ：对应的是 `EWMA` ，即指数加权移动平均算法。
+- `apisix/balancer/priority.lua` ：这个 `balancer` 应该是基于 `Upstream` 中自定义的优先级来实现的算法。
 
 仔细观察所有实现具体算法的 `balancer` 可以发现，除去比较特殊的 `priority.lua` 之外，其他的 `balancer` 都实现了 `_M.new()` 的实例化函数以及 `get()` ， `after_balance()` 和 `before_retry_next_priority()` 三个方法，这相当于这些模块都是 `balancer` 作为不同算法的具体实现，而根据 `apisix/balancer.lua` 中的代码，在实际中决定启用哪一种 `balancer` 是由 `Upstream` 的 `type` 决定的。
 

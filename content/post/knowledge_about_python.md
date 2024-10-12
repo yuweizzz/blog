@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -38,7 +38,7 @@ draft: false
 
 在 python2 中经常使用 virtualenv 作为虚拟环境管理库，在 python3 中可以直接使用标准库的自带虚拟环境管理库 venv 。
 
-``` bash
+```bash
 # python2 的 virtualenv 需要独立安装
 $ pip install virtualenv
 
@@ -75,7 +75,7 @@ $ deactivate
 
 创建虚拟环境后就可以直接安装需要的依赖，我的建议是除了虚拟环境管理库，其他依赖尽量不要在全局环境安装。
 
-``` bash
+```bash
 # 更换镜像源
 $ pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
@@ -96,7 +96,7 @@ $ pip install virtualenv
 
 在 python 中对字符串格式化的操作比较频繁，这里做个备忘，记录一下相关的方法。
 
-``` python
+```python
 # format 在 python2 和 python3 中均可用
 name = "python"
 greet = "hi, this is {}".format(name)
@@ -118,7 +118,7 @@ value_format = f"{value:x}"
 
 字典在各类编程语言中非常常见，这里记录一下 python 中字典的常用方法。
 
-``` python
+```python
 Count = {"A": 10, "B": 20}
 
 # 删除一个原有的键值对
@@ -144,7 +144,7 @@ for key, value in Count.items():  # 直接在循环中拆分元组
 
 集合最大的特点在于集合内的所有元素都是唯一的。
 
-``` python
+```python
 array = [1, 1, 2, 2, 3, 3]
 print(set(array))
 # print 将会输出 {1, 2, 3}
@@ -156,11 +156,11 @@ print(set(array))
 
 我们可以利用集合元素的唯一性，来实现两部分数据的差异对比：
 
-* 首先提取两部分数据的关键值，它应该像数据库记录的主键，作为这部分数据的最大特征值。
-* 将它们分别转化为集合，并取得补集，或称为对称差集。
-* 对这个对称差集做遍历，将它们分类归属。
+- 首先提取两部分数据的关键值，它应该像数据库记录的主键，作为这部分数据的最大特征值。
+- 将它们分别转化为集合，并取得补集，或称为对称差集。
+- 对这个对称差集做遍历，将它们分类归属。
 
-``` python
+```python
 # 假设有以下两个数据集
 Old = {"A": 10, "B": 20, "C": 30}
 New = {"B": 100, "C": 30, "D": 40}
@@ -216,7 +216,7 @@ for key, value in Sysmmetric_Difference:
 
 这是对使用 map 函数引发异常的探究。
 
-``` python
+```python
 def add(x):
     return x + 1
 
@@ -247,7 +247,7 @@ print(list(Map))
 
 我们一般通过关键字 `yield` 定义生成器函数。
 
-``` python
+```python
 def gen():
     yield "step1"
     yield "step2"
@@ -267,12 +267,12 @@ print([each for each in gen()])
 
 supervisor 是 python 编写的进程管理服务，使用 client/server 架构，可以方便监测进程状态，并提供值守功能，其中 server 是 supervisord ，它负责监听挂载的进程状态和客户端的请求信号， client 是 supervisorctl ，用于向服务端发送控制信号，使用 supervisor 的好处在于程序的启动变得简洁，并且自带值守功能，不用担心进程意外死亡导致的服务停摆。
 
-``` bash
-# 推荐使用 yum 安装 supervisor 
+```bash
+# 推荐使用 yum 安装 supervisor
 $ yum install supervisor
 
 # supervisord 部分没有具体需要可以保持不变
-$ cat /etc/supervisord.conf 
+$ cat /etc/supervisord.conf
 # 这里是具体进程的配置目录
 ...
 [include]
@@ -313,15 +313,15 @@ files = supervisord.d/*.ini
 
 以下是其中非常重要的几个配置项：
 
-* autorestart ：决定进程状态异常后是否会自动重启，这是最重要的值守功能，一般需要开启。
-* autostart ：决定进程是否跟随 supervisord 启动，一般需要开启，这样启动 supervisord 服务就相当于直接启动我们自定义的程序。
-* environment ：进程的环境变量配置。
-* command ：启动时的具体命令，如果是 python 进程，可以使用项目虚拟环境的绝对路径来指明对应的解释器。
-* directory ：程序的具体工作目录。
+- autorestart ：决定进程状态异常后是否会自动重启，这是最重要的值守功能，一般需要开启。
+- autostart ：决定进程是否跟随 supervisord 启动，一般需要开启，这样启动 supervisord 服务就相当于直接启动我们自定义的程序。
+- environment ：进程的环境变量配置。
+- command ：启动时的具体命令，如果是 python 进程，可以使用项目虚拟环境的绝对路径来指明对应的解释器。
+- directory ：程序的具体工作目录。
 
 在安装 supervisor 后，只要写入对应的 ini 文件到 `/etc/supervisord.d/` 目录中，就可以使用 `supervisorctl` 启动 ini 文件定义的 program ，或者在定义文件后直接重启整个 supervisord 服务 ，同样可以启动我们需要的 program 。
 
-``` bash
+```bash
 # 定义新的 program 后需要重载
 $ supervisorctl reload
 # 或者直接重启 supervisord
@@ -338,7 +338,7 @@ $ supervisorctl start theprogramname
 
 适用于不关心数据顺序，获取索引中所有文档部分所需字段的场景。
 
-``` python
+```python
 # 实现 ElasticSearch 滚动查询，将结果写入 csv
 import requests
 import json
@@ -389,7 +389,7 @@ scroll_id = dicts.get('_scroll_id')
 
 url = f'http://{user}:{password}@{host}:9200/_search/scroll/'
 body = {
-    'scroll': '1m', 
+    'scroll': '1m',
     'scroll_id': scroll_id
 }
 
@@ -408,7 +408,7 @@ csvfile.close()
 
 ## 中文字符处理
 
-``` python
+```python
 # 可用于处理中文文档中段落开头的两个空格
 with open('/path/to/readfile', 'r') as readf:
     strings = readf.read()
@@ -424,7 +424,7 @@ writef.close()
 
 效果类似于执行 Linux 命令 `cat /dev/urandom | tr -dc '[:graph:]' | head -c 24; echo` 。
 
-``` python
+```python
 import string
 import secrets
 
@@ -440,7 +440,7 @@ password = ''.join(secrets.choice(alphabet) for i in range(24))
 
 ## 使用 python 发送邮件
 
-``` python
+```python
 import smtplib
 from email.message import EmailMessage
 

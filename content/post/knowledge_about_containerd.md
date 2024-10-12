@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -68,8 +68,8 @@ containerd 守护进程管理着运行中的容器，与容器具体的交互功
 
 由于 containerd 具备完善的容器生命周期能力，我们可以不再使用 docker cli ，直接使用 containerd 的 cli 工具 ctr 直接运行容器。
 
-``` bash
-# 安装 containerd 
+```bash
+# 安装 containerd
 $ yum install containerd
 $ systemctl enable containerd
 $ systemctl start containerd
@@ -79,22 +79,22 @@ $ ctr i pull docker.io/library/busybox:latest
 $ ctr i pull docker.io/library/nginx:alpine
 
 # 生成容器
-$ ctr c create docker.io/library/busybox:latest mybusybox 
+$ ctr c create docker.io/library/busybox:latest mybusybox
 $ ctr c ls
-CONTAINER    IMAGE                               RUNTIME                           
+CONTAINER    IMAGE                               RUNTIME
 mybusybox    docker.io/library/busybox:latest    io.containerd.runtime.v1.linux
 
 # 启动容器
 $ ctr t start -d mybusybox
 $ ctr t ls
-TASK         PID     STATUS    
+TASK         PID     STATUS
 mybusybox    2973    RUNNING
 ```
 
 根据 OCI Runtime Spec ，正常的容器会经过以下几种运行状态：
 
 ```
-# OCI Runtime Spec 
+# OCI Runtime Spec
 
           init     ->    creating
                             |
@@ -109,21 +109,21 @@ mybusybox    2973    RUNNING
 
 在 containerd 中，除了 container ，还引入了 task 的概念， start ， kill 和 delete 等动作是使用在 task 上的，对应 OCI Runtime Spec 定义的容器状态。而 container 只有 create 和 delete 两个动作，从表象上来看 task 在 containerd 中是实际运行的容器进程，而 container 是容器信息的声明。
 
-``` bash
+```bash
 # task 支持多种动作
 # pause 和 resume 就是冻结和恢复
 $ ctr t ls
-TASK         PID     STATUS    
+TASK         PID     STATUS
 mybusybox    2973    RUNNING
 
 $ ctr t pause mybusybox
 $ ctr t ls
-TASK         PID     STATUS    
+TASK         PID     STATUS
 mybusybox    2973    PAUSED
 
 $ ctr t resume mybusybox
 $ ctr t ls
-TASK         PID     STATUS    
+TASK         PID     STATUS
 mybusybox    2973    RUNNING
 
 # kill 就是发送进程 signal ，一般用来发送终结信号
@@ -132,7 +132,7 @@ $ ctr t kill -s 9 mybusybox
 # 9: SIGKILL
 # 15: SIGTERM
 $ ctr t ls
-TASK         PID     STATUS    
+TASK         PID     STATUS
 mybusybox    2973    STOPPED
 
 # 只有处于 STOPPED 状态才能被删除
@@ -153,7 +153,7 @@ $ ctr t exec -t --exec-id busybox-sh mybusybox sh
 
 虽然 containerd 不具备 docker volumes 的功能，但是可以基于 mount 命名空间将宿主机上的某些文件目录映射到容器中。
 
-``` bash
+```bash
 # 需要在 container creater 阶段声明 mount 信息
 $ ctr c create docker.io/library/busybox:latest mybusybox --mount type=bind,src=/home/busybox,dst=/mnt,options=rbind:ro
 
@@ -175,7 +175,7 @@ containerd 可以基于 net 命名空间，配合 cni 工具构建网络模型�
 
 cni 工具由 cnitool 和各个网络插件组成，一般使用 cnitool 读取定义了各种参数和插件的配置文件来生成网络接口，再将它们附加到 net 命名空间中。
 
-``` bash
+```bash
 # 直接与宿主机共享网络栈
 $ ctr c create --net-host docker.io/library/busybox:latest mybusybox
 # 这样设置使得容器完全使用宿主机的网络，包括本地回环等所有网络接口
@@ -222,23 +222,23 @@ $ ip a
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host 
+    inet6 ::1/128 scope host
        valid_lft forever preferred_lft forever
 2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
     link/ether 00:0c:29:0a:69:d0 brd ff:ff:ff:ff:ff:ff
     inet 192.168.0.7/24 brd 192.168.0.255 scope global dynamic ens33
        valid_lft 84564sec preferred_lft 84564sec
-    inet6 fe80::20c:29ff:fe0a:69d0/64 scope link 
+    inet6 fe80::20c:29ff:fe0a:69d0/64 scope link
        valid_lft forever preferred_lft forever
 3: cni0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
     link/ether b2:51:ec:c7:b0:39 brd ff:ff:ff:ff:ff:ff
     inet 10.88.0.1/16 brd 10.88.255.255 scope global cni0
        valid_lft forever preferred_lft forever
-    inet6 fe80::b051:ecff:fec7:b039/64 scope link 
+    inet6 fe80::b051:ecff:fec7:b039/64 scope link
        valid_lft forever preferred_lft forever
-4: veth3adfd297@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni0 state UP group default 
+4: veth3adfd297@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni0 state UP group default
     link/ether 96:4e:da:cb:0b:27 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet6 fe80::944e:daff:fecb:b27/64 scope link 
+    inet6 fe80::944e:daff:fecb:b27/64 scope link
        valid_lft forever preferred_lft forever
 
 # 声明并启动容器，查看容器内的网络信息
@@ -248,11 +248,11 @@ $ ctr t exec -t --exec-id busybox-sh mybusybox sh
 / # ip a
 1: lo: <LOOPBACK> mtu 65536 qdisc noop qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-3: eth0@if4: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue 
+3: eth0@if4: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue
     link/ether ee:0f:03:a0:22:b7 brd ff:ff:ff:ff:ff:ff
     inet 10.88.0.2/16 brd 10.88.255.255 scope global eth0
        valid_lft forever preferred_lft forever
-    inet6 fe80::ec0f:3ff:fea0:22b7/64 scope link 
+    inet6 fe80::ec0f:3ff:fea0:22b7/64 scope link
        valid_lft forever preferred_lft forever
 
 # 清除接口

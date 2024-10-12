@@ -11,7 +11,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -34,7 +34,7 @@ draft: false
 
 本篇根据网络上找到的样板修改而来，首先通过 `go mod init myexporter` 来创建模块，具体的代码结构如下：
 
-``` bash
+```bash
 .
 ├── collector
 │   └── http.go
@@ -45,72 +45,72 @@ draft: false
 
 `http.go` 代码内容如下：
 
-``` go
+```go
 package collector
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
-	"net/http"
-	"sync"
-	"time"
+ "github.com/prometheus/client_golang/prometheus"
+ "net/http"
+ "sync"
+ "time"
 )
 
 type StatusCollector struct {
-	requestDesc *prometheus.Desc
-	mutex       sync.Mutex
+ requestDesc *prometheus.Desc
+ mutex       sync.Mutex
 }
 
 func NewStatusCollector() prometheus.Collector {
-	return &StatusCollector{
-		requestDesc: prometheus.NewDesc(
-			"http_request_status",
-			"The Status Code of http request",
-			nil,
-			prometheus.Labels{"url": "https://www.baidu.com"}),
-	}
+ return &StatusCollector{
+  requestDesc: prometheus.NewDesc(
+   "http_request_status",
+   "The Status Code of http request",
+   nil,
+   prometheus.Labels{"url": "https://www.baidu.com"}),
+ }
 }
 
 func (n *StatusCollector) Describe(ch chan<- *prometheus.Desc) {
-	ch <- n.requestDesc
+ ch <- n.requestDesc
 }
 
 func (n *StatusCollector) Collect(ch chan<- prometheus.Metric) {
-	n.mutex.Lock()
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
-	resp, err := client.Head("https://www.baidu.com")
-	if err != nil {
-		ch <- prometheus.MustNewConstMetric(n.requestDesc, prometheus.GaugeValue, 0)
-		n.mutex.Unlock()
-		return
-	}
-	ch <- prometheus.MustNewConstMetric(n.requestDesc, prometheus.GaugeValue, float64(resp.StatusCode))
-	n.mutex.Unlock()
+ n.mutex.Lock()
+ client := http.Client{
+  Timeout: 5 * time.Second,
+ }
+ resp, err := client.Head("https://www.baidu.com")
+ if err != nil {
+  ch <- prometheus.MustNewConstMetric(n.requestDesc, prometheus.GaugeValue, 0)
+  n.mutex.Unlock()
+  return
+ }
+ ch <- prometheus.MustNewConstMetric(n.requestDesc, prometheus.GaugeValue, float64(resp.StatusCode))
+ n.mutex.Unlock()
 }
 ```
 
 `main.go` 代码内容如下：
 
-``` go
+```go
 package main
 
 import (
-	"myexporter/collector"
-	"fmt"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"net/http"
+ "myexporter/collector"
+ "fmt"
+ "github.com/prometheus/client_golang/prometheus"
+ "github.com/prometheus/client_golang/prometheus/promhttp"
+ "net/http"
 )
 
 func main() {
-	r := prometheus.NewRegistry()
-	r.MustRegister(collector.NewStatusCollector())
-	handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
-	http.Handle("/metrics", handler)
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		fmt.Printf("Error occur when start server %v", err)
-	}
+ r := prometheus.NewRegistry()
+ r.MustRegister(collector.NewStatusCollector())
+ handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
+ http.Handle("/metrics", handler)
+ if err := http.ListenAndServe(":8080", nil); err != nil {
+  fmt.Printf("Error occur when start server %v", err)
+ }
 }
 ```
 
