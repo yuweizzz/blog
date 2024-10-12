@@ -12,7 +12,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -37,7 +37,7 @@ draft: false
 
 在引入一系列自定义的 lua package 的时候比较有用，事实上大部分基于 openresty 的网关项目都是这样做的。
 
-``` lua
+```lua
 # nginx.conf
 http {
     lua_package_path '/usr/local/src/lua-resty-http/?.lua;;';
@@ -49,7 +49,7 @@ http {
 
 openresty 请求响应可能会经过多次 body_filter_by_lua_block 阶段。其中在 body_filter_by_lua_block 阶段的 `ngx.arg[1]` 和 `ngx.arg[2]` 参数分别代表响应内容和响应结束标记。
 
-``` lua
+```lua
 -- apisix brotli plugin
 -- body_filter 函数会在 body_filter_by_lua_block 中执行
 function _M.body_filter(conf, ctx)
@@ -71,7 +71,7 @@ end
 
 eof 标记为 true 时 chunk 内容不一定为空，此时的 chunk 就是最后的响应内容。在某些响应体内容修改的场景中，可能需要将所有 `ngx.arg[1]` 内容进行合并后在处理，并且应该在 `header_filter_by_lua_block` 阶段将 `ngx.header.content_length` 置空。
 
-``` lua
+```lua
 -- 合并 ngx.arg[1] 可以参考 apisix hold_body_chunk 函数
 -- apisix/core/response.lua
 local arg = ngx.arg
@@ -123,7 +123,7 @@ proxy_next_upstream 是 ngx_http_proxy_module 提供的关键字，具体用法�
 
 在 openresty 中，这部分可以配合 balancer_by_lua_block 来自定义上游的选择。但是只有在访问上游出现的错误符合所定义的条件时，才会再次进入 balancer_by_lua_block 执行阶段。
 
-``` lua
+```lua
 # openresty balancer_by_lua_block doc
 http {
     upstream backend {
@@ -175,7 +175,7 @@ http {
 
 Luajit 提供了一个高效的 string buffer 模块，可以实现 FIFO 的字符缓存队列。
 
-``` lua
+```lua
 str_buffer = require("string.buffer")
 
 strings = "abcdefghij"
@@ -195,7 +195,7 @@ print(buffer:get(5))
 -- out:
 -- fghij
 
--- 取完所有数据，后续的 get 和 tostring 都会返回 "" 
+-- 取完所有数据，后续的 get 和 tostring 都会返回 ""
 if buffer:get(1) == "" then
     print([[get ""]])
     --- out:
@@ -218,7 +218,7 @@ buffer:free()
 
 在 openresty 中，正则相关的处理一般使用 ngx.re 模块。这个模块提供的函数和 Lua string 非常接近，同样都有 find ， match ， gmatch ， sub ， gsub 这几个函数。
 
-``` lua
+```lua
 location /find {
     content_by_lua_block {
         local regex = [[\d+]]
@@ -319,44 +319,42 @@ location /sub {
 
 关于如何搭建测试环境，这里引用 apisix 仓库文档 `docs/en/latest/building-apisix.md` 作为参考：
 
->
 > 1. 安装 `perl` 的包管理器 [cpanminus](https://metacpan.org/pod/App::cpanminus#INSTALLATION)。
 > 2. 通过 `cpanm` 来安装 [test-nginx](https://github.com/openresty/test-nginx) 的依赖：
-> 
+>
 >    ```shell
 >    sudo cpanm --notest Test::Nginx IPC::Run > build.log 2>&1 || (cat build.log && exit 1)
 >    ```
-> 
+>
 > 3. 将 `test-nginx` 源码克隆到本地：
-> 
+>
 >    ```shell
 >    git clone https://github.com/openresty/test-nginx.git
 >    ```
-> 
+>
 > 4. 运行以下命令将当前目录添加到 Perl 的模块目录：
-> 
+>
 >    ```shell
 >    export PERL5LIB=.:$PERL5LIB
 >    ```
-> 
+>
 >    你可以通过运行以下命令指定 NGINX 二进制路径：
-> 
+>
 >    ```shell
 >    TEST_NGINX_BINARY=/usr/local/bin/openresty prove -Itest-nginx/lib -r t
 >    ```
-> 
+>
 > 5. 运行测试：
-> 
+>
 >    ```shell
 >    make test
 >    ```
->
 
 正常设置环境变量后，可以通过 `prove -Itest-nginx/lib -r t/plugin/file.t` 指定要运行的测试文件。其中 `TEST_NGINX_BINARY=/usr/local/bin/openresty` 可以通过主动声明 openresty 的可执行路径 `export PATH=/usr/local/openresty/nginx/sbin:$PATH` 替换，无须每次运行时再次声明。
 
-测试过程经常会涉及一些资源创建和变更，以下是控制平面的一些常用的 api 收集：
+测试过程经常会涉及一些资源创建和变更，以下是控制平面的一些常用的 API 收集：
 
-``` bash
+```bash
 # 在 admin key 不再使用默认值，而是运行时生成后，需要使用这个命令获取
 admin_key=$(yq '.deployment.admin.admin_key[0].key' conf/config.yaml | sed 's/"//g')
 

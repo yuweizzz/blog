@@ -13,7 +13,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -38,29 +38,29 @@ draft: false
 
 在 Linux 系统中一般通过 iproute2 对路由进行管理。
 
-``` bash
+```bash
 $ ip route
-default via 10.233.0.1 dev ens33 
+default via 10.233.0.1 dev ens33
 10.233.0.0/16 dev ens33 proto kernel scope link src 10.233.0.2
 ```
 
 虽然通过 `ip route` 大部分情况就可以满足基本的场景需求，但是可以使用多张路由表来实现更复杂的流量控制。
 
-``` bash
+```bash
 # Linux 系统默认定义的路由表，其中 ip route 默认使用的就是 main ，也是大多数情况下默认使用的路由表
 # /etc/iproute2/rt_tables 用来定义 route table 和 id 的映射关系
 $ cat /etc/iproute2/rt_tables
 #
 # reserved values
 #
-255	local
-254	main
-253	default
-0	unspec
+255 local
+254 main
+253 default
+0 unspec
 #
 # local
 #
-#1	inr.ruhep
+#1 inr.ruhep
 
 # 路由表有优先级定义，一般来说 local 表的优先级应该是最高的
 # 注意这里的数字表示的是 prio 而不是 table id
@@ -102,7 +102,7 @@ $ ip rule del table custom  # 有映射关系的可以使用 id 或者名称
 
 多张路由表可以用在多网络出口和特殊子网管理的场景，使用单独的路由表来控制对应的流量，在网络情况复杂的时候会很有用。
 
-``` bash
+```bash
 # 通过 iptables 标记流量来指定处理的路由表，在容器网络管理方面经常使用
 $ iptables -t mangle -A FORWARD -i ens33 -j MARK --set-mark 1
 $ iptables -t mangle -S
@@ -115,7 +115,7 @@ $ iptables -t mangle -S
 
 # 添加处理对应流量标记的路由表
 $ ip rule add fwmark 1 table 103 prio 103
-$ ip rule show 
+$ ip rule show
 0:      from all lookup local
 101:    from 10.10.10.0/24 lookup custom
 102:    from 10.10.11.0/24 lookup 102
@@ -125,17 +125,17 @@ $ ip rule show
 
 # cilium 实际上也使用到了流量标记，以下输出是来自一台运行了 cilium 的系统
 $ ip rule show
-9:	from all fwmark 0x200/0xf00 lookup 2004
-100:	from all lookup local
-32766:	from all lookup main
-32767:	from all lookup default
+9: from all fwmark 0x200/0xf00 lookup 2004
+100: from all lookup local
+32766: from all lookup main
+32767: from all lookup default
 ```
 
 ## MTU 和 MSS
 
 在使用 openconnect 搭建 VPN 服务时，比较有意思的地方就是 tunnel 的 MTU 设定。
 
-``` bash
+```bash
 # 搭建 VPN 服务时用到的防火墙配置，其中 10.10.10.0/24 是 VPN 服务所使用的网段
 $ iptables -t filter -A FORWARD -s 10.10.10.0/24 -j ACCEPT
 $ iptables -t filter -A FORWARD -o vpns+ -j ACCEPT
@@ -164,6 +164,6 @@ MTU 和 TCP MSS 的重要区别是，当数据包超过目标设备的 MTU 则�
 
 一般来说， VPN 软件可能会添加一些自定义的数据包标头，所以为了保险起见，在创建 tun 设备时，会尽量使用低于 1500 的 MTU 值，这样当隧道中的数据包驮载到以太网设备中传输时，尽量做到保持数据包大小在标准以太网接口 MTU 之内。这一点可以参考 gre tunnel 的实现， gre tunnel 经常使用 1476 的 MTU 值，因为它需要 24 bytes 作为数据包标头。在 gre tunnel 的数据包中，包括了均为 20 bytes 的 TCP 协议标头和 IP 协议标头，这样它的 MSS 应该设置为 1436 bytes 是最合理，当数据包从 tunnel 中发出时，还需要添加 24 bytes 的数据包标头，最后总共就是 1500 bytes 的数据包格式。更多的详细信息可以参考思科的[官方文档](https://www.cisco.com/c/zh_cn/support/docs/ip/generic-routing-encapsulation-gre/25885-pmtud-ipfrag.html)。
 
-那么根据推断， openconnect 的数据包标头应该是 28 bytes ，其中 20 bytes 应该是标准 IP 协议的标头， 而 8 bytes 应该是自定义标头，如果使用的是 ipv6 协议，这个总值应该是 48 bytes ，这里可以通过在 openconnect 服务端显式设置 MTU 值来验证，在连接过程中你可以看到对应的 HTTP header 已经包含了这部分信息，其中 `X-CSTP-Base-MTU` 就是服务端的 tunnel 预设值，一般会使用低于 1500 的 MTU 值，而 `X-CSTP-MTU` 就是去除标头后的实际 MTU 值，也就是最后 tunnel 实际使用的 MTU 值。
+那么根据推断， openconnect 的数据包标头应该是 28 bytes ，其中 20 bytes 应该是标准 IP 协议的标头， 而 8 bytes 应该是自定义标头，如果使用的是 IPv6 协议，这个总值应该是 48 bytes ，这里可以通过在 openconnect 服务端显式设置 MTU 值来验证，在连接过程中你可以看到对应的 HTTP header 已经包含了这部分信息，其中 `X-CSTP-Base-MTU` 就是服务端的 tunnel 预设值，一般会使用低于 1500 的 MTU 值，而 `X-CSTP-MTU` 就是去除标头后的实际 MTU 值，也就是最后 tunnel 实际使用的 MTU 值。
 
 防火墙的 `--clamp-mss-to-pmtu` 一般是用来协调使用不同 MTU 值的网络接口传输过程中的 TCP MSS ，在 openconnect 中，服务端的流量出入口通常都是同个网卡，这个设置实际上是可以省去的，如果网络环境比较复杂可能才需要这个设置。此外除了自动调整，也可以将 TCP MSS 设定为一个固定值，通过 `iptables -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400` 就可以实现。

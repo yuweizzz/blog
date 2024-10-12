@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -35,16 +35,16 @@ draft: false
 
 根据官网，目前 Kubernetes 支持以下特定 Pod 的 DNS 策略，设定字段为 `.spec.dnsPolicy` ：
 
-* `Default` ： Pod 从运行所在的节点继承 `/etc/resolv.conf` ，但是这种策略并不是 Pod 默认的 DNS 策略。
-* `ClusterFirst` ：使用集群提供的 DNS 服务，通常使用 CoreDNS 作为集群 DNS ， `ClusterFirst` 才是 Pod 默认的 DNS 策略。
-* `ClusterFirstWithHostNet` ：对于以 hostNetwork 方式运行的 Pod ，应该将它的 DNS 策略显式设置为 `ClusterFirstWithHostNet` 。
-* `None` ：允许 Pod 忽略集群中的 DNS 设置并使用 `.spec.dnsConfig` 作为 DNS 设置。
+- `Default` ： Pod 从运行所在的节点继承 `/etc/resolv.conf` ，但是这种策略并不是 Pod 默认的 DNS 策略。
+- `ClusterFirst` ：使用集群提供的 DNS 服务，通常使用 CoreDNS 作为集群 DNS ， `ClusterFirst` 才是 Pod 默认的 DNS 策略。
+- `ClusterFirstWithHostNet` ：对于以 hostNetwork 方式运行的 Pod ，应该将它的 DNS 策略显式设置为 `ClusterFirstWithHostNet` 。
+- `None` ：允许 Pod 忽略集群中的 DNS 设置并使用 `.spec.dnsConfig` 作为 DNS 设置。
 
 使用 `Default` 策略时， Pod 中的 `/etc/resolv.conf` 将和宿主机中的 `/etc/resolv.conf` 完全一致，这时就无法通过 service name 域名的方式去访问内部服务。
 
 使用 `ClusterFirst` 策略时，可以突破 `Default` 策略的限制，在 Pod 中直接通过 service name 域名去访问集群中 service 类型的资源，这时 Pod 中的 `/etc/resolv.conf` 一般会是如下的内容：
 
-``` bash
+```bash
 search default.svc.cluster.local svc.cluster.local cluster.local
 nameserver 10.96.0.10
 options ndots:5
@@ -58,7 +58,7 @@ options ndots:5
 
 使用 `None` 策略可以参考官方给出的配置参考，定义自己需要的配置：
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -89,7 +89,7 @@ Kubernetes 的 sevice 资源有四种类型，它决定了集群服务是如何�
 
 `ClusterIP` 是默认和最常见的服务类型，成功创建资源后集群会自动分配服务的 IP 地址，这个 IP 地址和 Pod 网段是隔离的，它的网络通信依赖于 kube-proxy 组件。
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -98,11 +98,11 @@ metadata:
     app.kubernetes.io/name: proxy
 spec:
   containers:
-  - name: nginx
-    image: nginx:stable
-    ports:
-      - containerPort: 80
-        name: http-web-svc
+    - name: nginx
+      image: nginx:stable
+      ports:
+        - containerPort: 80
+          name: http-web-svc
 
 ---
 apiVersion: v1
@@ -113,10 +113,10 @@ spec:
   selector:
     app.kubernetes.io/name: proxy
   ports:
-  - name: name-of-service-port
-    protocol: TCP
-    port: 80
-    targetPort: http-web-svc
+    - name: name-of-service-port
+      protocol: TCP
+      port: 80
+      targetPort: http-web-svc
 ```
 
 通常会将 Pod 或者 Deployment 资源加上 label ，然后使用 Service selector 来选中这些资源，这样的 Service 就可以将请求均衡发送到 Pod 集合中。
@@ -125,7 +125,7 @@ spec:
 
 `NodePort` 是 `ClusterIP` 的扩展类型。除了集群内部的服务 IP 地址，还会在集群中所有节点的对应端口进行监听，并代理到各自节点中的 Pod 中，实现外部访问集群内服务。
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -140,7 +140,7 @@ spec:
       nodePort: 30007
 ```
 
-在 yaml 文件中， port 是 Pod 暴露服务的端口， targetPort 是 Service 暴露服务的端口，两者可以保持一致，由 targetPort 跟随 port 即可， nodePort 可以显式指定，也可以不进行指定并由集群自动分配，通常采取第二种方式，来避免手动指定的端口和已有的服务产生冲突。自动分配的范围由 apiServer 中的 `--service-node-port-range` 参数指定，默认值是 `30000-32767` 。
+在 YAML 文件中， port 是 Pod 暴露服务的端口， targetPort 是 Service 暴露服务的端口，两者可以保持一致，由 targetPort 跟随 port 即可， nodePort 可以显式指定，也可以不进行指定并由集群自动分配，通常采取第二种方式，来避免手动指定的端口和已有的服务产生冲突。自动分配的范围由 apiServer 中的 `--service-node-port-range` 参数指定，默认值是 `30000-32767` 。
 
 ### LoadBalancer
 
@@ -148,7 +148,7 @@ spec:
 
 可以认为这里 `NodePort` 是隐式实现的，并且云厂商还应该提供负载均衡器，它会对集群中所有节点代理，实现负载均衡。这样外部访问不再直接访问集群节点而是通过负载均衡器进行代理转发。
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -165,7 +165,7 @@ spec:
 status:
   loadBalancer:
     ingress:
-    - ip: 192.0.2.127
+      - ip: 192.0.2.127
 ```
 
 在创建 LoadBalancer Service 时，通常只需要指定 `LoadBalancer` 作为 Service 类型即可，关于 port 的设置和 `nodePort` 类型相似。创建资源完成后会将负载均衡器信息报告在 status 中。
@@ -174,7 +174,7 @@ status:
 
 `ExternalName` 是不直接关联 Pod 的服务类型，它实际是通过创建 CNAME 记录，来实现 Service 访问映射到其他域名。
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -195,7 +195,7 @@ spec:
 
 在这个认证体系中，比较重要的是 `ServiceAccount` 资源对象，它在每个新的 `namespace` 创建时都会随之默认生成，实际上也就是这个命名空间中的资源向 ApiServer 请求时默认使用的身份，当然除了这个默认对象之外也可以自行创建。
 
-``` yaml
+```yaml
 # 来自 ingress nginx controller manifest 中的 ServiceAccount
 apiVersion: v1
 automountServiceAccountToken: true
@@ -220,7 +220,7 @@ metadata:
 imagePullSecrets:
   - name: myregistrykey
 ```
- 
+
 `ServiceAccount` 中的 `automountServiceAccountToken` 参数可以控制是否将 `ServiceAccount` 对应生成的 token 挂载到具体的工作负载中，一般会在容器的 `/run/secrets/kubernetes.io/serviceaccount/` 路径下，但是 token 的具体内容信息跟所在 Kubernetes 集群的版本有关。 `ServiceAccount` 还可以通过 `imagePullSecrets` 参数来关联 `Secret` 类型资源，使用了这种关键字的 `ServiceAccount` 就会具有特定的镜像拉取认证信息。
 
 具体的 `ServiceAccount` 可以通过工作负载资源对象中的 `serviceAccountName` 参数来具体指定，否则工作负载默认使用创建命名空间时自动创建的 `ServiceAccount` 。
@@ -231,7 +231,7 @@ imagePullSecrets:
 
 {{<details "`Role` 和 `ClusterRole` 具体实例">}}
 
-``` yaml
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -244,83 +244,83 @@ metadata:
   name: ingress-nginx
   namespace: ingress-nginx
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - namespaces
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  - pods
-  - secrets
-  - endpoints
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - services
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - networking.k8s.io
-  resources:
-  - ingresses
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - networking.k8s.io
-  resources:
-  - ingresses/status
-  verbs:
-  - update
-- apiGroups:
-  - networking.k8s.io
-  resources:
-  - ingressclasses
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - coordination.k8s.io
-  resourceNames:
-  - ingress-nginx-leader
-  resources:
-  - leases
-  verbs:
-  - get
-  - update
-- apiGroups:
-  - coordination.k8s.io
-  resources:
-  - leases
-  verbs:
-  - create
-- apiGroups:
-  - ""
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - discovery.k8s.io
-  resources:
-  - endpointslices
-  verbs:
-  - list
-  - watch
-  - get
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - pods
+      - secrets
+      - endpoints
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingressclasses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - coordination.k8s.io
+    resourceNames:
+      - ingress-nginx-leader
+    resources:
+      - leases
+    verbs:
+      - get
+      - update
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - list
+      - watch
+      - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -332,76 +332,76 @@ metadata:
     app.kubernetes.io/version: 1.8.2
   name: ingress-nginx
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  - endpoints
-  - nodes
-  - pods
-  - secrets
-  - namespaces
-  verbs:
-  - list
-  - watch
-- apiGroups:
-  - coordination.k8s.io
-  resources:
-  - leases
-  verbs:
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - nodes
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - services
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - networking.k8s.io
-  resources:
-  - ingresses
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - networking.k8s.io
-  resources:
-  - ingresses/status
-  verbs:
-  - update
-- apiGroups:
-  - networking.k8s.io
-  resources:
-  - ingressclasses
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - discovery.k8s.io
-  resources:
-  - endpointslices
-  verbs:
-  - list
-  - watch
-  - get
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - endpoints
+      - nodes
+      - pods
+      - secrets
+      - namespaces
+    verbs:
+      - list
+      - watch
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingressclasses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - list
+      - watch
+      - get
 ```
 
 {{</details>}}
@@ -410,7 +410,7 @@ rules:
 
 在创建 `Role` 和 `ClusterRole` 之后，就完成了对角色具体权限的定义，这时只需要将这个角色和具体用户绑定，就可以赋予这个用户这些已经定义的权限，这一步需要用到的是 `RoleBinding` 和 `ClusterRoleBinding` 的资源对象。
 
-``` yaml
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -427,9 +427,9 @@ roleRef:
   kind: Role
   name: ingress-nginx
 subjects:
-- kind: ServiceAccount
-  name: ingress-nginx
-  namespace: ingress-nginx
+  - kind: ServiceAccount
+    name: ingress-nginx
+    namespace: ingress-nginx
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -445,9 +445,9 @@ roleRef:
   kind: ClusterRole
   name: ingress-nginx
 subjects:
-- kind: ServiceAccount
-  name: ingress-nginx
-  namespace: ingress-nginx
+  - kind: ServiceAccount
+    name: ingress-nginx
+    namespace: ingress-nginx
 ```
 
 在完成上述资源的定义之后，就可以使用对应的工作负载中的 token 来和 ApiServer 进行交互，很多实际使用的云原生服务都用到了这些资源。

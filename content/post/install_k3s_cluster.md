@@ -12,7 +12,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -35,7 +35,7 @@ draft: false
 
 ## 安装 k3s
 
-``` bash
+```bash
 # 使用 etcd 作为配置中心
 apt install etcd-server etcd-client
 
@@ -62,7 +62,7 @@ traefik 的功能由 Apisix Ingress 接管， servicelb 的功能则通过 ciliu
 
 通过修改 k3s registries 配置来解决 docker 被墙后的镜像拉取错误问题。
 
-``` bash
+```bash
 # 添加 /etc/rancher/k3s/registries.yaml
 cat /etc/rancher/k3s/registries.yaml
 mirrors:
@@ -76,12 +76,12 @@ systemctl restart k3s
 
 ## 安装 cilium
 
-``` bash
+```bash
 # 安装 helm
 curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | sh -
 
 # 安装 cilium
-helm repo add cilium https://helm.cilium.io/  
+helm repo add cilium https://helm.cilium.io/
 helm repo update
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 helm upgrade --install cilium cilium/cilium --version 1.15.1 \
@@ -103,21 +103,21 @@ helm upgrade --install cilium cilium/cilium --version 1.15.1 \
 
 cilium helm 参数可以参考以下信息：
 
-* `operator.replicas` 的默认值是 2 ，这里使用 1 个副本就足够了。
-* `ipam.mode` 默认就是 cluster-pool 模式，相应的要通过 `ipam.operator.clusterPoolIPv4PodCIDRList` 用来设置允许分配的 Pod CIDR 范围。
-> 设置之后可以通过 CiliumNode 查看具体的 CIDR 分配，具体节点上的 CIDR 由 cilium operator 分配。
-* `routingMode` 使用 native 模式，也就是 cilium 的 Native-Routing 模式， native 模式的性能高于默认的 tunnel 模式， `ipv4NativeRoutingCIDR` 用于声明 Pod CIDR ， cilium 会认为这部分的流量是可以由系统网络直接路由，不需要使用 SNAT ， `autoDirectNodeRoutes` 允许 cilium 修改节点的路由信息，使得 Pod CIDR 可以被直接路由，适用于所有 worker 节点处在同一 L2 网络。
-* `bpf.masquerade` 设置为 true 时，会使用 ebpf 来实现地址伪装，否则默认是通过 iptables 去实现的，主要针对 Pod 内部和集群外部之间的流量。
-* `kubeProxyReplacement` 设置为 true 允许 cilium 使用内置功能替换 kube-proxy 。 `loadBalancer.mode` 设置为 dsr 是针对 NodePort 类型的 ebpf 增强，允许通过 ebpf 修改数据包，使得 Pod 不在当前节点的流量可以直接返回客户端，而不是通过 SNAT 进行跳转。 `loadBalancer.acceleration` 是优化选项，设置为 native 允许数据包通过 XDP 直接在网卡驱动部分处理，而不是系统内核，可以提高性能。
-> 虚拟机上的某些网卡驱动可能不支持 XDP ，这时 `loadBalancer.acceleration` 的 native 模式不可用，直接去掉即可。
-* `installNoConntrackIptablesRules` 设置为 true 可以禁用流量的连接跟踪，也就是 iptables 提供的流量追踪功能，可以提高性能。
-* `hubble.relay.enabled` 和 `hubble.ui.enabled` 是可观测性的相关部分，它们都是默认关闭的，这里重新启用了它们。其中 ui 是对应的图形界面， relay 是 hubble 的中继服务，用来沟通不同 hubble 实例和提供更多的 api 支持，开启 hubble 会略微降低一些性能。
+- `operator.replicas` 的默认值是 2 ，这里使用 1 个副本就足够了。
+- `ipam.mode` 默认就是 cluster-pool 模式，相应的要通过 `ipam.operator.clusterPoolIPv4PodCIDRList` 用来设置允许分配的 Pod CIDR 范围。
+  > 设置之后可以通过 CiliumNode 查看具体的 CIDR 分配，具体节点上的 CIDR 由 cilium operator 分配。
+- `routingMode` 使用 native 模式，也就是 cilium 的 Native-Routing 模式， native 模式的性能高于默认的 tunnel 模式， `ipv4NativeRoutingCIDR` 用于声明 Pod CIDR ， cilium 会认为这部分的流量是可以由系统网络直接路由，不需要使用 SNAT ， `autoDirectNodeRoutes` 允许 cilium 修改节点的路由信息，使得 Pod CIDR 可以被直接路由，适用于所有 worker 节点处在同一 L2 网络。
+- `bpf.masquerade` 设置为 true 时，会使用 ebpf 来实现地址伪装，否则默认是通过 iptables 去实现的，主要针对 Pod 内部和集群外部之间的流量。
+- `kubeProxyReplacement` 设置为 true 允许 cilium 使用内置功能替换 kube-proxy 。 `loadBalancer.mode` 设置为 dsr 是针对 NodePort 类型的 ebpf 增强，允许通过 ebpf 修改数据包，使得 Pod 不在当前节点的流量可以直接返回客户端，而不是通过 SNAT 进行跳转。 `loadBalancer.acceleration` 是优化选项，设置为 native 允许数据包通过 XDP 直接在网卡驱动部分处理，而不是系统内核，可以提高性能。
+  > 虚拟机上的某些网卡驱动可能不支持 XDP ，这时 `loadBalancer.acceleration` 的 native 模式不可用，直接去掉即可。
+- `installNoConntrackIptablesRules` 设置为 true 可以禁用流量的连接跟踪，也就是 iptables 提供的流量追踪功能，可以提高性能。
+- `hubble.relay.enabled` 和 `hubble.ui.enabled` 是可观测性的相关部分，它们都是默认关闭的，这里重新启用了它们。其中 ui 是对应的图形界面， relay 是 hubble 的中继服务，用来沟通不同 hubble 实例和提供更多的 API 支持，开启 hubble 会略微降低一些性能。
 
 关于性能优化的部分可以参考[官方文档](https://docs.cilium.io/en/stable/operations/performance/tuning/) ，关于 Host-Routing ， installNoConntrackIptablesRules 等性能优化的选项都可以找到对应说明。
 
 正常安装后通过 cilium pod 查看安装信息和配置情况。
 
-``` bash
+```bash
 # 查看 cilium 状态
 kubectl exec -it -n cilium cilium-5r2nh -- cilium status --verbose
 
@@ -150,7 +150,7 @@ KubeProxyReplacement Details:
 
 使用 cilium 的 L2 Announcement 可以在内网环境下直接实现 LoadBalancer 类型的 service 。这个功能对 cilium 的版本有一定要求，并且必须使用 kubeProxyReplacement 模式。
 
-``` bash
+```bash
 # 可以在之前的步骤中直接开启，也可以在安装 cilium 之后重新启用
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 helm upgrade cilium cilium/cilium \
@@ -161,7 +161,7 @@ helm upgrade cilium cilium/cilium \
 
 启用相关配置后，需要新增两个 cilium crd ，其中 CiliumLoadBalancerIPPool 设定的 CIDR 范围必须是内网可以路由的网段。而 CiliumL2AnnouncementPolicy 则是用来设置 L2 Announcement 具体生效的集群节点。
 
-``` yaml
+```yaml
 apiVersion: "cilium.io/v2alpha1"
 kind: CiliumL2AnnouncementPolicy
 metadata:
@@ -187,7 +187,7 @@ spec:
 
 同时新增一个可供测试的 service 资源。
 
-``` yml
+```yml
 apiVersion: v1
 kind: Service
 metadata:
@@ -208,9 +208,9 @@ spec:
 
 这里使用的是无需 etcd 的集成模式。
 
-``` bash
+```bash
 git clone --depth 1 --branch 1.7.0 https://github.com/apache/apisix-ingress-controller.git ingress-apisix-1.7.0
 cd ingress-apisix-1.7.0
 kubectl apply -k samples/deploy/crd/v1/
-kubectl apply -f samples/deploy/composite.yaml 
+kubectl apply -f samples/deploy/composite.yaml
 ```

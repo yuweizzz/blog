@@ -12,7 +12,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -80,7 +80,7 @@ TLS 证书包括了该站点的组织信息，域名信息，站点所使用的�
 
 在实际应用中，我们可以直接自行签发 TLS 证书，也可以通过自建 CA 来签发需要的 TLS 证书。
 
-``` bash
+```bash
 # 自签名 TLS 证书
 
 # 生成私钥
@@ -92,9 +92,9 @@ $ openssl req -new -sha256 -key key.pri \
 $ openssl x509 -req -sha256 -days 365 -in request.csr -signkey key.pri -out ibm.crt
 
 # 上述例子生成的证书就是 RSA 证书，下面的例子是生成 ECC 证书
-# 查看当前 openssl 版本支持的椭圆曲线 
+# 查看当前 openssl 版本支持的椭圆曲线
 $ openssl ecparam -list_curves
-# 一般使用 prime256v1 来生成私钥 
+# 一般使用 prime256v1 来生成私钥
 $ openssl ecparam -genkey -name prime256v1 -out key.pri
 $ openssl req -new -sha256 -key key.pri \
  -subj "/C=US/ST=IL/L=Chicago/O=IBM Corporation/OU=IBM Software Group/CN=www.ibm.com" -out request.csr
@@ -105,7 +105,7 @@ $ openssl x509 -req -sha256 -days 365 -in request.csr -signkey key.pri -out ibm.
 
 所以如果需要多个自签 TLS 证书，则自建 CA 会更方便，它与自签名 TLS 的区别在于不随意使用私钥去签名，而是固定一对密钥，把它持续用于后续 TLS 证书的签发，并且将固定公钥生成 CA 证书，那么只需要信任 CA 证书就可以自动信任它所签发的 TLS 证书。
 
-``` bash
+```bash
 # 自建 CA
 
 # 生成私钥
@@ -131,7 +131,7 @@ $ openssl x509 -req -sha256 -days 365 -in request.csr -CA CA.crt -CAkey key.pri 
 
 在 golang 1.15 之后的版本，进行 tls 握手时发生报错 `"x509: certificate relies on legacy Common Name field, use SANs or temporarily enable Common Name matching with GODEBUG=x509ignoreCN=0"` 是因为当前使用的证书依赖于 CN 作为域名绑定，需要使用 x509 拓展字段 Subject Alternative Name 才能进行正常验证，也就是报错信息所述的 SAN 。
 
-``` bash
+```bash
 # 生成 SAN 证书
 
 # 前序步骤和使用 CN 的证书相似
@@ -155,7 +155,7 @@ $ openssl x509 -req -sha256 -days 365 -in request.csr -CA CA.crt -CAkey key.pri 
 通过信任上述例子中的 `CA.crt` ，后续如 `software.crt` 等由 `CA.crt` 签发的证书都是自动授信的。
 
 ```bash
-# 在 CentOS 中添加信任 CA 
+# 在 CentOS 中添加信任 CA
 $ mv TrustCA.crt /etc/pki/ca-trust/source/anchors/
 $ update-ca-trust
 
@@ -165,7 +165,7 @@ $ cat /etc/pki/tls/certs/ca-bundle.crt
 
 以下是 `openssl` 的一些常用命令以供参考：
 
-``` bash
+```bash
 # 查看证书生成请求
 $ openssl req -in request.csr -text -noout
 
@@ -222,7 +222,7 @@ $ openssl ciphers -v
 
 `openssl` 可以运行一个用于响应 OCSP 请求的服务端，能够满足一些基本的测试要求，实际中 OCSP 具体如何在 Nginx 中进行应用则可以参考[这里](https://yuweizzz.github.io/post/practical_tips_in_nginx/#%E5%BC%80%E5%90%AF-ocsp-stapling)。
 
-``` bash
+```bash
 # 可以参照前面的例子生成证书签发请求，在具体签发 CA 证书时，需要主动声明证书用途
 $ openssl x509 -req -sha256 -days 3650 -in ca.csr -signkey ca.key \
   -extfile <(printf "basicConstraints=CA:TRUE") -out ca.crt
@@ -240,8 +240,8 @@ $ openssl x509 -req -sha256 -days 3650 -in signer.csr -CA ca.crt -CAkey ca.key -
 # 字段之间使用 \t 隔开，即使某些字段不存在，比如吊销时间，也需要保留制表符
 # 经过实践测试，最后的 CN 字段并不一定要与对应证书中的 CN 一致，但是在 index 中每行的 CN 都必须不同
 $ cat index.txt
-V	340101075959Z		1	unknown	/C=CN/OU=IBM Software Group/CN=software.ibm.com1
-R	340101075959Z	240124135959Z	3	unknown	/C=CN/OU=IBM Software Group/CN=software.ibm.com2
+V 340101075959Z  1 unknown /C=CN/OU=IBM Software Group/CN=software.ibm.com1
+R 340101075959Z 240124135959Z 3 unknown /C=CN/OU=IBM Software Group/CN=software.ibm.com2
 # 需要注意有效证书记录中序列号字段前的制表符数量
 $ cat -T index.txt
 V^I340101075959Z^I^I1^Iunknown^I/C=CN/OU=IBM Software Group/CN=software.ibm.com1

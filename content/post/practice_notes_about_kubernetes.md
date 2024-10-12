@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -39,7 +39,7 @@ draft: false
 
 根据官方文档和实际运行情况来看，由于国内网络的问题，为了避免拉取镜像失败，最好把容器运行时配置中的 `pause` 镜像修改掉，以 `crio` 为例子：
 
-``` bash
+```bash
 $ cat /etc/crio/crio.conf
 ......
 [crio.image]
@@ -52,7 +52,7 @@ $ systemctl reload crio
 
 修改容器运行时配置并重启服务后，还需要启用内核模块和修改一些内核参数：
 
-``` bash
+```bash
 # 修改内核参数
 $ echo 1 > /proc/sys/net/ipv4/ip_forward  # 不开启 ip forward 初始化会报错
 # 持久化内核参数
@@ -64,7 +64,7 @@ $ modprobe br_netfilter  # 不启用 br_netfilter 初始化会报错
 
 然后就可以使用 `kubeadm` 来初始化控制平面：
 
-``` bash
+```bash
 # 直接调用 init 命令来进行初始化
 $ kubeadm init \
   --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers \
@@ -88,7 +88,7 @@ $ kubeadm init --config config.yaml
 
 初始化完成后，可以使用 `kubectl` 来查看集群状态：
 
-``` bash
+```bash
 # 复制证书信息到当前用户工作目录下
 $ cp /etc/kubernetes/admin.conf $HOME/.kube/config
 $ kubectl get node
@@ -102,7 +102,7 @@ $ kubectl get pods -A
 
 这时节点仍处于 NotReady 状态，因为网络插件还没有安装，可以选择需要的网络插件进行安装，这里以 `flannel` 为例子：
 
-``` bash
+```bash
 $ curl -L -O https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 # 修改 kube-flannel.yml 中 ConfigMap 的 Network 为需要的 podSubnet
 $ kubectl apply -f kube-flannel.yml
@@ -110,7 +110,7 @@ $ kubectl apply -f kube-flannel.yml
 
 安装完成后整个节点就会处于 Ready 状态，主节点安装完成。接下来如果要为这个集群添加工作节点，那么需要在工作节点上安装 `kubelet` ， `kubeadm` 和容器运行时，为了保证工作节点的正常运行，也应该开启对应的内核模块并修改内核参数，然后执行对应的命令即可：
 
-``` bash
+```bash
 # 主节点生成 token
 $ kubeadm token create --print-join-command
 # 生成的 token 可以在 secret 中找到，对应的 type 为 bootstrap.kubernetes.io/token
@@ -124,7 +124,7 @@ $ kubeadm join <api-server-endpoint> --token <discovery-token> --discovery-token
 
 kubernetes 的控制平面节点默认是不允许调度的，它在一些低版本中也称为 Master 节点或主节点，可以通过 `kubectl describe nodes <name>` 看到主节点信息中带有污点 `node-role.kubernetes.io/control-plane:NoSchedule` ，可以通过去掉这部信息来允许主节点进行 Pod 调度。
 
-``` bash
+```bash
 # 假设主节点名称为 k8s-master
 # 去除主节点禁止调度的污点
 $ kubectl taint node k8s-master node-role.kubernetes.io/control-plane-
@@ -137,7 +137,7 @@ $ kubectl taint node k8s-master node-role.kubernetes.io/control-plane="":NoSched
 
 有时候需要把一些特殊域名指定为固定的 IP 地址，可以通过 `hostAliases` 来实现，它相当于向 `/etc/hosts` 中添加了对应的信息。
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -145,21 +145,21 @@ metadata:
 spec:
   restartPolicy: Never
   hostAliases:
-  - ip: "127.0.0.1"
-    hostnames:
-    - "foo.local"
-    - "bar.local"
-  - ip: "10.1.2.3"
-    hostnames:
-    - "foo.remote"
-    - "bar.remote"
+    - ip: "127.0.0.1"
+      hostnames:
+        - "foo.local"
+        - "bar.local"
+    - ip: "10.1.2.3"
+      hostnames:
+        - "foo.remote"
+        - "bar.remote"
   containers:
-  - name: cat-hosts
-    image: busybox:1.28
-    command:
-    - cat
-    args:
-    - "/etc/hosts"
+    - name: cat-hosts
+      image: busybox:1.28
+      command:
+        - cat
+      args:
+        - "/etc/hosts"
 ```
 
 上述文件是官方文档给出的实例，如果是 `pod` 则应该将 `hostAliases` 添加到 `.spec.hostAliases` 这个字段中，而在 `deployment` 中则应该添加到 `.spec.template.spec.hostAliases` 这个字段中。
@@ -176,7 +176,7 @@ spec:
 
 通过某个 deployment 作为实例：
 
-``` yaml
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -194,19 +194,19 @@ spec:
         app: nginx
     spec:
       containers:
-      - name: nginx
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
+        - name: nginx
+          image: nginx:1.14.2
+          ports:
+            - containerPort: 80
       initContainers:
-      - name: init
-        image: busybox:1.28
-        command: ['sh', '-c', 'echo The init containers is running!']
+        - name: init
+          image: busybox:1.28
+          command: ["sh", "-c", "echo The init containers is running!"]
 ```
 
 initContainers 和 containers 中的容器都可以更新镜像：
 
-``` bash
+```bash
 $ kubectl set image deployment/nginx-deployment init=busybox:1.29  nginx=nginx:1.16.1 --record=true
 # set image 可以更新一个或多个镜像
 # set image 可以操作的资源对象有：
@@ -216,7 +216,7 @@ $ kubectl set image deployment/nginx-deployment init=busybox:1.29  nginx=nginx:1
 
 更新镜像这类使得对应资源产生变化的操作可以通过 rollout 命令回退：
 
-``` bash
+```bash
 # undo 会回退到当前资源的前一版本
 $ kubectl rollout undo deployment/nginx-deployment
 
@@ -243,10 +243,10 @@ $ kubectl rollout undo deployment/nginx-deployment --revision=1
 
 安装 ingress NGINX controller 可以参考具体的[官方文档](https://kubernetes.github.io/ingress-nginx/)。
 
-如果我们剖析具体的 yaml 文件，我们可以看到除了重要的 deployment 和 service 之外，主要是关于资源权限控制和自定义资源的相关定义。如果我们想要在自建的集群中使用，可以主要关注两个部分：
+如果我们剖析具体的 YAML 文件，我们可以看到除了重要的 deployment 和 service 之外，主要是关于资源权限控制和自定义资源的相关定义。如果我们想要在自建的集群中使用，可以主要关注两个部分：
 
-* 整体服务的可用性。
-* service 种类。
+- 整体服务的可用性。
+- service 种类。
 
 由于默认的 deployment 是非常简单，启动后我们会发现这是单 pod 的 deployment ，基于实际上的考虑，我们可以选择将 deployment 修改为 daemonset 来增强容错能力，否则我们至少应该调整 deployment 的副本数来保证服务的可用性，此外还可能需要根据访问量来调节 Pod 资源，并且考虑 Pod Affinity 的相关问题。
 
@@ -256,7 +256,7 @@ $ kubectl rollout undo deployment/nginx-deployment --revision=1
 
 除了 `ExternalName` 类型的 service 可以实现访问集群外部服务，还可以通过指定 endpoints 来实现。
 
-``` yaml
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -264,20 +264,20 @@ metadata:
   namespace: prod
 spec:
   ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8080
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
 ---
-apiVersion: v1     
+apiVersion: v1
 kind: Endpoints
 metadata:
   name: my-service
   namespace: prod
 subsets:
-- addresses:
-  - ip: 10.10.10.10
-  ports:
-  - port: 8080
+  - addresses:
+      - ip: 10.10.10.10
+    ports:
+      - port: 8080
 ```
 
 这里的 service 将会是 `ClusterIP` 类型，但是它的具体 endpoints 不使用 selector 进行选取，而是自行定义到具体服务入口，适用于那些运行在集群外但是在同个内网下的服务。
