@@ -37,8 +37,8 @@ jobs:
       - name: clean
         if: ${{ failure() }}
         run: |
-          rm -rf github_conf/branch_protection_rules.json
-          rm -rf super-linter-output/super-linter-summary.md
+          sudo rm -rf github_conf/branch_protection_rules.json
+          sudo rm -rf super-linter-output/super-linter-summary.md
 
       - name: create pull request
         uses: peter-evans/create-pull-request@v7
