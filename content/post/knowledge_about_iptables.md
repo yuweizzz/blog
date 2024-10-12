@@ -163,6 +163,6 @@ $ iptables -t nat -A POSTROUTING -d 192.168.1.233 -p tcp -m tcp --dport 10000 -j
 - connlimit 模块可以限制 IP 地址到本机的连接数量，比如 `-m connlimit --connlimit-above 3 -p tcp --dport 22` 可以限制单个 IP 地址到本机的 SSH 链接只能在 3 个以内，如果不指定 IP ，对所有 IP 都会进行限制； `-m connlimit --connlimit-above 3  --connlimit-mask 24` 会限制整个网段的连接数量， 24 代表掩码的位数，可以把一个网段内所有 IP 连接限制在 3 个以下。
 
 - state 模块可以监控数据包的状态，通过状态进行对应匹配动作。这个状态并不是 tcp 协议的连接状态，而是独有的一种状态分类，对各种协议均有效。它一共有 `NEW` ， `ESTABLISHED` ， `INVALID` ， `RELATED` ， `UNTRACKED` 五种状态：
-其中 `NEW` 用来代表第一次到达本机的数据包； `ESTABLISHED` 用来代表已经通过一次 iptables 的数据包，比如本机向外发出请求，外部响应发回的数据包； `RELATED` 用来代表数据包不是主动入站或出站，而是通过其他连接发起的数据包，有时我们连接一项服务，这些服务主动发起新连接就属于这种状态； `INVALID` 用来代表无法确定状态的数据包，一般会被直接丢弃； `UNTRACKED` 用来代表无法追踪的数据包。具体用例为 `-m state --state NEW,ESTABLISHED` 。
+  其中 `NEW` 用来代表第一次到达本机的数据包； `ESTABLISHED` 用来代表已经通过一次 iptables 的数据包，比如本机向外发出请求，外部响应发回的数据包； `RELATED` 用来代表数据包不是主动入站或出站，而是通过其他连接发起的数据包，有时我们连接一项服务，这些服务主动发起新连接就属于这种状态； `INVALID` 用来代表无法确定状态的数据包，一般会被直接丢弃； `UNTRACKED` 用来代表无法追踪的数据包。具体用例为 `-m state --state NEW,ESTABLISHED` 。
 
 - tcp 模块可以专门处理 tcp 协议的数据包，可以通过 --tcp-flags 来筛选 tcp 报头一些特有的标志位，比如发起连接的 SYN ，断开连接的 FIN 。具体用例 `-m tcp --tcp-flags ALL SYN` 可以用来匹配发起 tcp 连接的报文，即第一次握手。而 `-m tcp --tcp-flags ALL SYN,ACK` 可以用来匹配第二次握手的报文，它以筛选出报文中同时带有 SYN 和 ACK 的标志为匹配条件。
