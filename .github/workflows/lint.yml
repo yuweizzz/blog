@@ -30,6 +30,7 @@ jobs:
           FILTER_REGEX_INCLUDE: ^/github/workspace/content/
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           VALIDATE_JSCPD: false
+          SAVE_SUPER_LINTER_SUMMARY: false
 
       - name: create pull request
         uses: peter-evans/create-pull-request@v7
