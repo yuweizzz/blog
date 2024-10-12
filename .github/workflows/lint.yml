@@ -48,5 +48,4 @@ jobs:
           title: 'chore: Auto lint docs'
           body: |
             chore: Auto lint docs
-          milestone: 1
           draft: false
