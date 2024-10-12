@@ -30,7 +30,7 @@ jobs:
       - name: lint docs
         uses: super-linter/super-linter@v7.1.0
         env:
-          FILTER_REGEX_INCLUDE: ^/github/workspace/content/
+          FILTER_REGEX_INCLUDE: ^/github/workspace/content/post
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           VALIDATE_JSCPD: false
           FIX_MARKDOWN: true
