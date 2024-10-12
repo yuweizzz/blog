@@ -46,7 +46,7 @@ Jekyll ， Hexo 和 Hugo 这一类静态网站生成器的工作方式都是类�
 
 以下片段出自 Hugo 的[官方文档](https://gohugo.io/templates/partials/])：
 
-```
+```text
 Partial templates—like single page templates and list page templates—have a specific lookup order.
 However, partials are simpler in that Hugo will only check in two places:
 

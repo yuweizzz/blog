@@ -74,7 +74,7 @@ YAML 语法比较简单，这里会跳过相关介绍，直接通过实例来学
 
 以下是 GitHub 社区提供的基于 python 环境的 CI 工作流程。
 
-```
+```yaml
 name: Python package
 
 on:
@@ -135,7 +135,7 @@ jobs:
 
 在很多情况下需要使用自定义 workflow ，以下是我使用过的工作流程，略微比 python 自动测试的 workflow 复杂，用来自动构建并部署静态博客。
 
-```
+```yaml
 name: deploy blog
 on:
   push:

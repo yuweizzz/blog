@@ -262,7 +262,7 @@ $ openssl ocsp -index index.txt -port 8080 -rsigner signer.crt -rkey signer.key 
 
 现有的主流 TLS 版本是 TLS v1.2 和 TLS v1.3 ，低于这两个版本的协议安全性比较低，不建议使用。
 
-```
+```text
 TLS v1.2 的握手过程:
 
       Client                                               Server
