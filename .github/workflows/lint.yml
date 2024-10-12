@@ -19,3 +19,4 @@ jobs:
         uses: github/super-linter@v4
         env:
           FILTER_REGEX_INCLUDE: ^content/
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
