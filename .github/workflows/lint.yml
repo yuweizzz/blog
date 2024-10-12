@@ -25,3 +25,20 @@ jobs:
         env:
           FILTER_REGEX_INCLUDE: ^/github/workspace/content/
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          VALIDATE_JSCPD: false
+
+      - name: create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          commit-message: "chore: lint"
+          branch: lint-patch
+          branch-suffix: timestamp
+          delete-branch: true
+          title: '[lint] Update report'
+          body: |
+            Update lint report
+          labels: |
+            report
+          milestone: 1
+          draft: false
