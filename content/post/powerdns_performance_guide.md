@@ -13,7 +13,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -50,9 +50,9 @@ PowerDNS 的搭建和配置都相对简单，这里只记录一些调优过程�
 
 我们需要先了解 Authoritative Server 中重要的缓存种类：
 
-* Packet Cache ：数据包缓存，可以无需做任何额外处理，直接响应查询请求的数据缓存。
-* Query Cache ：执行后端查询后，后端查询到的数据库记录缓存。
-* Negative Cache ：在 Query Cache 中，请求信息无法在后端查询到记录的数据缓存。
+- Packet Cache ：数据包缓存，可以无需做任何额外处理，直接响应查询请求的数据缓存。
+- Query Cache ：执行后端查询后，后端查询到的数据库记录缓存。
+- Negative Cache ：在 Query Cache 中，请求信息无法在后端查询到记录的数据缓存。
 
 其实可以直接地认为是两种缓存， Packet Cache 是对请求回答数据的缓存， Query Cache 和 Negative Cache 都是对数据库记录的缓存，通常我们希望直接返回 Packet Cache ，这会是最快最节省资源的响应办法。如果确实无法直接命中，则应该优先在 Query Cache 部分寻找命中，可以节省对数据库的查询行为。在这一部分， Negative Cache 和常规 Query Cache 的命中都是同样的，只是这个请求是否能得到回答数据的区别而已。
 
@@ -78,7 +78,7 @@ distributor thread 是 receiver thread 接收请求后，用于处理这些请�
 
 最终的优化配置大概如下：
 
-``` bash
+```bash
 # 假设是 4 核机器，单个 MySQL 作为 backend
 $ cat pdns.conf
 cache-ttl=60
@@ -93,10 +93,10 @@ reuseport=yes
 
 Recursor Server 同样有着多个缓存种类：
 
-* Nameserver Speeds Cache ：对所有远端权威服务器的平均延迟时间的缓存。
-* Negative Cache ：对无响应数据请求的缓存。
-* Recursor Cache ：对递归过程一些公共记录信息的缓存。
-* Packet Cache ：数据包缓存，可以无需做任何额外处理，直接响应查询请求的数据缓存。
+- Nameserver Speeds Cache ：对所有远端权威服务器的平均延迟时间的缓存。
+- Negative Cache ：对无响应数据请求的缓存。
+- Recursor Cache ：对递归过程一些公共记录信息的缓存。
+- Packet Cache ：数据包缓存，可以无需做任何额外处理，直接响应查询请求的数据缓存。
 
 在递归服务器中，各类缓存的 ttl 已经被默认设置为较高值，所以这部分并没有对它们做额外调节，更多的优化细节在于工作线程这一方面。
 
@@ -108,7 +108,7 @@ Recursor Server 的 threads 和 Authoritative Server 的 receiver threads 类似
 
 最终的优化配置大概如下：
 
-``` bash
+```bash
 # 假设是 4 核机器，单个 MySQL 作为 backend
 $ cat pdns.conf
 threads=4
@@ -121,7 +121,7 @@ cpu-map=0=0 1=1 2=2 3=3
 
 powerdns 可以通过 lua 扩展脚本在查询的基础上实现更复杂的功能。
 
-``` bash
+```bash
 # 添加 lua 脚本扩展
 $ cat pdns.conf
 lua-dns-script /path/to/lua/script
@@ -132,20 +132,20 @@ rec_control reload-lua-script
 
 powerdns 提供了多个查询钩子，可以在对应的查询阶段进行请求拦截并重写对应的回答动作，有以下几个钩子：
 
-* ipfilter ：在查询数据包开始解析之前。
-* gettag ：在查询数据包缓存之前。
-* prerpz ：在应用响应策略之前。
-* preresolve ：在查询逻辑工作开始之前。
-* nodata, nxdomain ：在返回无数据结果和无域名结果之后。
-* postresolve ：在查询逻辑工作结束之后。
-* preoutquery ：在向权威服务器查询之前。
-* policyEventFilter ：在响应策略命中之后。
+- ipfilter ：在查询数据包开始解析之前。
+- gettag ：在查询数据包缓存之前。
+- prerpz ：在应用响应策略之前。
+- preresolve ：在查询逻辑工作开始之前。
+- nodata, nxdomain ：在返回无数据结果和无域名结果之后。
+- postresolve ：在查询逻辑工作结束之后。
+- preoutquery ：在向权威服务器查询之前。
+- policyEventFilter ：在响应策略命中之后。
 
 由于存在着多阶段的钩子函数，所以实现扩展功能只需要重写对应的函数即可。
 
 以下是一些参考用例，更多详细用法可以参考官方文档。
 
-``` lua
+```lua
 -- 以无响应域名结果的钩子为例，来自官方实例
 nxdomainsuffix = newDN("com")
 function nxdomain(dq)
@@ -187,7 +187,7 @@ end
 rewriteset = newDS()
 rewriteset:add("powerdns.org")
 function nxdomain(dq)
-    if rewriteset:check(dq.qname) then 
+    if rewriteset:check(dq.qname) then
         local dh = dq:getDH()
         -- 独立的处理函数 udpQueryResponse 允许发起新的 udp 查询，具体用法可以参考官方文档
         dq.followupFunction = "udpQueryResponse"
@@ -233,7 +233,7 @@ metrics:inc()  -- 增加 metrics 计数，更多 metrics 方法可以参考官�
 
 {{<details "完整的 `lua` 文件参考">}}
 
-``` lua
+```lua
 local sub = string.sub
 local char = string.char
 local rshift = bit.rshift
@@ -318,7 +318,7 @@ local function build_udp_package(qname, id, no_recurse, opts)
     end
 
     return  ident_hi .. ident_lo .. flags .. nqs .. nan .. nns .. nar .. name .. typ .. class
-    
+
 end
 
 local function _decode_name(buf, pos)
@@ -812,7 +812,7 @@ end
 rewriteset = newDS()
 rewriteset:add("powerdns.org")
 function nxdomain(dq)
-    if rewriteset:check(dq.qname) then 
+    if rewriteset:check(dq.qname) then
         local dh = dq:getDH()
         dq.followupFunction = "udpQueryResponse"
         dq.udpCallback = "gotdomaindetails"
@@ -850,6 +850,6 @@ end
 
 ## 参考文档
 
-* [powerdns authoritative performance](https://doc.powerdns.com/authoritative/performance.html)
-* [powerdns recursor performance](https://docs.powerdns.com/recursor/performance.html)
-* [powerdns recursor lua scripting](https://docs.powerdns.com/recursor/lua-scripting/index.html)
+- [powerdns authoritative performance](https://doc.powerdns.com/authoritative/performance.html)
+- [powerdns recursor performance](https://docs.powerdns.com/recursor/performance.html)
+- [powerdns recursor lua scripting](https://docs.powerdns.com/recursor/lua-scripting/index.html)

@@ -8,11 +8,11 @@ tags:
 draft: false
 ---
 
-通过配置 Github SSH Key 实现 GitHub 免密推送，并且使用 GPG 密钥对 commit 进行签名。
+通过配置 GitHub SSH Key 实现 GitHub 免密推送，并且使用 GPG 密钥对 commit 进行签名。
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -43,7 +43,7 @@ GitHub 的推送和 SSH 的登陆原理非常相似，通常是本地使用私�
 
 我们需要在本地先生成一个新的秘钥对。
 
-``` bash
+```bash
 $ ssh-keygen -t rsa -C "注册 GitHub 时的邮箱"
 # -t 代表秘钥对的加密算法，rsa是最常见的非对称加密算法
 # -C 可以指定公钥的文本信息，这一步是 GitHub 要求的
@@ -57,7 +57,7 @@ $ ssh-keygen -t rsa -C "注册 GitHub 时的邮箱"
 
 所以，我比较推荐使用非交互式的命令生成秘钥对。
 
-``` bash
+```bash
 $ ssh-keygen -t rsa -C "注册 GitHub 时的邮箱" -P "" -f ~/.ssh/id_rsa
 # 非交互生成的参考命令
 # -P passphrase为空
@@ -70,13 +70,13 @@ $ ssh-keygen -t rsa -C "注册 GitHub 时的邮箱" -P "" -f ~/.ssh/id_rsa
 
 我们需要把公钥信息上传到自己的 GitHub 账户。
 
-打开自己的[ GitHub 账户](https://github.com/settings/keys)，点击 New SSH key ，复制 id_rsa.pub 的内容到 Key 中，Title 按照自己的需求命名，然后 Add SSH Key ，完成公钥添加。
+打开自己的[GitHub 账户](https://github.com/settings/keys)，点击 New SSH key ，复制 id_rsa.pub 的内容到 Key 中，Title 按照自己的需求命名，然后 Add SSH Key ，完成公钥添加。
 
 ## 测试公钥
 
 完成云端公钥信息的添加后，我们可以在本地测试公钥是否正确设置。
 
-``` bash
+```bash
 # 使用生成秘钥的账户测试
 $ ssh git@github.com
 
@@ -99,20 +99,20 @@ $ ssh git@ssh.github.com -i ~/.ssh/id_rsa -p 443
 
 如果一切正常，会返回下面的信息：
 
-``` bash
+```bash
 $ ssh git@github.com
 PTY allocation request failed on channel 0
 Hi yuweizzz! You've successfully authenticated, but GitHub does not provide shell access.
 Connection to github.com closed.
 ```
 
-其实从这部分可以得出 Github 推送仓库是基于 OpenSSH 来实现的。
+其实从这部分可以得出 GitHub 推送仓库是基于 OpenSSH 来实现的。
 
 更多信息可以参考 GitHub 的[官方文档](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh)。
 
 ## 利用 GPG 密钥对 commit 进行签名
 
-``` bash
+```bash
 # 生成 GPG 密钥
 $ gpg --full-generate-key
 

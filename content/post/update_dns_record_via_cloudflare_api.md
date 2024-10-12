@@ -8,11 +8,11 @@ tags:
 draft: false
 ---
 
-通过 cloudflare api 更新 DNS 记录的 python 脚本。
+通过 cloudflare API 更新 DNS 记录的 python 脚本。
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -33,7 +33,7 @@ draft: false
 
 ```
 
-``` python
+```python
 import urllib.parse
 import urllib.request
 import json

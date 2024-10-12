@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -41,35 +41,35 @@ draft: false
 
 首先了解几个基本概念：
 
-* 仓库 (repository) ：仓库是一个被 Git 管控的目录。
-* 分支 (branch) ：每个仓库一般有一个默认分支 master/main ，并且可以拥有多个分支。
-* 提交 (commit) ：可以视为整个代码仓库的不同版本，提交会推进仓库的版本更新。
+- 仓库 (repository) ：仓库是一个被 Git 管控的目录。
+- 分支 (branch) ：每个仓库一般有一个默认分支 master/main ，并且可以拥有多个分支。
+- 提交 (commit) ：可以视为整个代码仓库的不同版本，提交会推进仓库的版本更新。
 
 ## 创建并配置本地仓库
 
-``` bash
-$ cd repository
-$ git init
+```bash
+cd repository
+git init
 ```
 
 这样 repository 目录就是一个 Git 本地仓库，后续用来添加项目代码文件。
 
 初始化仓库后，仓库会带有一些默认的配置，我们可以根据需要去查询或者修改。
 
-``` bash
+```bash
 # config -l用来查看仓库属性
 # 如果要使用 github 的远程仓库，至少应该为仓库配置用户名和邮箱
 # --global 和 --local 可以用来设定属性是 git 全局属性还是单一仓库属性
-$ git config -l 
-$ git config [--global|--local] user.name "your name" 
-$ git config [--global|--local] user.email "your@email.com" 
+$ git config -l
+$ git config [--global|--local] user.name "your name"
+$ git config [--global|--local] user.email "your@email.com"
 ```
 
 ## 转换仓库中文件的状态
 
 下面是一个 Git 仓库实例，基本覆盖了文件状态之间的转换：
 
-``` bash
+```bash
 $ git status
 # On branch master
 # Changes to be committed:
@@ -93,15 +93,15 @@ $ git status
 
 这里引入了 Git 仓库**工作区**和**暂存区**的概念：
 
-* 上面的仓库包含了多种文件，FileA ，FileB ，FileC 处于同一个工作区，工作区 (workspace) 可以简单认为是仓库所在目录，其中存放了各种不同状态的文件。
+- 上面的仓库包含了多种文件，FileA ，FileB ，FileC 处于同一个工作区，工作区 (workspace) 可以简单认为是仓库所在目录，其中存放了各种不同状态的文件。
 
-* 暂存区 (index) 是一个抽象概念，它的信息会保存在实际文件 (.git/index) 中，我们修改过的文件，就可以暂存 (staged) 到暂存区中，也是 Changes to be committed 这一部分，它的下一步操作通常会是提交 (commit) 。
+- 暂存区 (index) 是一个抽象概念，它的信息会保存在实际文件 (.git/index) 中，我们修改过的文件，就可以暂存 (staged) 到暂存区中，也是 Changes to be committed 这一部分，它的下一步操作通常会是提交 (commit) 。
 
 下面进入实例的分析：
 
-* Changes to be committed 列出的是已经被暂存的 FileA ，它已经由 not staged 转换为 staged 。下一步它可以提交到分支中，或者使用 reset 重置掉这次 modified 。
-* Changes not staged for commit 列出的是在工作区中被修改过，但是尚未被 staged 的 FileB 。下一步它可以使用 add 更新到暂存区，或者使用 checkout 丢弃本次修改，恢复到上次 add 的暂存区版本或 commit 保存的版本，恢复的版本由最近的一次的修改情况决定。
-* Untracked 的 FileC 目前是不受 Git 管制的，但是可以通过 add 转换状态。
+- Changes to be committed 列出的是已经被暂存的 FileA ，它已经由 not staged 转换为 staged 。下一步它可以提交到分支中，或者使用 reset 重置掉这次 modified 。
+- Changes not staged for commit 列出的是在工作区中被修改过，但是尚未被 staged 的 FileB 。下一步它可以使用 add 更新到暂存区，或者使用 checkout 丢弃本次修改，恢复到上次 add 的暂存区版本或 commit 保存的版本，恢复的版本由最近的一次的修改情况决定。
+- Untracked 的 FileC 目前是不受 Git 管制的，但是可以通过 add 转换状态。
 
 以下是实际命令的使用过程：
 
@@ -111,7 +111,7 @@ $ git status
 
 通过删除文件，我们可以把文件排除出工作区 (untracked) ，如果是某些特定种类的文件需要排除，推荐使用 .gitignore 。
 
-``` bash
+```bash
 $ git add <file>
 # add 用于 tracked 和 staged
 
@@ -126,7 +126,7 @@ $ git rm [-f] [--cached] [--] <file>
 
 需要丢弃不想要的修改，可以使用 reset 命令或者 checkout 命令。
 
-``` bash
+```bash
 $ git reset HEAD <file>
 # reset 指令涉及 git 的实现原理，HEAD 是指向当前分支最新 commit 的指针
 # 这里只能用于回退暂存区文件，后面会有涉及这一步的解释
@@ -141,7 +141,7 @@ $ git checkout -- <file>
 
 文件修改，重置，暂存一系列操作，都是为了将代码修改到我们认可的程度，然后 commit 到分支中，产生新的版本库，一次或多次的 commit 可以视为一个新的版本库。
 
-``` bash
+```bash
 $ git commit -m <msg>
 # 提交暂存区的文件到版本库， -m 为提交的说明信息
 
@@ -149,7 +149,7 @@ $ git commit --amend [<msg>]
 # 修改上次 commit ，可以添加提交暂存区文件并修改上次 commit 说明信息
 ```
 
-这样所有 staged 的文件就会被提交到一个新的版本库中了。我们还会得到一个 commit id ，这是非常重要的依据，后续版本库的管理都是基于 commit id 来实现的。
+这样所有 staged 的文件就会被提交到一个新的版本库中了。我们还会得到一个 commit ID ，这是非常重要的依据，后续版本库的管理都是基于 commit ID 来实现的。
 
 带 --amend 的 commit 指令可以在一次提交后，追加位于暂存区的文件变动。使用这个命令后只会有一个提交，本次带 --amend 的提交将代替上一次提交的结果。如果暂存区是干净的，可以使用这个命令修改上次 commit 的说明信息。
 
@@ -163,7 +163,7 @@ $ git log
 
 $ git show <object>
 # 用来查看 commit 的具体变动，默认为最近一次 commit 的详细信息
-# 可以通过指定 commit id 来查看不同 commit 
+# 可以通过指定 commit id 来查看不同 commit
 
 $ git reflog
 # 类似于 bash history，它会输出 commit 操作的历史记录，可以作为版本回退和误操作恢复的依据
@@ -179,9 +179,9 @@ $ git diff --cached [<commit>] [--] [<path>...]
 
 如果需要撤消 commit ，恢复原有的代码版本，需要用到 reset 指令。
 
-在 reset 命令中，我们经常会看到 HEAD 的使用，它用来指向当前分支的最新 commit ，所以最新 commit 的上一个版本使用 HEAD^ 表示，上上一个版本使用 HEAD^^ 表示，这是一种便捷写法，使用对应 commit id 也是一样的效果。
+在 reset 命令中，我们经常会看到 HEAD 的使用，它用来指向当前分支的最新 commit ，所以最新 commit 的上一个版本使用 HEAD^ 表示，上上一个版本使用 HEAD^^ 表示，这是一种便捷写法，使用对应 commit ID 也是一样的效果。
 
-``` bash
+```bash
 # reset 的使用参数
 $ git reset [--mixed | --soft | --hard | --merge | --keep] [-q] [<commit>]
 # --mixed               reset HEAD and index
@@ -194,9 +194,9 @@ $ git reset [--mixed | --soft | --hard | --merge | --keep] [-q] [<commit>]
 
 可以看到 reset 有五种工作模式，但我在使用的时候一般只用到 mixed ， soft 和 hard 三种：
 
-* mixed ：默认的工作模式，这个模式会影响 commit 和暂存区保存的文件变动。
-* soft ：这个模式的影响对象是 commit ，所以实际效果看起來就只有 commit 的消失，也就是 HEAD 指向了更旧的 commit 。 commit 回退后，文件变化会存放在暂存区。
-* hard ：这个模式下， commit ，工作区，暂存区的文件变动都会丢失。
+- mixed ：默认的工作模式，这个模式会影响 commit 和暂存区保存的文件变动。
+- soft ：这个模式的影响对象是 commit ，所以实际效果看起來就只有 commit 的消失，也就是 HEAD 指向了更旧的 commit 。 commit 回退后，文件变化会存放在暂存区。
+- hard ：这个模式下， commit ，工作区，暂存区的文件变动都会丢失。
 
 在前面的实例中 `git reset HEAD <file>` 就是 mixed 模式的应用，它用来回退 staged 文件到 not staged 的状态。因为指定了 HEAD ，所以文件变化还是留存在工作区，暂存区被清空， commit 无变化。
 
@@ -208,7 +208,7 @@ soft 模式是最安全的，它不会影响实际文件，而 hard 模式是最
 
 revert 的使用方法类似于 reset ，但它不会改变 commit 的历史记录，而是在最新 commit 的基础上，将所指定 commit 的文件变动还原，并将这个过程提交为一个新的 commit 。
 
-``` bash
+```bash
 # revert 的使用参数
 $ git revert <commit>
 # 执行后将会产生新的 commit 的提交，默认将以 revert 信息作为 commit 信息
@@ -220,7 +220,7 @@ $ git revert <commit>
 
 分支创建，分支删除和分支合并是分支管理比较常用的操作，其中分支合并应该是多分支场景最重要的操作，当不同分支上的开发进行到一定程度时，可以将所涉及的文件变化都合并到同个分支中，然后这个分支就拥有了最新版本的文件。
 
-``` bash
+```bash
 # git branch 会列出当前已有分支，并以 * 标识目前所在的分支
 $ git branch
 * master
@@ -251,7 +251,7 @@ $ git merge <new branch name>
 
 如果我们需要临时切换到其他分支，而不想对现有工作区进行暂存和提交，希望它保持原状，可以使用 stash 来将工作区入栈保存。
 
-``` bash
+```bash
 $ git stash
 # 保存暂存区和工作区的文件改动
 
@@ -260,7 +260,7 @@ $ git stash list
 
 $ git stash pop
 # 恢复已入栈的文件改动到工作区，默认会把工作区和暂存区的改动都恢复到工作区
-$ git stash pop --index 
+$ git stash pop --index
 # 在默认的基础上，除了工作区的文件改动，还会将原来暂存区的改动恢复到暂存区
 
 $ git stash drop [<stash>]
@@ -274,7 +274,7 @@ $ git stash clear
 
 标签 tag 可以认为是一个特殊的分支，我们通过给分支中的某个 commit 打上标签，用来作为代码的版本信息管理依据。
 
-``` bash
+```bash
 $ git tag -l
 # 列出历史 tag 信息
 

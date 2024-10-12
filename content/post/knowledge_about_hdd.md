@@ -10,7 +10,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -51,11 +51,11 @@ SATA ，全称为串行的 ATA 接口 Serial ATA ，它的很多设计都是在 
 
 SATA 接口的传输协议有 3 个版本：
 
-* SATA 1.0 ： 1.5 Gbps ， 8b/10b 编码 ， 150 MB/s
+- SATA 1.0 ： 1.5 Gbps ， 8b/10b 编码 ， 150 MB/s
 
-* SATA 2.0 ： 3 Gbps ， 8b/10b 编码 ， 300 MB/s
+- SATA 2.0 ： 3 Gbps ， 8b/10b 编码 ， 300 MB/s
 
-* SATA 3.0 ： 6 Gbps ， 8b/10b 编码 ， 600 MB/s
+- SATA 3.0 ： 6 Gbps ， 8b/10b 编码 ， 600 MB/s
 
 我们可以通过换算公式 `总线传输速率 * 编码 / 8 = 总线带宽` 计算它的带宽。其中编码一般为校验或者标志位的码率损耗，由比特位换算到存储字节单位还需要除以 8 ，但是最终的带宽值为理论值，实际传输还会有折损，需要再去掉 10% 才能接近实际的带宽。
 
@@ -71,11 +71,11 @@ SCSI ，全称为 Small Computer System Interface ，它是一套庞大复杂的
 
 SAS 接口的传输协议也有 3 个版本：
 
-* SAS 1.1 ： 3 Gbps ， 8b/10b 编码 ， 300 MB/s
+- SAS 1.1 ： 3 Gbps ， 8b/10b 编码 ， 300 MB/s
 
-* SAS 2.1 ： 6 Gbps ， 8b/10b 编码 ， 600 MB/s
+- SAS 2.1 ： 6 Gbps ， 8b/10b 编码 ， 600 MB/s
 
-* SAS 3.0 ： 12 Gbps ， 8b/10b 编码 ， 1200 MB/s
+- SAS 3.0 ： 12 Gbps ， 8b/10b 编码 ， 1200 MB/s
 
 SAS 的优势在于存储集群的场景，带宽比较大，并且可以兼容 SATA 这类主流的硬盘接口。在现有的机械硬盘接口中，使用最多的就是 SATA 和 SAS ，但整个存储构架使用了 SAS 的模式，就是因为它的兼容优势。
 
@@ -114,7 +114,7 @@ Model: VMware, VMware Virtual S (scsi)
 Disk /dev/sda: 10.7GB
 Sector size (logical/physical): 512B/512B  # 虚拟硬盘都是模拟的，模拟的设备一般都是原生的 512B 扇区大小
 Partition Table: msdos
-Disk Flags: 
+Disk Flags:
 
 Number  Start   End     Size    Type     File system     Flags
  1      1049kB  525MB   524MB   primary  xfs             boot
@@ -122,12 +122,12 @@ Number  Start   End     Size    Type     File system     Flags
  3      1599MB  10.7GB  9138MB  primary  xfs
 
 # 这是实机上运行的一块硬盘，它就是 512e 的硬盘
-$ parted -l 
+$ parted -l
 Model: ATA ST500LT012-9WS14 (scsi)
 Disk /dev/sdb: 500GB
 Sector size (logical/physical): 512B/4096B  # 硬盘的物理扇区大小为 4096B ，逻辑扇区大小为 512B ，这是 512e 的 AF 硬盘
 Partition Table: msdos
-Disk Flags: 
+Disk Flags:
 
 Number  Start   End     Size    Type      File system  标志
  1      1049kB  53.7GB  53.7GB  primary   ntfs
@@ -140,7 +140,7 @@ Number  Start   End     Size    Type      File system  标志
 
 可以看到，这块希捷的 500GB 机械硬盘的物理扇区大小是 4K ，但是逻辑扇区大小是 512B ，这是在 Linux 系统上比较常见的情况，而虚拟机的物理扇区和逻辑扇区都是 512B ，现代硬盘比较少出现这种情况，尤其是大容量硬盘。
 
-在 512e 硬盘的读写过程中，固件层做了隐式的扇区大小转换，读行为比较简单，我们需要读取的扇区只是 512B 大小，但固件是以 4K 去读取的，它要做的工作是找到目标数据所在的 4K 扇区，读取并返回只需要的 512B 部分。 
+在 512e 硬盘的读写过程中，固件层做了隐式的扇区大小转换，读行为比较简单，我们需要读取的扇区只是 512B 大小，但固件是以 4K 去读取的，它要做的工作是找到目标数据所在的 4K 扇区，读取并返回只需要的 512B 部分。
 
 在写行为时，这个情况会变得略微复杂一些，当确定了需要写入的扇区位置，需要读取整个 4K 物理扇区的内容并修改目的位置的数据，然后将整个扇区写入到硬盘中。这个过程称为 read-modify-write ，如果我们的逻辑扇区和物理扇区没有很好地适配，比如逻辑扇区被分割存储到不同的物理扇区中，这个 read-modify-write 过程将会需要多次进行，这样会严重影响硬盘的性能。为了避免这种情况，我们在硬盘分区的时候需要进行 4K 对齐以达到硬盘的最佳性能。
 
@@ -167,14 +167,14 @@ MBR 分区方式是比较经典的分区方式，这种分区格式流行的时�
 
 由于存储空间有限， MBR 分区只能有四个 primary 分区或者三个 primary 分区加一个包含 N 个 logical 分区的 extended 分区，理论上 logical 分区没有上限。
 
-``` bash
+```bash
 # 同样是前面的两个 MBR 分区格式的硬盘
 $ parted -l
 Model: VMware, VMware Virtual S (scsi)
 Disk /dev/sda: 10.7GB
 Sector size (logical/physical): 512B/512B
 Partition Table: msdos  # msdos 即为 MBR 分区格式
-Disk Flags: 
+Disk Flags:
 
 Number  Start   End     Size    Type     File system     Flags
  1      1049kB  525MB   524MB   primary  xfs             boot
@@ -182,12 +182,12 @@ Number  Start   End     Size    Type     File system     Flags
  3      1599MB  10.7GB  9138MB  primary  xfs
 # 这个硬盘由三个 primary 分区组成
 
-$ parted -l 
+$ parted -l
 Model: ATA ST500LT012-9WS14 (scsi)
 Disk /dev/sdb: 500GB
 Sector size (logical/physical): 512B/4096B
 Partition Table: msdos
-Disk Flags: 
+Disk Flags:
 
 Number  Start   End     Size    Type      File system  Flags
  1      1049kB  53.7GB  53.7GB  primary   ntfs
@@ -215,7 +215,7 @@ Model: VMware, VMware Virtual S (scsi)
 Disk /dev/sdb: 12.9GB
 Sector size (logical/physical): 512B/512B
 Partition Table: gpt
-Disk Flags: 
+Disk Flags:
 
 Number  Start   End     Size    File system  Name     Flags
  1      1049kB  12.9GB  12.9GB               primary
@@ -233,11 +233,11 @@ Number  Start   End     Size    File system  Name     Flags
 
 这里列出一些主要用于机械硬盘硬盘健康的相关指标：
 
-* SMART 5 : Reallocated_Sector_Count --> 扇区重定位计数，如果物理扇区已经损坏，硬盘会自动把指向这一故障扇区的请求映射到特定的空间作为代替，这个值的增长说明硬盘已经出现坏块，如果坏块数量过多，会明显影响硬盘的读写。
-* SMART 187 : Reported_Uncorrect --> 无法纠错扇区计数，这个值增长说明硬盘的部分扇区已经出现故障并且无法恢复纠正。
-* SMART 188 : Command_Timeout --> 命令超时计数，对某些硬盘指令无响应的计数值，这个值增长说明硬盘变得不稳定，对这个硬盘读写有可能出现 IO Error 。
-* SMART 196 : Reallocation_Event_Count --> 重定位事件计数，和 SMART 5 类似，用来记录已重映射扇区和可能重映射扇区的事件，这个值增长说明硬盘不稳定。
-* SMART 197 : Current_Pending_Sector_Count --> 等候重定位的扇区计数，记录了不稳定的扇区的数量，这些扇区可能是响应过慢或者故障，这个值增长说明硬盘不稳定。
-* SMART 198 : Offline_Uncorrectable --> 已经无法纠错的掉线扇区计数，和 SMART 187 类似，记录已经出错的掉线扇区数量，这个值增长说明硬盘出现坏块。
+- SMART 5 : Reallocated_Sector_Count --> 扇区重定位计数，如果物理扇区已经损坏，硬盘会自动把指向这一故障扇区的请求映射到特定的空间作为代替，这个值的增长说明硬盘已经出现坏块，如果坏块数量过多，会明显影响硬盘的读写。
+- SMART 187 : Reported_Uncorrect --> 无法纠错扇区计数，这个值增长说明硬盘的部分扇区已经出现故障并且无法恢复纠正。
+- SMART 188 : Command_Timeout --> 命令超时计数，对某些硬盘指令无响应的计数值，这个值增长说明硬盘变得不稳定，对这个硬盘读写有可能出现 IO Error 。
+- SMART 196 : Reallocation_Event_Count --> 重定位事件计数，和 SMART 5 类似，用来记录已重映射扇区和可能重映射扇区的事件，这个值增长说明硬盘不稳定。
+- SMART 197 : Current_Pending_Sector_Count --> 等候重定位的扇区计数，记录了不稳定的扇区的数量，这些扇区可能是响应过慢或者故障，这个值增长说明硬盘不稳定。
+- SMART 198 : Offline_Uncorrectable --> 已经无法纠错的掉线扇区计数，和 SMART 187 类似，记录已经出错的掉线扇区数量，这个值增长说明硬盘出现坏块。
 
 某些硬盘厂商可以对固件进行定制，设置不同的 SMART 指标，但以上几个指标在不同厂家都是类似的，它们可以作为是否更换硬盘的参考。

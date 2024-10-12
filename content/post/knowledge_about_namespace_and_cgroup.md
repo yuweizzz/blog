@@ -12,7 +12,7 @@ draft: false
 
 <!--more-->
 
-``` bash
+```bash
 
                                        (@@) (  ) (@)  ( )  @@    ()    @     O     @     O      @
                                   (   )
@@ -45,18 +45,18 @@ draft: false
 
 在 Linux 中已经定义的命名空间有 8 种：
 
-* User ： 用户和用户组
-* PID ： 进程 ID
-* Mount ： 挂载点
-* Network ： 网络设备和网络协议栈
-* UTS ： 主机名和域名
-* IPC ： 进程间通信
-* Time ： 系统时钟
-* Cgroup ： cgroup 控制群组
+- User ： 用户和用户组
+- PID ： 进程 ID
+- Mount ： 挂载点
+- Network ： 网络设备和网络协议栈
+- UTS ： 主机名和域名
+- IPC ： 进程间通信
+- Time ： 系统时钟
+- Cgroup ： cgroup 控制群组
 
 在这些不同的命名空间种类中， `Time` 和 `Cgroup` 在高版本的内核中才得到实现，现有生产环境的流行内核版本大部分只实现了前六种类型。
 
-``` bash
+```bash
 # CentOS 7.9
 # Kernel Version 3.10.0
 # 以 root 用户运行
@@ -92,7 +92,7 @@ $ lsns
 
 Linux 提供了用户层命令 `unshare` 和 `nsenter` 来操作进程的命名空间归属。
 
-``` bash
+```bash
 # CentOS 7.9
 # Kernel Version 3.10.0
 # 当前系统可能对 user 命名空间有限制，一般有两种情况：
@@ -102,7 +102,7 @@ $ whoami
 root
 $ cat /boot/config-3.10.0-1160.el7.x86_64 | grep -i user_ns
 CONFIG_USER_NS=y
-$ cat /proc/sys/user/max_user_namespaces 
+$ cat /proc/sys/user/max_user_namespaces
 0
 
 # 开放内核对命名空间的限制， unshare 才能正常创建 user 命名空间
@@ -127,8 +127,8 @@ net 除了和父空间隔离外，会生成新的网络栈并默认生成独立�
 
 对于 pid ，unshare 提供了 `--fork` 和 `--mount-proc` 扩展选项，值得注意的是这里无论带什么选项， unshare 这个进程不会加入新的 pid 命名空间：
 
-* `--mount-proc` 可以使得隔离进程和父空间的所有进程信息隔离开来，子空间的 pid 将重新从 1 开始衍生，但父空间仍然可以监控到这部分信息。如果不带 `--mount-proc` 选项，则父空间的 pid 信息会被子空间继承。
-* `--fork` 则可以生成子进程来运行指定程序，如果使用上面的例子，你将会得到 `unshare` 进程和作为子进程的 `/bin/sh` ，其中 `unshare` 进程属于父 pid 命名空间，子进程 `/bin/sh` 新生成的子 pid 命名空间。如果不带 `--fork` 将无法生成新的 pid 命名空间，生成的 `/bin/sh` 仍然在原有的命名空间，并且它的生命周期极短，命令运行完成后进程就不再分配内存了。
+- `--mount-proc` 可以使得隔离进程和父空间的所有进程信息隔离开来，子空间的 pid 将重新从 1 开始衍生，但父空间仍然可以监控到这部分信息。如果不带 `--mount-proc` 选项，则父空间的 pid 信息会被子空间继承。
+- `--fork` 则可以生成子进程来运行指定程序，如果使用上面的例子，你将会得到 `unshare` 进程和作为子进程的 `/bin/sh` ，其中 `unshare` 进程属于父 pid 命名空间，子进程 `/bin/sh` 新生成的子 pid 命名空间。如果不带 `--fork` 将无法生成新的 pid 命名空间，生成的 `/bin/sh` 仍然在原有的命名空间，并且它的生命周期极短，命令运行完成后进程就不再分配内存了。
 
 mount 命名空间是最复杂的一种，它使用 shared subtrees 运行机制，允许在不同 mount 命名空间之间自动，受控地传播 mount 事件和 unmount 事件。简单来说，我们通过设置某个命名空间的 propagation 属性，决定这个命名空间中挂载动作和卸载动作是如何传播到其他命名空间。
 
@@ -141,7 +141,7 @@ $ ctr i pull docker.io/library/busybox:latest
 $ ctr c create docker.io/library/busybox:latest busybox
 $ ctr t start -d busybox
 $ ctr t ls
-TASK         PID      STATUS    
+TASK         PID      STATUS
 busybox    61830    RUNNING
 $ lsns
         NS TYPE  NPROCS   PID USER   COMMAND
@@ -168,7 +168,7 @@ cgroup 是内核用来控制系统资源的一项技术，它可以基于 cgroup
 
 根据前面所述，容器本质上也是系统的进程，那么它也可以交由 cgroup 进行资源控制。
 
-``` bash
+```bash
 $ ls /sys/fs/cgroup/
 total 0
 drwxr-xr-x. 5 root root  0 Apr 14 22:13 blkio
@@ -198,7 +198,7 @@ cgroup filesystem 是使用 cgroup 时内核态与用户态沟通的重要节点
 
 如前文所述，我们需要通过 cgroup filesystem 来和内核沟通，虽然可以在 `/sys/fs/cgroup` 中直接创建新的 cgroup ，但是我们选择重新挂载 cgroupfs 来学习具体的工作过程。
 
-``` bash
+```bash
 # 挂载 cgroup fs
 # 以挂载两种子系统为例
 
@@ -226,7 +226,7 @@ $ umount /mnt/cgroups/cpuset
 
 在挂载子系统完成后，就可以在对应的子系统中需要创建需要的 cgroup 。
 
-``` bash
+```bash
 # 创建 cgroup
 
 # 注意需要切换到新挂载的子系统目录下，否则 cgroup 会默认创建到 /sys/fs/cgroup 下的子系统
@@ -286,7 +286,7 @@ $ cgdelete -g memory:mem
 
 创建完 cgroup 后，我们就可以调整资源参数，并将进程加入到 cgroup 中使它们受到对应的资源约束。
 
-``` bash
+```bash
 # 设置 cgroup 参数同样需要注意路径的问题
 $ cd /mnt/cgroups/memory
 $ cgset -r memory.limit_in_bytes=2M mem
@@ -307,10 +307,10 @@ $ cat /mnt/cgroups/memory/mem/tasks
 
 systemd 提供了 slice ， service 和 scope 几个资源等级，其中 slice 是最上层的等级，默认情况下，系统会创建四种 slice ：
 
-* -.slice ： 根 slice 。
-* system.slice ： 所有系统 service 的默认位置。
-* user.slice ： 所有用户会话的默认位置。
-* machine.slice ： 所有虚拟机和 Linux 容器的默认位置。
+- -.slice ： 根 slice 。
+- system.slice ： 所有系统 service 的默认位置。
+- user.slice ： 所有用户会话的默认位置。
+- machine.slice ： 所有虚拟机和 Linux 容器的默认位置。
 
 我们可以通过 `systemd-cgls` 来查看 systemd 生成的 cgroup ，可以看到最小单位是 service 和 scope 。其中 service 是用户最常接触的 systemd 资源，一般通过 `.service` 文件定义具体的运行细节，然后交由 systemd 管控，而 scope 更多地用于用户进程，一般用户的交互式 shell 进程都由 scope 管理，并处于 user.slice 分片这个层级之中。
 
@@ -318,7 +318,7 @@ systemd 提供了 slice ， service 和 scope 几个资源等级，其中 slice 
 
 使用 systemd 生成 cgroup 我们无需关心 cgroupfs ，直接使用 systemd 提供的命令操作即可，并且后续都不应该直接操作这些 cgroup 。
 
-``` bash
+```bash
 # 使用 systemd-run 创建临时 cgroup
 $ systemd-run --unit=toptest --slice=test top -b
 # 可以通过带 --scope 则生成 scope 等级的 systemd 资源，不带则默认是 service 等级
@@ -339,7 +339,7 @@ $ systemctl status toptest
 
 而如果是需要长期使用的 cgroup ，应该定义为 service 资源，并将需要的配置参数写入到 `.service` 文件，存放路径应为 `/usr/lib/systemd/system/` ，服务类型的软件一般都会自动将它们的服务定义文件安装到这个目录，这样就可以和 `systemd-run` 生成的 unit 一样，直接使用 `systemctl` 来操作。
 
-``` bash
+```bash
 # 设置 systemd unit 的参数
 # systemd 对 cgroup 参数做了封装，具体使用需要参考具体文档
 
@@ -350,7 +350,7 @@ $ systemctl set-property sshd MemoryLimit=50M --runtime
 
 # 不带 --runtime 会写入到独立的配置文件中，重启系统后也能生效
 $ systemctl set-property sshd MemoryLimit=50M
-$ cat /etc/systemd/system/sshd.service.d/50-MemoryLimit.conf 
+$ cat /etc/systemd/system/sshd.service.d/50-MemoryLimit.conf
 [Service]
 MemoryLimit=52428800
 
