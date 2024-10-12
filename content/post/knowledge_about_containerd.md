@@ -93,7 +93,6 @@ mybusybox    2973    RUNNING
 
 根据 OCI Runtime Spec ，正常的容器会经过以下几种运行状态：
 
-
 ```text
 # OCI Runtime Spec
 
