@@ -281,3 +281,13 @@ subsets:
 ```
 
 这里的 service 将会是 `ClusterIP` 类型，但是它的具体 endpoints 不使用 selector 进行选取，而是自行定义到具体服务入口，适用于那些运行在集群外但是在同个内网下的服务。
+
+## 删除处于 terminating 状态的 namespace
+
+执行了 `kubectl delete ns work` 之后，命名空间内部资源已经删除，但是 namespace 资源依然处于 terminating 状态，可以参考以下方法进行删除。
+
+```bash
+kubectl get ns work -o json > work.json
+cat work.json | jq '.spec.finalizers=[]' > d_work.json
+kubectl replace --raw "/api/v1/namespaces/work/finalize" -f d_work.json
+```
