@@ -72,49 +72,49 @@ draft: false
 // https://github.com/ipxe/ipxe/blob/master/src/net/udp/dhcp.c
 static int dhcp_has_pxeopts ( struct dhcp_packet *dhcppkt ) {
 
-	/* Check for a next-server and boot filename */
-	if ( dhcppkt->dhcphdr->siaddr.s_addr &&
-	     ( dhcppkt_fetch ( dhcppkt, DHCP_BOOTFILE_NAME, NULL, 0 ) > 0 ) )
-		return 1;
+ /* Check for a next-server and boot filename */
+ if ( dhcppkt->dhcphdr->siaddr.s_addr &&
+      ( dhcppkt_fetch ( dhcppkt, DHCP_BOOTFILE_NAME, NULL, 0 ) > 0 ) )
+  return 1;
 
-	/* Check for a PXE boot menu */
-	if ( dhcppkt_fetch ( dhcppkt, DHCP_PXE_BOOT_MENU, NULL, 0 ) > 0 )
-		return 1;
+ /* Check for a PXE boot menu */
+ if ( dhcppkt_fetch ( dhcppkt, DHCP_PXE_BOOT_MENU, NULL, 0 ) > 0 )
+  return 1;
 
-	return 0;
+ return 0;
 }
 
 static void dhcp_request_rx ( struct dhcp_session *dhcp,
-			      struct dhcp_packet *dhcppkt,
-			      struct sockaddr_in *peer, uint8_t msgtype,
-			      struct in_addr server_id,
-			      struct in_addr pseudo_id ) {
-  	/* ............................... */
-	/* Perform ProxyDHCP if applicable */
-	if ( dhcp->proxy_offer /* Have ProxyDHCP offer */ &&
-	     ( ! dhcp->no_pxedhcp ) /* ProxyDHCP not disabled */ ) {
-		if ( dhcp_has_pxeopts ( dhcp->proxy_offer ) ) {
-			/* PXE options already present; register settings
-			 * without performing a ProxyDHCPREQUEST
-			 */
-			settings = &dhcp->proxy_offer->settings;
-			if ( ( rc = register_settings ( settings, NULL,
-					   PROXYDHCP_SETTINGS_NAME ) ) != 0 ) {
-				DBGC ( dhcp, "DHCP %p could not register "
-				       "proxy settings: %s\n",
-				       dhcp, strerror ( rc ) );
-				dhcp_finished ( dhcp, rc );
-				return;
-			}
-		} else {
-			/* PXE options not present; use a ProxyDHCPREQUEST */
-			dhcp_set_state ( dhcp, &dhcp_state_proxy );
-			return;
-		}
-	}
+         struct dhcp_packet *dhcppkt,
+         struct sockaddr_in *peer, uint8_t msgtype,
+         struct in_addr server_id,
+         struct in_addr pseudo_id ) {
+   /* ............................... */
+ /* Perform ProxyDHCP if applicable */
+ if ( dhcp->proxy_offer /* Have ProxyDHCP offer */ &&
+      ( ! dhcp->no_pxedhcp ) /* ProxyDHCP not disabled */ ) {
+  if ( dhcp_has_pxeopts ( dhcp->proxy_offer ) ) {
+   /* PXE options already present; register settings
+    * without performing a ProxyDHCPREQUEST
+    */
+   settings = &dhcp->proxy_offer->settings;
+   if ( ( rc = register_settings ( settings, NULL,
+        PROXYDHCP_SETTINGS_NAME ) ) != 0 ) {
+    DBGC ( dhcp, "DHCP %p could not register "
+           "proxy settings: %s\n",
+           dhcp, strerror ( rc ) );
+    dhcp_finished ( dhcp, rc );
+    return;
+   }
+  } else {
+   /* PXE options not present; use a ProxyDHCPREQUEST */
+   dhcp_set_state ( dhcp, &dhcp_state_proxy );
+   return;
+  }
+ }
 
-	/* Terminate DHCP */
-	dhcp_finished ( dhcp, 0 );
+ /* Terminate DHCP */
+ dhcp_finished ( dhcp, 0 );
 }
 ```
 
