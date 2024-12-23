@@ -6,3 +6,5 @@ super-linter.log
 
 # GitHub Actions leftovers
 github_conf
+
+.hugo_build.lock

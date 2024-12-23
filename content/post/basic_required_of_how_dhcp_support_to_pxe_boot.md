@@ -2,9 +2,9 @@
 date: 2024-11-08 17:14:10
 title: DHCP 支持 PXE 启动的基本条件
 tags:
-  - "linux"
-  - "pxe"
-  - "dhcp"
+  - "Linux"
+  - "PXE"
+  - "DHCP"
 draft: false
 ---
 

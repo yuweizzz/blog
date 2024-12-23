@@ -2,8 +2,8 @@
 date: 2024-10-14 15:14:10
 title: 常用 Linux 内核参数配置参考
 tags:
-  - "linux"
-  - "kernel"
+  - "Linux"
+  - "Kernel"
 draft: false
 ---
 

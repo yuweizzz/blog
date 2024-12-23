@@ -366,7 +366,7 @@ $ timedatectl show-timesync --all
 $ systemctl restart systemd-timesyncd.service
 ```
 
-## 通过 dpkg 查询文件
+## 通过 dpkg 管理 deb 软件包
 
 ```bash
 # 查询系统已经安装的 deb 软件包，对标 redhat 系列的 rpm -qa
@@ -377,4 +377,11 @@ $ dpkg -L <package_name>
 
 # 查询文件的 deb 软件包归属，对标 redhat 系列的 rpm -qf <filename>
 $ dpkg -S <filename>
+
+# 不执行安装，只下载 deb 软件包，会默认下载到 apt 的缓存目录
+$ apt install --download-only <package_name>
+$ ls /var/cache/apt/archives
+
+# 不执行安装，直接解压 deb 软件包，可以自由指定解压目录
+$ dpkg -x <package_name> /tmp/deb
 ```
