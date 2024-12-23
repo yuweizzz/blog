@@ -106,8 +106,8 @@ iface tap0 inet manual
   up /sbin/ip link set dev $IFACE up
   post-down /sbin/ip link del dev $IFACE || true
 
-auto br0 
-iface br0 inet dhcp 
+auto br0
+iface br0 inet dhcp
   bridge_ports eth0 tap0
   bridge_stp off
   bridge_fd 0
@@ -144,7 +144,7 @@ systemctl restart networking
 - `-smp` 用来指定虚机的 CPU 核数， `-m` 用来指定虚机的内存大小。
 - `-device` 用来创建虚机中的设备， `-drive` 或者 `-netdev` 用来关联宿主机中和对应虚机的相关设备。
 - `-device nec-usb-xhci -device usb-kbd -device usb-tablet` 用来设置 USB 设备。
-- `-netdev tap,id=eth0,ifname=tap0,script=no,downscript=0` 指定了宿主机中的 tap 设备作为虚机的实际关联设备，具体的 iface 是我们前面创建的 tap0 ，而通过自定义的 id ，可以和 `-device virtio-net-pci,netdev=eth0,bootindex=0` 进行关联，在虚机中，它是一个挂载于 pci 总线上的网络设备，并且指定了启动顺序。
+- `-netdev tap,id=eth0,ifname=tap0,script=no,downscript=0` 指定了宿主机中的 tap 设备作为虚机的实际关联设备，具体的 iface 是我们前面创建的 tap0 ，而通过自定义的 ID ，可以和 `-device virtio-net-pci,netdev=eth0,bootindex=0` 进行关联，在虚机中，它是一个挂载于 pci 总线上的网络设备，并且指定了启动顺序。
 - `-device virtio-scsi-pci -device scsi-hd,drive=hd0,bootindex=1` 这里是关于硬盘设备的配置，这里使用了 `virtio-scsi-pci` 作为中间设备，具体的硬盘设备会作为 scsi 子设备连接到 scsi 总线，这样更加接近物理服务器的架构，而硬盘设备就是前面创建的 qcow2 镜像，通过 `-drive if=none,file=/opt/x86.qcow2,id=hd0` 指定。
 - `-nographic` 用来关闭图形界面，虚拟机的输出信息会自动重定向到标准输出中。
 
@@ -169,7 +169,7 @@ cp /usr/share/OVMF/OVMF_VARS.fd /opt/OVMF_VARS.fd
   -device virtio-net-pci,netdev=eth0,bootindex=0 \
   -drive if=none,file=/opt/x86.qcow2,id=hd0 \
   -device virtio-scsi-pci -device scsi-hd,drive=hd0,bootindex=1 \
-  -nographic         
+  -nographic
 ```
 
 具体的执行命令和 BIOS 模式下接近，只有额外指定了 UEFI firmware 的区别。
