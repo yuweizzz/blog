@@ -373,7 +373,7 @@ retry = 3
 enforce_for_root
 
 # 增加 pwhistory 配置项
-$ cat /usr/share/pam-configs/pwhistory 
+$ cat /usr/share/pam-configs/pwhistory
 Name: Pwhistory
 Default: yes
 Priority: 1024
