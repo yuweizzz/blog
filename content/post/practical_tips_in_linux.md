@@ -747,3 +747,40 @@ $ ldapsearch -h 10.0.0.1 \
     -b "ou=users,dc=example,dc=org" \
     "(&(cn=username)(objectClass=Person))"
 ```
+
+## systemd timer
+
+很多的发行软件已经使用 systemd timer 替代原有的 cron 定时任务，可以大致了解一下 systemd timer 的使用方法。
+
+```bash
+# 创建 service 文件
+$ cat /etc/systemd/system/ls.service
+[Unit]
+Description=ls
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ls
+
+# 创建对应的 timer 文件
+$ cat /etc/systemd/system/ls.timer
+[Unit]
+Description=ls
+
+[Timer]
+OnCalendar=*-*-* 12:00:00 Asia/Shanghai
+
+[Install]
+WantedBy=multi-user.target
+
+# 验证 systemd 文件
+$ systemd-analyze verify /etc/systemd/system/ls.timer
+$ systemd-analyze verify /etc/systemd/system/ls.service
+$ systemctl daemon-reload
+
+# 模拟 Calendar 表达式的具体执行时间，当前表达式会在每天中午 12 点执行
+$ systemd-analyze calendar --iterations=5 '*-*-* 12:00:00 Asia/Shanghai'
+
+# 启用 timer 之后会按照所设定的 Calendar 执行对应的同名 service
+$ systemctl enable ls.timer
+```

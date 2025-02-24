@@ -322,7 +322,77 @@ $ chmod 750 /data/sftp/sftp
 # 使用 sftp 用户登陆后会被限制在 /data/sftp 中，并且只能修改 /data/sftp/sftp 下的文件
 ```
 
-## 增加 history 时间戳
+## Debian 用户安全加固
+
+### 增加用户登陆会话超时时间
+
+设置用户登陆会话的超时时间为 15 分钟，到达对应的空闲时间后会自动退出会话。
+
+```bash
+# 追加环境变量到 /etc/profile.d/session_timeout.sh 文件中
+$ cat /etc/profile.d/session_timeout.sh
+export TMOUT=900
+readonly TMOUT
+```
+
+### 增加用户密码过期时间
+
+系统默认的用户密码过期时间等同于永不过期，可以参考以下命令修改，这里的命令应该也适用于其他发行版。
+
+```bash
+# 检查当前用户密码过期时间
+$ grep PASS_MAX_DAYS /etc/login.defs
+# PASS_MAX_DAYS Maximum number of days a password may be used.
+PASS_MAX_DAYS 99999
+
+# 将默认的过期时间修改为 7 天
+$ sed -i 's/PASS_MAX_DAYS.*/PASS_MAX_DAYS\t7/' /etc/login.defs
+```
+
+### 增加密码复杂度要求
+
+密码复杂度需要符合一定的安全标准，可以大致参考以下要求：
+
+- 密码长度大于等于 12 个字符。
+- 密码至少包含大写字母，小写字母，数字字符。
+- 不得与之前 5 次使用过的密码相同。
+
+一般借助 pam 模块来实现密码复杂度限制。
+
+```bash
+# 安装 pwquality module
+$ apt install libpam-pwquality
+
+# 修改 pwquality 配置文件
+$ cat /etc/security/pwquality.conf
+minlen = 12
+dcredit = -1
+ucredit = -1
+lcredit = -1
+retry = 3
+enforce_for_root
+
+# 增加 pwhistory 配置项
+$ cat /usr/share/pam-configs/pwhistory 
+Name: Pwhistory
+Default: yes
+Priority: 1024
+Password-Type: Primary
+Password:
+  required  pam_pwhistory.so enforce_for_root use_authtok remember=5
+Password-Initial:
+  required  pam_pwhistory.so enforce_for_root use_authtok remember=5
+
+# 修改 pam 配置，勾选已经创建的 Pwhistory 然后保存
+$ pam-auth-update
+
+# 检查配置是否生效
+$ cat /etc/pam.d/common-password
+# pam_pwquality.so 由 libpam-pwquality 提供，安装后会自动出现在配置文件中
+# pam_pwhistory.so 由 libpam-modules 提供，不需要额外安装软件，但需要在添加默认配置项后，使用 pam-auth-update 进行配置
+```
+
+### 增加 bash_history 时间戳
 
 ```bash
 # 追加环境变量到 /etc/profile.d/history_timestamp.sh 文件中
