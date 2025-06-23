@@ -37,7 +37,7 @@ Categraf 内置的日志采集功能是从 DataDog Agent 中提取的，而 Data
 
 VMAuth 的配置文件：
 
-``` bash
+```bash
 # vmauth.conf
 unauthorized_user:
   url_map:
