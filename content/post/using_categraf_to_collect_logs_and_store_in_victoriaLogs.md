@@ -2,9 +2,8 @@
 date: 2025-06-10 11:14:00
 title: 使用 Categraf 采集日志存储到 VictoriaLogs
 tags:
-  - "Openresty"
-  - "Zstandard"
-  - "Lua"
+  - "Categraf"
+  - "VictoriaLogs"
 draft: false
 ---
 

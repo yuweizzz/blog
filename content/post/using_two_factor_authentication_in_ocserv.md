@@ -66,5 +66,5 @@ echo "0x$(head -c 16 /dev/urandom | xxd -c 256 -ps)" | xxd -r -c 256 | base32
 
 参考文档：
 
-- [mod-authn-otp wiki](https://github.com/archiecobbs/mod-authn-otp/wiki/UsersFile)。
-- [openconnect vpn how-to guides](https://docs.openconnect-vpn.net/recipes/ocserv-2fa/)。
+- [mod-authn-otp wiki](https://github.com/archiecobbs/mod-authn-otp/wiki/UsersFile)
+- [openconnect vpn how-to guides](https://docs.openconnect-vpn.net/recipes/ocserv-2fa/)
