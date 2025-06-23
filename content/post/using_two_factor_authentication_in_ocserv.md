@@ -38,14 +38,14 @@ draft: false
 使用用户密码验证的配置：
 
 ```bash
-# /etc/ocserv/ocserv.conf 
+# /etc/ocserv/ocserv.conf
 auth = "plain[passwd=/etc/ocserv/ocpasswd]"
 ```
 
 额外添加一层双因素身份验证非常简单，只需要修改认证配置，其他的原有配置不受影响：
 
 ```bash
-# /etc/ocserv/ocserv.conf 
+# /etc/ocserv/ocserv.conf
 auth = "plain[passwd=/etc/ocserv/ocpasswd,otp=/etc/ocserv/users.oath]"
 ```
 
