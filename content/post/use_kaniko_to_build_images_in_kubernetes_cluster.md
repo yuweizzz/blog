@@ -70,7 +70,7 @@ spec:
 主要通过容器参数来定义构建内容，主要的参数信息参考：
 
 - `--context` ：容器构建的上下文信息，一般就是源代码路径。
-- `--dockerfile` ： dockerfile 文件所在路径，一般来说保持 dockerfile 在源代码目录并且命名为 `Dockerfile` 可以不需要这个参数。
+- `--dockerfile` ： Dockerfile 文件所在路径，一般来说保持 Dockerfile 在源代码目录并且命名为 `Dockerfile` 可以不需要这个参数。
 - `--destination` ：镜像的命名相关信息。
 
 可以看到这个 pod 还额外挂载了 secret ，这部分其实是用来存放拉取源码和构建完成后推送镜像的一些认证信息。
@@ -108,7 +108,7 @@ spec:
 - `--no-push` ：构建镜像完成后不进行推送。
 - `--tar-path` ：通过指定路径将镜像通过 tar 文件进行保存。
 
-虽然这里没有涉及 docker 镜像构建中的 `--build-arg` ，但是它在 kaniko 中同样支持，具体用法和 `docker build` 相似。
+虽然这里没有涉及 Docker 镜像构建中的 `--build-arg` ，但是它在 kaniko 中同样支持，具体用法和 `docker build` 相似。
 
 {{<details "使用 `--build-arg` 的 YAML 文件参考">}}
 
@@ -161,7 +161,7 @@ ctr i ls
 
 ### 构建完成后推送到镜像仓库
 
-这里会涉及本地仓库的搭建，测试环境可以使用 docker registry ，如果是生产环境可以考虑 harbor 。
+这里会涉及本地仓库的搭建，测试环境可以使用 Docker registry ，如果是生产环境可以考虑 harbor 。
 
 {{<details "搭建 `docker registry` 的资源文件">}}
 
@@ -236,12 +236,12 @@ spec:
 
 {{</details>}}
 
-docker registry 搭建完成后，我们只需要对前面的本地构建所使用的 YAML 做出一些小修改就可以，主要还是 kaniko 的运行参数：
+Docker registry 搭建完成后，我们只需要对前面的本地构建所使用的 YAML 做出一些小修改就可以，主要还是 kaniko 的运行参数：
 
 - 不再需要 `"--no-push"` 。
 - 保存 tar 文件的参数 `"--tar-path=/source/image.tar"` 是可选项，按需选择保留或者去除。
 - 将目标镜像 `"--destination=gcr.io/project/image:latest"` 修改为 `"--destination=registry:5000/project/image:latest"` 指向本地镜像仓库。
-- 由于搭建的 docker registry 没有启用 https ，所以需要增加 `"--insecure"` 参数，这样 kaniko 才能正常进行镜像推送。
+- 由于搭建的 Docker registry 没有启用 https ，所以需要增加 `"--insecure"` 参数，这样 kaniko 才能正常进行镜像推送。
 
 {{<details "修改后的 `kaniko` 具体实例">}}
 
@@ -270,7 +270,7 @@ spec:
 
 {{</details>}}
 
-以下是一些可能用到的 docker registry API ：
+以下是一些可能用到的 Docker registry API ：
 
 ```bash
 # 查看仓库中的镜像信息
@@ -308,7 +308,7 @@ distroless-static 是适用于静态编译运行的镜像，根据官方文档�
 
 所以在 distroless-static 作为基础镜像时，不再需要更新证书和时区内容，只需要传入对应的 TZ 变量就可以。
 
-distroless-base 在 distroless-static 镜像的基础上增加了 glibc 和 openssl 的支持，还有 distroless-base-nossl 则是只支持 glibc ，这两个镜像有比较强的通用性。可以根据程序的库依赖要求来选择。
+distroless-base 在 distroless-static 镜像的基础上增加了 glibc 和 OpenSSL 的支持，还有 distroless-base-nossl 则是只支持 glibc ，这两个镜像有比较强的通用性。可以根据程序的库依赖要求来选择。
 
 distroless-cc 则是在 distroless-base 的基础上支持 libgcc1 and its dependencies ，适用于 Rust 和 D 编写的程序。
 
@@ -316,7 +316,7 @@ distroless-cc 则是在 distroless-base 的基础上支持 libgcc1 and its depen
 
 目前我们正使用这些基础镜像开始替换 Alpine 镜像，在保持镜像轻量的同时提高安全性，使用 go 编写的程序都已经基本迁移完成。
 
-以下是一个适用于 go 程序的 dockerfile 例子：
+以下是一个适用于 go 程序的 Dockerfile 例子：
 
 ```dockerfile
 FROM golang:1.20 as build

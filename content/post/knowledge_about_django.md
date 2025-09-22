@@ -58,7 +58,7 @@ $ source project/bin/activate
 
 ## 使用 MySQL 做后端存储
 
-Django 默认的后端存储是 sqlite3 ，可以用更强大的 MySQL 或者 PostgreSQL 代替。
+Django 默认的后端存储是 SQLite3 ，可以用更强大的 MySQL 或者 PostgreSQL 代替。
 
 ```bash
 # 安装依赖
@@ -329,9 +329,9 @@ chord_instance()
 
 ## 使用 Django 序列化器
 
-序列化实际上是比较广泛的定义，在 Django 中一般指将 Django Model 转换为通用型数据格式，最常用的就是 json 格式。
+序列化实际上是比较广泛的定义，在 Django 中一般指将 Django Model 转换为通用型数据格式，最常用的就是 JSON 格式。
 
-原生的 Django serializers 可以将 Model 转换为 json 格式的纯文本，除了 json 还包括 XML 和 YAML 这两种格式。
+原生的 Django serializers 可以将 Model 转换为 JSON 格式的纯文本，除了 JSON 还包括 XML 和 YAML 这两种格式。
 
 通常情况下会使用 Django REST framework 提供的 serializers 来替代原生的序列化器， Django REST framework 是非常强大的 Django 扩展库，在 Django 原有的基础类上做了增强封装，它的 serializers 拥有更丰富的内置函数，可以轻松实现序列化和反序列化。
 

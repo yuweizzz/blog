@@ -40,7 +40,7 @@ draft: false
 
 我们可以从最常用的环境变量 `PATH` 开始，它是寻找解释器或者命令的默认路径，以 `:` 分割不同路径的形式出现。在这个变量定义的路径中，可执行文件可以被快速搜索并直接执行，而且路径的顺序是有意义的，越靠前的搜索优先级越高。经常可以在一些软件的使用文档中看到 `export PATH=/path/to/bin:$PATH` 的类似用法。
 
-除了 `export` 之外，还有 `source` 也可以用来设置一些环境变量， python 的虚拟环境 venv 就用到了 `source` 来设置一些环境变量，实际上 `export` 和 `source` 都是 bash 的内置命令。
+除了 `export` 之外，还有 `source` 也可以用来设置一些环境变量， python 的虚拟环境 venv 就用到了 `source` 来设置一些环境变量，实际上 `export` 和 `source` 都是 Bash 的内置命令。
 
 ```bash
 # 以下出自 bash 的相关文档
@@ -76,11 +76,11 @@ SHELL BUILTIN COMMANDS
 
 由于前面所述的方法只对当前 shell 生效，那么持久方案也值得我们额外关注。
 
-这里只讨论 Linux 环境下的 bash ，其他类型的 shell 和 bash 可能略有差别，但它们的机制应该是相近的。
+这里只讨论 Linux 环境下的 Bash ，其他类型的 shell 和 Bash 可能略有差别，但它们的机制应该是相近的。
 
 ### shell 的属性
 
-bash 的机制比表面看上去的复杂得多，它隐藏了很多的属性设置。可以根据我们比较关系的属性，来简单划分 shell 的种类。
+Bash 的机制比表面看上去的复杂得多，它隐藏了很多的属性设置。可以根据我们比较关系的属性，来简单划分 shell 的种类。
 
 影响环境变量的属性有比较关键的两个，分别是登录相关的属性和交互相关的属性。
 
@@ -143,7 +143,7 @@ SHELL BUILTIN COMMANDS
 
 ### profile 和 rc
 
-bash 使用了 profile 和 rc 来完成一些 bash 环境的设置工作，环境变量的设置会在这一步完成。
+Bash 使用了 profile 和 rc 来完成一些 Bash 环境的设置工作，环境变量的设置会在这一步完成。
 
 ```bash
 # 以下出自 bash 的相关文档
@@ -189,7 +189,7 @@ INVOCATION
 ...
 ```
 
-加载 profile 和 rc 是由 shell 属性决定的，从 bash 文档可以得出，登录式 shell 启动时会加载 profile 系列文件，非登陆交互式 shell 启动时会加载 rc 系列文件。
+加载 profile 和 rc 是由 shell 属性决定的，从 Bash 文档可以得出，登录式 shell 启动时会加载 profile 系列文件，非登陆交互式 shell 启动时会加载 rc 系列文件。
 
 根据上述文档，只要是登录式 shell ，不论是否带有交互属性，它的显式预加载链为 `/etc/profile --> ~/.bash_profile` ，可以通过 `bash -i -l -x` 进行验证，读取整体链条文件可以知道完整的预加载链为：
 
@@ -224,7 +224,7 @@ INVOCATION
 
 综合上面来看，我们可以在两个地方设置持久的环境变量，那就是 `/etc/profile.d/*.sh` 和 `~/.bashrc` 。
 
-将变量写在 `/etc/profile.d/*.sh` 是 bash 本身推荐的做法，但是如果仔细阅读过 `/etc/bashrc` 和 `/etc/profile` 的代码你会知道，它们对 `/etc/profile.d/*.sh` 的处理是一致的，只有对应的用户拥有 `/etc/profile.d/` 中的文件可读权限，那么这个脚本才会被执行。如果有时候自行写入了 `/etc/profile.d/` 中的文件却无法正常加载变量，很可能就是权限导致的问题。
+将变量写在 `/etc/profile.d/*.sh` 是 Bash 本身推荐的做法，但是如果仔细阅读过 `/etc/bashrc` 和 `/etc/profile` 的代码你会知道，它们对 `/etc/profile.d/*.sh` 的处理是一致的，只有对应的用户拥有 `/etc/profile.d/` 中的文件可读权限，那么这个脚本才会被执行。如果有时候自行写入了 `/etc/profile.d/` 中的文件却无法正常加载变量，很可能就是权限导致的问题。
 
 将变量写在常用用户的 `~/.bashrc` 我个人认为是更好的办法，它的好处在于方便隔离，各个用户之间不会互相影响。
 

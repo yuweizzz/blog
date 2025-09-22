@@ -116,7 +116,7 @@ jobs:
 
 在 jobs 被定义之前的 on 是 workflow 的关键字，用来定义这个 workflow 的运行触发条件。对于这个文件来说，在分支 master 上的 push 或 pull 动作都会激活这个 workflow 。除了 push 和 pull 两种触发方式，还可以使用 crontab 定时调度触发。
 
-在 jobs 定义 step 之前，还有运行环境的相关定义。 runs-on 关键字用来定义 workflow 的主机工作环境，一般的工作环境有 Linux ， macOS 和 Windows ，这里使用的是 ubuntu 最新版本。 matrix 是构建矩阵，常用于定义 jobs 运行在多个不同版本的工作环境，这里定义了不同的 python 解释器版本，包括了3.5，3.6，3.7，3.8，所以这个 workflow 会在不同的解释器版本下都运行一次。
+在 jobs 定义 step 之前，还有运行环境的相关定义。 runs-on 关键字用来定义 workflow 的主机工作环境，一般的工作环境有 Linux ， macOS 和 Windows ，这里使用的是 Ubuntu 最新版本。 matrix 是构建矩阵，常用于定义 jobs 运行在多个不同版本的工作环境，这里定义了不同的 python 解释器版本，包括了3.5，3.6，3.7，3.8，所以这个 workflow 会在不同的解释器版本下都运行一次。
 
 主要部分 steps 列表定义了5个成员，在每个成员中， name 用来定义该 action 的名称， run 用来定义该 action 的具体内容， with 用来设置参数和变量， uses 用来调用社区公共 action ，它们是可以灵活组合的。
 

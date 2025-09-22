@@ -112,7 +112,7 @@ IPv6 radvd 服务用于辅助 SLAAC 地址获取，但是需要注意不开启�
 
 在我使用的 Armbian 中， `accept_ra` 参数为 1 ， `autoconf` 参数为 1 ， `addr_gen_mode` 参数为 0 ， `use_tempaddr` 参数为 0 ，所以最终只获取到一个由 SLAAC 生成的 IPv6 地址。
 
-现在的 DNS 设置仍然是由 ipv4 的 DHCP 服务配置的，因为 SLAAC 并不会配置 DNS 信息，如果想要在 Linux 中使用 DHCPv6 自动配置 DNS 信息，应该使用命令 `dhclient -6 <interface>` 主动拉起 DHCPv6 客户端，这样 DNS 设置就会由 DHCPv6 客户端接管配置。在 Armbian 中，和 DNS 配置相关的文件是 `/etc/resolv.conf` 和 `/etc/resolvconf/run/resolv.conf` ，它们之间应该通过软链接相关联。
+现在的 DNS 设置仍然是由 IPv4 的 DHCP 服务配置的，因为 SLAAC 并不会配置 DNS 信息，如果想要在 Linux 中使用 DHCPv6 自动配置 DNS 信息，应该使用命令 `dhclient -6 <interface>` 主动拉起 DHCPv6 客户端，这样 DNS 设置就会由 DHCPv6 客户端接管配置。在 Armbian 中，和 DNS 配置相关的文件是 `/etc/resolv.conf` 和 `/etc/resolvconf/run/resolv.conf` ，它们之间应该通过软链接相关联。
 
 ## 配置硬盘休眠
 

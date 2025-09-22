@@ -113,7 +113,7 @@ $ vi layouts/partials/script.html
     └── texture_02.png
 ```
 
-模型文件大都是 json 格式，其中 model3.json 是最为重要的入口文件，很多模型的行为都是由它定义的，后续也需要修改这个文件来实现一些自定义需求。
+模型文件大都是 JSON 格式，其中 model3.json 是最为重要的入口文件，很多模型的行为都是由它定义的，后续也需要修改这个文件来实现一些自定义需求。
 
 现在我们拥有了模型，如果要在网页上实现模型的应用，还需要对应模型版本的 framework 的支持。在这一块我们只能使用 Live2D 出品公司原有的框架，或者使用由大神整理过的资源，我直接使用了 [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display) 插件，在这个插件中， pixijs 是整个项目的重要部分，它是一个强大的前端 2D 动画渲染引擎，和 Cubism framework 很好地结合在一起，所以我们不必去了解底层的 API ，可以直接使用这个插件为我们提供的 API ，这也是我选择这个插件的原因。
 
