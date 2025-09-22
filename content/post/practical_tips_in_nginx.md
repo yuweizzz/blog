@@ -313,6 +313,27 @@ server {
 
 开启了 HSTS 后想降级使用 HTTP 是比较麻烦的，可能需要修改浏览器的 HSTS 相关设置，此外 `Strict-Transport-Security` 还可以添加 `preload` 指令，这样浏览器第一次访问时会直接强制 HTTPS 而不是经过一次重定向后再强制，要正常使用 `preload` 指令需要自行将域名注册到 Chromium 项目的 HSTS preload list 并修改服务端配置，成功注册到 HSTS preload list 后如果想降级使用 HTTP 可能会导致服务无法访问。
 
+## 配置浏览器安全策略相关的 Header
+
+除去跨域请求配置和 HSTS 配置，一般还有以下几个 Header 需要配置：
+
+- `X-Content-Type-Options` ：用于控制浏览器是否遵循在 Content-Type 响应请求头中定义的 MIME 类型，使用 nosniff 代表不允许进行嗅探，遵循原有的类型。
+- `X-Frame-Options` ：用于控制内嵌 Frame 相关标签的具体行为，一般值为 SAMEORIGIN 或者 DENY ，即允许从同源中加载 Frame 或者彻底不允许加载。应该视具体使用情况而定，如果完全不用到这个标签，直接使用 DENY 即可。
+- `Content-Security-Policy` ：用于声明资源加载策略的具体行为，主要的控制内容是控制资源的加载来源，并且可以为每一种资源做不同的限制，具体参考这里的[文档](https://content-security-policy.com/)。
+
+```bash
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    location / {
+        add_header X-Content-Type-Options "nosniff";
+        add_header X-Frame-Options "DENY";
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self';";
+    }
+}
+```
+
 ## 开启 OCSP Stapling
 
 OCSP 全称 Online Certificate Status Protocol ，也就是在线证书状态协议，在请求端浏览器获取到服务端证书后，可以向证书签发机构调用接口检验证书的时效性。

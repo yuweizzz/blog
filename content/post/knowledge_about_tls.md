@@ -218,6 +218,22 @@ $ openssl ciphers -v
 # SHA256 指的是摘要算法， SHA256 是 256 bit 的摘要算法
 ```
 
+## 计算公钥指纹
+
+在安卓开发过程中的 SSL pinning 会需要用到证书公钥指纹，可以通过私钥或者证书计算得出。
+
+```bash
+# 从私钥提取对应的公钥
+$ openssl rsa -in key.pri -pubout -out key.pub
+
+# 从证书中提取对应的公钥
+$ openssl x509 -in x509.crt -noout -pubkey -out key.pub
+
+# 计算公钥指纹
+$ openssl asn1parse -noout -in key.pub -inform pem -out key_der.pub
+$ openssl dgst -sha256 -binary key_der.pub | openssl enc -base64
+```
+
 ## 运行 OCSP Responder
 
 `openssl` 可以运行一个用于响应 OCSP 请求的服务端，能够满足一些基本的测试要求，实际中 OCSP 具体如何在 Nginx 中进行应用则可以参考[这里](https://yuweizzz.github.io/post/practical_tips_in_nginx/#%E5%BC%80%E5%90%AF-ocsp-stapling)。
