@@ -132,7 +132,7 @@ net 除了和父空间隔离外，会生成新的网络栈并默认生成独立�
 
 mount 命名空间是最复杂的一种，它使用 shared subtrees 运行机制，允许在不同 mount 命名空间之间自动，受控地传播 mount 事件和 unmount 事件。简单来说，我们通过设置某个命名空间的 propagation 属性，决定这个命名空间中挂载动作和卸载动作是如何传播到其他命名空间。
 
-propagation 有 `private|shared|slave|unchanged` 这几种，最常用的是 private ，它默认从父空间继承挂载节点，后续不同空间的挂载动作和卸载动作互不影响，在 docker 的官方文档中，有这么一段话： `Volumes use rprivate bind propagation, and bind propagation is not configurable for volumes.` ，说明了卷是基于 mount 命名空间来实现挂载特性的。
+propagation 有 `private|shared|slave|unchanged` 这几种，最常用的是 private ，它默认从父空间继承挂载节点，后续不同空间的挂载动作和卸载动作互不影响，在 Docker 的官方文档中，有这么一段话： `Volumes use rprivate bind propagation, and bind propagation is not configurable for volumes.` ，说明了卷是基于 mount 命名空间来实现挂载特性的。
 
 ```bash
 # 在运行容器的情况下查看现有的命名空间
@@ -190,7 +190,7 @@ drwxr-xr-x. 5 root root  0 Apr 14 22:13 systemd
 
 cgroup filesystem 是使用 cgroup 时内核态与用户态沟通的重要节点，默认路径一般为 `/sys/fs/cgroup` ，目前 cgroup 有 v1 和 v2 两个版本，这里使用的是 cgroup v1 ，如果想要使用 cgroup v2 ，应该通过 `/proc/filesystems` 查看当前内核是否支持。
 
-在这里我们可以看到 cgroupfs 将各种资源划分到多个子系统，主要有 cpu ， memory ， net ， blk 这几种资源，它们对应的控制器名称在后续创建 cgroup 是比较重要的。
+在这里我们可以看到 cgroupfs 将各种资源划分到多个子系统，主要有 CPU ， memory ， net ， blk 这几种资源，它们对应的控制器名称在后续创建 cgroup 是比较重要的。
 
 ### 使用 libcgroup 创建 cgroup
 
@@ -375,9 +375,9 @@ $ systemctl status toptest
            └─2661 /usr/bin/top -b
 ```
 
-现有常用的容器进行时中， docker 默认会在 `/sys/fs/cgroup` 的各个子系统中自行维护 cgroup ，但可以通过修改 cgroup driver 来托管到 systemd 中，而 containerd 也存在类似的驱动设置。
+现有常用的容器进行时中， Docker 默认会在 `/sys/fs/cgroup` 的各个子系统中自行维护 cgroup ，但可以通过修改 cgroup driver 来托管到 systemd 中，而 containerd 也存在类似的驱动设置。
 
-在 docker 使用 `"exec-opts": ["native.cgroupdriver=systemd"]` 改变 cgroup driver 的情况下，新运行的容器会作为 system.slice 中的 scope 运行，如果使用默认的 cgroupfs 的情况下，会如前面所述，在 `/sys/fs/cgroup` 的各个子系统中创建 cgroup ，而不是托管在 systemd 中。
+在 Docker 使用 `"exec-opts": ["native.cgroupdriver=systemd"]` 改变 cgroup driver 的情况下，新运行的容器会作为 system.slice 中的 scope 运行，如果使用默认的 cgroupfs 的情况下，会如前面所述，在 `/sys/fs/cgroup` 的各个子系统中创建 cgroup ，而不是托管在 systemd 中。
 
 ## 结语
 

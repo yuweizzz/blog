@@ -60,7 +60,7 @@ traefik 的功能由 Apisix Ingress 接管， servicelb 的功能则通过 ciliu
 
 相应的 `--datastore-endpoint` 具体信息记录在 `/var/lib/rancher/k3s/server/db` ，而 k3s 集群创建的 local-path 类型的 PVC 则存储在 `/var/lib/rancher/k3s/storage` 。
 
-通过修改 k3s registries 配置来解决 docker 被墙后的镜像拉取错误问题。
+通过修改 k3s registries 配置来解决 Docker 被墙后的镜像拉取错误问题。
 
 ```bash
 # 添加 /etc/rancher/k3s/registries.yaml

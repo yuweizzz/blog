@@ -34,15 +34,15 @@ draft: false
 
 ## 前言
 
-containerd 是由 docker 公司贡献，符合 OCI 标准的容器进行时。
+containerd 是由 Docker 公司贡献，符合 OCI 标准的容器进行时。
 
-## containerd 和 docker 的关系
+## containerd 和 Docker 的关系
 
 首先我们需要了解 [OCI](https://opencontainers.org/) 是什么，它的全称为 Open Container Initiative ，也就是开放容器提案，目前主要有 Runtime Spec 和 Image Spec ，Distribution Spec 几个定制标准，标准化使得各种第三方组件不再限定于某种容器运行时，而是可以自由运行在任何符合 OCI 标准的容器进行时，可以说 OCI 促进了容器技术的生态发展。
 
-通常来说，容器进行时指的是管理容器生命周期的守护进程，比如 docker 就是最经典的容器进行时，我们只需要调用 docker 命令就可以启动或者停止容器。但实际上 docker 要做的工作不止这些，它还兼顾了镜像管理，镜像构建，容器网络和存储管理等工作，属于高层级的容器进行时。
+通常来说，容器进行时指的是管理容器生命周期的守护进程，比如 Docker 就是最经典的容器进行时，我们只需要调用 Docker 命令就可以启动或者停止容器。但实际上 Docker 要做的工作不止这些，它还兼顾了镜像管理，镜像构建，容器网络和存储管理等工作，属于高层级的容器进行时。
 
-containerd 也属于高层级的容器进行时，但相比于 docker 它更加精简，最关键地保留了管控容器生命周期的核心功能，在较新版本的 docker 中，管控容器生命周期的功能已经完全由 containerd 承担， docker 守护进程和 containerd 守护进程之间使用 grpc 进行通信。
+containerd 也属于高层级的容器进行时，但相比于 Docker 它更加精简，最关键地保留了管控容器生命周期的核心功能，在较新版本的 Docker 中，管控容器生命周期的功能已经完全由 containerd 承担， Docker 守护进程和 containerd 守护进程之间使用 gRPC 进行通信。
 
 containerd 守护进程管理着运行中的容器，与容器具体的交互功能则是由 runc 负责的， runc 是低底层的容器运行时接口，只要是符合 OCI 标准的容器镜像，就可以直接调用 runc 运行这个镜像。
 
@@ -66,7 +66,7 @@ containerd 守护进程管理着运行中的容器，与容器具体的交互功
 
 ## 直接通过 containerd cli 运行容器
 
-由于 containerd 具备完善的容器生命周期能力，我们可以不再使用 docker cli ，直接使用 containerd 的 cli 工具 ctr 直接运行容器。
+由于 containerd 具备完善的容器生命周期能力，我们可以不再使用 Docker cli ，直接使用 containerd 的 cli 工具 ctr 直接运行容器。
 
 ```bash
 # 安装 containerd
@@ -151,7 +151,7 @@ $ ctr t exec -t --exec-id busybox-sh mybusybox sh
 
 ### 声明持久化挂载点
 
-虽然 containerd 不具备 docker volumes 的功能，但是可以基于 mount 命名空间将宿主机上的某些文件目录映射到容器中。
+虽然 containerd 不具备 Docker volumes 的功能，但是可以基于 mount 命名空间将宿主机上的某些文件目录映射到容器中。
 
 ```bash
 # 需要在 container creater 阶段声明 mount 信息
@@ -261,8 +261,8 @@ $ ip link delete cni0
 $ ip netns delete container-net
 ```
 
-以上信息描述了两种容器网络的实现方法，第一种非常简单，直接和主机共享网络栈，第二种网络模式则是由 cni 提供支持，和 docker 默认的网桥模式类似，更复杂的 cni 网络模式可以参阅[官方文档](https://github.com/containernetworking/cni/blob/spec-v1.0.0/SPEC.md)和各插件的[详细说明](https://www.cni.dev/plugins/current/main/)。
+以上信息描述了两种容器网络的实现方法，第一种非常简单，直接和主机共享网络栈，第二种网络模式则是由 cni 提供支持，和 Docker 默认的网桥模式类似，更复杂的 cni 网络模式可以参阅[官方文档](https://github.com/containernetworking/cni/blob/spec-v1.0.0/SPEC.md)和各插件的[详细说明](https://www.cni.dev/plugins/current/main/)。
 
 ## 总结
 
-目前 contained 已经可以直接作为 Kubernetes 的容器进行时，并且后续 Kubernetes 会减弱对 docker 的支持，在容器集群环境可以尝试直接使用 contained 替代 docker ，如果是单机环境则 docker 依旧是较好的选择。
+目前 contained 已经可以直接作为 Kubernetes 的容器进行时，并且后续 Kubernetes 会减弱对 Docker 的支持，在容器集群环境可以尝试直接使用 contained 替代 Docker ，如果是单机环境则 Docker 依旧是较好的选择。

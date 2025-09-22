@@ -75,9 +75,9 @@ map $http_user_agent $mobile {
 # 获取 HTTP 请求头 User-Agent 的值，如果使用正则匹配到 Opera Mini 则设置变量 mobile 为 1 ，其他情况默认为 0
 ```
 
-## 设置 json 格式日志
+## 设置 JSON 格式日志
 
-Nginx 原生的日志格式是列出了关键信息的单行文本，我们可以创建模拟 json 格式的日志写入规则。
+Nginx 原生的日志格式是列出了关键信息的单行文本，我们可以创建模拟 JSON 格式的日志写入规则。
 
 ```bash
 # 模拟 json 的日志格式
@@ -136,7 +136,7 @@ $ cat /etc/logrotate.d/nginx
 
 WebSocket 是基于 HTTP 协议的实时双向通讯协议，它属于应用层的协议。
 
-在浏览器中， WebSocket 会以 `ws://` 的形式出现，基于 ssl 加密则会以 `wss://` 的形式出现，在 Nginx 中，所有的 WebSocket 请求只是带有特定请求头的普通 HTTP 请求。
+在浏览器中， WebSocket 会以 `ws://` 的形式出现，基于 SSL 加密则会以 `wss://` 的形式出现，在 Nginx 中，所有的 WebSocket 请求只是带有特定请求头的普通 HTTP 请求。
 
 WebSocket 的握手请求带有重要的两个请求头 `Upgrade: websocket` 和 `Connection: Upgrade` ，握手成功将会返回 `101 Switching Protocols` ，后续双方就可以使用 WebSocket 的方法互相通信。
 
@@ -447,7 +447,7 @@ github.pem: good
  Next Update: Nov 17 12:30:02 2022 GMT
 ```
 
-在 Nginx 中可以通过 ssl 模块中的相关指令来开启 OCSP 支持。
+在 Nginx 中可以通过 SSL 模块中的相关指令来开启 OCSP 支持。
 
 ```bash
 # 开启 OCSP 支持

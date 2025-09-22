@@ -114,9 +114,9 @@ $ xfsdump -f ~/home.img /home
 $ xfsrestore -f ~/home.img /home
 ```
 
-## curl 的基本使用
+## cURL 的基本使用
 
-curl 在 Linux 代替了浏览器的工作，经常用来调试接口。
+cURL 在 Linux 代替了浏览器的工作，经常用来调试接口。
 
 ```bash
 # 经典 curl 用例
@@ -144,9 +144,9 @@ $ curl -X POST -H 'Content-Type: application/json' --data-binary @data.json 'htt
 $ cat data.json | curl -X POST -H 'Content-Type: application/json' --data-binary @- 'http://....'
 ```
 
-## curl 结合 bash 变量使用
+## cURL 结合 Bash 变量使用
 
-curl 可以结合 bash 变量，实现更灵活的 URL 请求。
+cURL 可以结合 Bash 变量，实现更灵活的 URL 请求。
 
 ```bash
 # 结合 bash 变量的简单实例
@@ -163,7 +163,7 @@ $ curl -X POST -H 'Content-Type: application/json' -d '{"keyA": "'"$keyA"'","key
 - `"$keyB"`
 - `'"}'`
 
-其中 `'` 包围的文本不会被 bash 转义，所以 `{}` 会以源文本的格式保留而不被转义。而变量总是以 `"$keyA"` 的形式出现，保证它被 bash 正确转义并获取变量内容。所以文本块就是 `'` 包围的部分和变量转义后的组合文本，注意 `"$keyA"` 和任意 `'` 包围的部分之间不能有空格，这样它们就会被认为是完整的 `-d` 选项的内容，发起请求时就不会报错了。
+其中 `'` 包围的文本不会被 Bash 转义，所以 `{}` 会以源文本的格式保留而不被转义。而变量总是以 `"$keyA"` 的形式出现，保证它被 Bash 正确转义并获取变量内容。所以文本块就是 `'` 包围的部分和变量转义后的组合文本，注意 `"$keyA"` 和任意 `'` 包围的部分之间不能有空格，这样它们就会被认为是完整的 `-d` 选项的内容，发起请求时就不会报错了。
 
 ## 使用 sed 快速去除无用字符
 
@@ -226,7 +226,7 @@ $ printf "%e" 12345
 
 ## 在 shell 中使用数组
 
-bash 4 原生支持一维数组，在某些情况下可能会使用到这种数据结构。
+Bash 4 原生支持一维数组，在某些情况下可能会使用到这种数据结构。
 
 ```bash
 #!/bin/bash
@@ -261,9 +261,9 @@ echo ${#array[@]};
 echo ${#array["index"]};
 ```
 
-## bash 变量操作符
+## Bash 变量操作符
 
-bash 变量支持操作符，可以基于原有值做一些快速变换。
+Bash 变量支持操作符，可以基于原有值做一些快速变换。
 
 ```bash
 $ var=file.name.sh
@@ -296,7 +296,7 @@ file
 
 关于这两个定义符的记忆，我建议直接看键盘， `#` 在 `$` 左边， `%` 在 `$` 右边，把它们指向 `$` 则暗合它们的开始匹配方向。
 
-## awk 内置函数 split()
+## AWK 内置函数 split()
 
 ```bash
 #!/bin/bash
@@ -313,7 +313,7 @@ split("A;B;C;D",array,';')
 # 值得注意的是 array 是 awk 的内部变量
 ```
 
-## awk 导入外部数据
+## AWK 导入外部数据
 
 ```bash
 #!/bin/bash
@@ -474,7 +474,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
 - `name` 是对 Repository 的描述。
 - `enable` 规定对应 Repository 是否启用，可以使用这个选项屏蔽 Repository 。
-- `baseurl` 是指向 Repository 的 repodata 目录的地址，里面存放了软件包和他们的依赖关系。它可以指向本地和云端，本地文件以 `file://` 来指定，云端可以使用 http，ftp 等工具。
+- `baseurl` 是指向 Repository 的 repodata 目录的地址，里面存放了软件包和他们的依赖关系。它可以指向本地和云端，本地文件以 `file://` 来指定，云端可以使用 http，FTP 等工具。
 - `mirrorlist` 是 `baseurl` 的一种集合形式，可以说 `mirrorlist` 指向的是一系列的 `baseurl` ，配合 fastestmirror 插件能找到响应速度最快的 Repository 。
 - `gpgcheck` 规定是否进行签名检查。
 - `gpgkey` 指定了签名检查的合法签名数据源。

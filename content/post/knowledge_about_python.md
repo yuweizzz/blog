@@ -334,7 +334,7 @@ $ supervisorctl start all
 $ supervisorctl start theprogramname
 ```
 
-## 使用 python 进行 ElasticSearch 滚动查询
+## 使用 python 进行 Elasticsearch 滚动查询
 
 适用于不关心数据顺序，获取索引中所有文档部分所需字段的场景。
 

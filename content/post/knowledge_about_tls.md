@@ -129,7 +129,7 @@ $ openssl x509 -req -sha256 -days 365 -in request.csr -CA CA.crt -CAkey key.pri 
 
 > 在签发 CA 证书时最好通过 `-extfile <(printf "basicConstraints=CA:TRUE")` 表明自身是用作 CA 证书用途。
 
-在 golang 1.15 之后的版本，进行 tls 握手时发生报错 `"x509: certificate relies on legacy Common Name field, use SANs or temporarily enable Common Name matching with GODEBUG=x509ignoreCN=0"` 是因为当前使用的证书依赖于 CN 作为域名绑定，需要使用 x509 拓展字段 Subject Alternative Name 才能进行正常验证，也就是报错信息所述的 SAN 。
+在 Go 1.15 之后的版本，进行 tls 握手时发生报错 `"x509: certificate relies on legacy Common Name field, use SANs or temporarily enable Common Name matching with GODEBUG=x509ignoreCN=0"` 是因为当前使用的证书依赖于 CN 作为域名绑定，需要使用 x509 拓展字段 Subject Alternative Name 才能进行正常验证，也就是报错信息所述的 SAN 。
 
 ```bash
 # 生成 SAN 证书

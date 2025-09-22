@@ -74,7 +74,7 @@ imapsync --tmpdir /tmp \
   --automap --nofoldersizes --subscribeall \
   --ssl1 --host1 imap.host1.com --port1 993 --user1 user@host1.com --passfile1 /var/tmp/password \
   --ssl2 --host2 outlook.office365.com --port2 993 --user2 user@host2.com \
-  --office2 --oauthaccesstoken2 /var/tmp/tokens/oauth2_tokens_user@host2.com.txt 
+  --office2 --oauthaccesstoken2 /var/tmp/tokens/oauth2_tokens_user@host2.com.txt
 ```
 
 使用其他的邮件服务商也是类似的方法，但是需要修改对应的 provider ，具体可以参考 imapsync 的[官方文档](https://github.com/imapsync/imapsync/blob/master/README)。

@@ -296,9 +296,9 @@ PubkeyAcceptedAlgorithms +ssh-rsa
 $ sshd -T | grep pubkeyacceptedalgorithms
 ```
 
-### 启用 sftp
+### 启用 SFTP
 
-sshd 服务默认就会启动 sftp 服务，这里主要是对某些用户做一些额外的 sftp 适配。
+sshd 服务默认就会启动 SFTP 服务，这里主要是对某些用户做一些额外的 SFTP 适配。
 
 ```bash
 # 增加 sftp 用户并修改密码

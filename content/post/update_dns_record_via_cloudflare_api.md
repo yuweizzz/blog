@@ -8,7 +8,7 @@ tags:
 draft: false
 ---
 
-通过 cloudflare API 更新 DNS 记录的 python 脚本。
+通过 Cloudflare API 更新 DNS 记录的 python 脚本。
 
 <!--more-->
 

@@ -134,9 +134,9 @@ filebeat.inputs:
 
 示例中的表达式匹配了使用开头为 `[` 的行，由于它的 `multiline.negate` 为 true ，所以不以 `[` 开头的行被认为是聚合行中的子行，并且根据 `multiline.match` 的 `after` ，每次匹配到 `[` 之后，后续的子行会与它聚合为一行，直到下一符合 `[` 开头的行为止。
 
-### json 配置
+### JSON 配置
 
-`json` 配置可以使 filebeat 读取日志文件时将对应的日志内容解析为 json 格式。
+`json` 配置可以使 filebeat 读取日志文件时将对应的日志内容解析为 JSON 格式。
 
 ```yaml
 filebeat.inputs:
@@ -157,7 +157,7 @@ filebeat.inputs:
       add_error_key: true
 ```
 
-它适用于日志文件本身就是单行 json 格式的场景，因为它默认的解析来源是 `event.message` 字段，不过这个来源可以通过 `message_key` 进行修改。其中参数 `keys_under_root` 和 `overwrite_keys` 的定义类似于 `fields_under_root` 的行为，如果成功解析日志，字段都会被添加到 event 中，且同名字段时也是采取覆盖操作。而 `add_error_key` 则会在解析日志失败时添加 `event.error` 字段并在其中加入报错信息。解析成功后，不会再出现 `event.message` 字段。
+它适用于日志文件本身就是单行 JSON 格式的场景，因为它默认的解析来源是 `event.message` 字段，不过这个来源可以通过 `message_key` 进行修改。其中参数 `keys_under_root` 和 `overwrite_keys` 的定义类似于 `fields_under_root` 的行为，如果成功解析日志，字段都会被添加到 event 中，且同名字段时也是采取覆盖操作。而 `add_error_key` 则会在解析日志失败时添加 `event.error` 字段并在其中加入报错信息。解析成功后，不会再出现 `event.message` 字段。
 
 ### 具体行为配置
 
@@ -335,7 +335,7 @@ processors:
 
 ### dissect
 
-`dissect` 可以通过给定匹配式截取出需要的数据并且拆分到对应的字段中，可以用于非标准 json 格式日志的信息格式化。其中 `target_prefix` 与 `add_fields` 中的 `target` 类似， `ignore_failure` 和 `overwrite_keys` 也同 `fields` 中错误处理和字段覆写用法相似。
+`dissect` 可以通过给定匹配式截取出需要的数据并且拆分到对应的字段中，可以用于非标准 JSON 格式日志的信息格式化。其中 `target_prefix` 与 `add_fields` 中的 `target` 类似， `ignore_failure` 和 `overwrite_keys` 也同 `fields` 中错误处理和字段覆写用法相似。
 
 ```yaml
 # log_path: /var/log/info.log
@@ -409,7 +409,7 @@ output.console:
   pretty: true
 ```
 
-在生产环境下，可以直接从 filebeat 把数据输出到 ElasticSearch ，也可以使用 Kafka 这类消息中间件做数据中转，再通过其他方式去消费。
+在生产环境下，可以直接从 filebeat 把数据输出到 Elasticsearch ，也可以使用 Kafka 这类消息中间件做数据中转，再通过其他方式去消费。
 
 ```yaml
 # log_path: /var/log/info.log

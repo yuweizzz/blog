@@ -439,7 +439,7 @@ spec:
 
 tekton trigger 可以提供相关的 web 接口，使得外部服务可以通过这个接口来触发对应的 pipelinerun 。
 
-具体的 tekton trigger 由 TriggerTemplate ， TriggerBinding 以及 EventListener 三个部分组成。其中 TriggerTemplate 和 pipeline 定义密切相关，基本上是在 pipeline 的基础上进行额外包装，而 TriggerBinding 则是规定了具体的 json payload 格式，应该要与 TriggerTemplate 中的参数结构对应。最终由 EventListener 对外提供 web 接口，接收来自外部的请求。
+具体的 tekton trigger 由 TriggerTemplate ， TriggerBinding 以及 EventListener 三个部分组成。其中 TriggerTemplate 和 pipeline 定义密切相关，基本上是在 pipeline 的基础上进行额外包装，而 TriggerBinding 则是规定了具体的 JSON payload 格式，应该要与 TriggerTemplate 中的参数结构对应。最终由 EventListener 对外提供 web 接口，接收来自外部的请求。
 
 此外还可以通过 Interceptors 对请求内容进行一些校验和转换处理，但这里暂时只用到了简单的参数映射，所以没有用上 Interceptors 。
 
