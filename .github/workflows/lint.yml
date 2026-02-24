@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0
 
       - name: lint docs
-        uses: super-linter/super-linter@v7.1.0
+        uses: super-linter/super-linter@v8.3.1
         env:
           FILTER_REGEX_INCLUDE: ^/github/workspace/content/post
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
