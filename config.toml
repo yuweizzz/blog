@@ -16,7 +16,8 @@ pygmentsUseClasses = true
   favicon = "/images/favicon.svg"
   headerIcon = "/images/github-mark-white.png"
   location = "China"
-  custom_js = ["https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js", "/js/CustomLive2D.js"]
+  custom_js = ["https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"]
+  defer_custom_js = ["/js/CustomLive2D.js"]
   enableSearch = true
 
 [frontmatter]
