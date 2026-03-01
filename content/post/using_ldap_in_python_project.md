@@ -152,3 +152,52 @@ print(ldap_conn.auth("user", "password"))
 ```
 
 上述代码还有改进空间，不过已经可以覆盖大部分场景，只需要选定的 Attributes 实际值唯一即可。
+
+## Docker Compose 文件
+
+以下是搭建 LDAP 测试环境的 Docker Compose 文件。
+
+```yaml
+services:
+  openldap:
+    image: docker.io/bitnami/openldap:latest
+    container_name: "openldap"
+    restart: always
+    ports:
+      - '1389:1389'
+    environment:
+      LDAP_ADMIN_USERNAME: admin
+      LDAP_ADMIN_PASSWORD: adminpassword
+      LDAP_USERS: user
+      LDAP_PASSWORDS: userpassword
+      LDAP_ROOT: dc=example,dc=org
+      LDAP_ADMIN_DN: cn=admin,dc=example,dc=org
+    volumes:
+      - /opt/openldap/data:/bitnami/openldap
+    ports:
+      - 1389:1389
+    expose:
+      - 1389
+    networks:
+      openldap_network:
+
+  openldap-ui:
+    depends_on:
+      - 'openldap'
+    image: docker.io/dnknth/ldap-ui:latest
+    container_name: "openldap-ui"
+    restart: always
+    ports:
+      - "5000:5000"
+    expose:
+      - 5000
+    environment:
+      LDAP_URL: ldap://openldap:1389/
+      BASE_DN: dc=example,dc=org
+      BIND_PATTERN: cn=%s,dc=example,dc=org
+    networks:
+      openldap_network:
+
+networks:
+  openldap_network:
+```

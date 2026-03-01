@@ -442,18 +442,36 @@ $ systemctl restart systemd-timesyncd.service
 
 ```bash
 # 查询系统已经安装的 deb 软件包，对标 redhat 系列的 rpm -qa
-$ dpkg -l
+dpkg -l
 
-# 查询 deb 软件包安装的所有文件，对标 redhat 系列的 rpm -ql <package_name>
-$ dpkg -L <package_name>
+# 查询 deb 软件包安装的所有文件，对标 redhat 系列的 rpm -ql "package_name"
+dpkg -L "package_name"
 
-# 查询文件的 deb 软件包归属，对标 redhat 系列的 rpm -qf <filename>
-$ dpkg -S <filename>
+# 查询文件的 deb 软件包归属，对标 redhat 系列的 rpm -qf "filename"
+dpkg -S "filename"
 
 # 不执行安装，只下载 deb 软件包，会默认下载到 apt 的缓存目录
-$ apt install --download-only <package_name>
-$ ls /var/cache/apt/archives
+apt install --download-only "package_name"
+ls /var/cache/apt/archives
 
 # 不执行安装，直接解压 deb 软件包，可以自由指定解压目录
-$ dpkg -x <package_name> /tmp/deb
+dpkg -x "package_name" /tmp/deb
+```
+
+## GPG KEY 的导出和导入
+
+```bash
+apt update
+apt install gpg gpg-agent
+
+# 检查现有的 gpg key
+gpg --list-signatures
+
+# 获取 keyid 后执行导出，导出私钥时需要对应的密码
+gpg --output pub.gpg --armor --export "keyid"
+gpg --output pri.gpg --armor --export-secret-key "keyid"
+
+# 执行导入
+gpg --import pub.gpg
+gpg --allow-secret-key-import --import pri.gpg
 ```
