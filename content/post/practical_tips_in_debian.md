@@ -324,6 +324,18 @@ $ chmod 750 /data/sftp/sftp
 # 使用 sftp 用户登陆后会被限制在 /data/sftp 中，并且只能修改 /data/sftp/sftp 下的文件
 ```
 
+### SSH Tunnel
+
+通过 SSH Tunnel 访问有网络限制的端口或者特定服务。
+
+```bash
+ssh -i key -NfL <local_ip>:<local_port>:<dest_ip>:<dest_port> <user>@<remote_server_ip>
+```
+
+`dest_ip` 和 `dest_port` 是有网络限制的服务端的地址和端口，相对的 `remote_server_ip` 是有能力访问 `dest_ip` 的远程服务器，可以执行这条命令的机器就是 `local_ip` ，它有相对自由的选择，可以是个人电脑或者是任何内网中的机器，但都需要有访问 `remote_server_ip` 的能力。
+
+原理就是通过 `local_ip` 和 `remote_server_ip` 之间建立 SSH 隧道，本地流量通过直接访问 `local_ip` 进行流量转发，经由 `remote_server_ip` 到达 `dest_ip` ，从而绕开网络限制。
+
 ## Debian 用户安全加固
 
 ### 增加用户登陆会话超时时间
