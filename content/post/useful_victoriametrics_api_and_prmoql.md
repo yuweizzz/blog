@@ -72,6 +72,26 @@ curl http://localhost:8428/api/v1/admin/tsdb/delete_series \
 
 该操作会将整个指标都直接删除，并且占用的存储空间不会立即释放。
 
+## 使用 VMctl 迁移数据
+
+这里涉及的内容是单机节点到单点节点的迁移：
+
+```bash
+# 指定时间范围和指标选取值，以月份为单位步长进行迁移
+./vmctl vm-native \
+  --vm-native-src-addr=http://127.0.0.1:8428 \
+  --vm-native-dst-addr=http://192.168.1.1:8428 \
+  --vm-native-filter-time-start='2025-11-20T00:00:00+08:00' \
+  --vm-native-filter-time-end='2026-01-19T18:29:00+08:00' \
+  --vm-native-step-interval=month \
+  --vm-native-filter-match='{__name__!~"vm_.*"}'
+  # --vm-intercluster 在集群间迁移数据应该带上这个参数
+```
+
+在迁移过程中会大量写入旧时间的数据，可能会触发大量 `rollupResult cache has been cleared` 错误日志，这个错误应该是因为写入新数据导致原有缓存失效，可以使用 `-search.disableAutoCacheReset` 暂时禁用，迁移完成后可以去掉，使用较大的 `--cacheTimestampOffset` 值代替，这样可以使得缓存在指标延迟写入时不被重置。
+
+时间步长较大时，单次取出的序列数据可能大于默认的限制值，可以通过较大的 `-search.maxSeries` 选项值来允许取出更多的数据。
+
 ## 常用的 PromQL
 
 这里会介绍一些比较常用的 PromQL 。

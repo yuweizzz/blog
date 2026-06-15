@@ -466,3 +466,38 @@ with smtplib.SMTP_SSL(stmp_address, stmp_port) as server:
     server.login(username, password)
     server.send_message(msg)
 ```
+
+## 将 python 项目打包 docker 镜像
+
+首先将依赖写入到 `requirements.txt` 中：
+
+```bash
+pip freeze > requirements.txt
+```
+
+然后创建 `Dockerfile` 文件：
+
+```Dockerfile
+FROM python:3.10.19-slim-trixie AS base
+FROM base AS builder
+COPY requirements.txt /requirements.txt
+RUN pip install --user -r /requirements.txt
+
+FROM base
+# copy only the dependencies installation from the 1st stage image
+COPY --from=builder /root/.local /root/.local
+RUN mkdir /app
+COPY app.py /app
+WORKDIR /app
+
+ENTRYPOINT ["python3", "-u", "app.py"]
+
+EXPOSE 8080
+```
+
+执行镜像构建，完成之后就可以在本地运行镜像：
+
+```bash
+docker buildx build . --tag image_name:latest
+docker run -d image_name:latest
+```
