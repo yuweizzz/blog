@@ -81,7 +81,20 @@ After=network.target
 [Service]
 Restart=on-failure
 WorkingDirectory=/opt/victorialogs/
-ExecStart=/opt/victorialogs/victoria-logs-prod -storageDataPath=victoria-logs-data
+ExecStart=/opt/victorialogs/victoria-logs-prod \
+  -storageDataPath=victoria-logs-data \ 
+  -retentionPeriod=90d \
+  -httpListenAddr=:9428 \
+  -loggerFormat=json \
+  -insert.maxLineSizeBytes=10485760 \
+  -memory.allowedPercent=70
+
+# storageDataPath 用来指定日志数据存储的路径
+# retentionPeriod 用来指定日志数据的保留时间
+# httpListenAddr 用来设置服务的监听地址和端口
+# loggerFormat 用来设置日志格式
+# insert.maxLineSizeBytes 用来设置允许插入的最大单行日志大小
+# memory.allowedPercent 用来设置允许占用的系统内存大小的比例
 
 [Install]
 WantedBy=multi-user.target
