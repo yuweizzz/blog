@@ -29,7 +29,7 @@ draft: false
 
 ```
 
-# 设置 transport 证书
+## 设置 transport 证书
 
 适用于单节点集群扩展的情况，重新统一配置集群节点之间的 transport 证书。
 
@@ -86,7 +86,7 @@ http.host: 0.0.0.0
 - <https://www.elastic.co/docs/deploy-manage/maintenance/add-and-remove-elasticsearch-nodes>
 - <https://www.elastic.co/docs/deploy-manage/security/set-up-basic-security>
 
-# 修改集群索引上限
+## 修改集群索引上限
 
 在集群节点比较少，但是想容纳更多索引的情况下可以使用。
 
@@ -101,7 +101,7 @@ PUT _cluster/settings
 }
 ```
 
-# 索引的生命周期管理
+## 索引的生命周期管理
 
 设置了生命周期的索引在执行 rollover 之后，索引的时间值 age 会自动更新，导致 ilm 的过期时间没有办法正常对上，这里参考旧版本 Elasticsearch 的方法，将日期时间写定在索引名称上，可以作为生命周期管理的依据。
 
@@ -196,7 +196,7 @@ PUT _cluster/settings
 }
 ```
 
-# 自定义日期格式的组件模板
+## 自定义日期格式的组件模板
 
 通过使用自定义日期格式的组件模板，应用于索引模板中。
 
