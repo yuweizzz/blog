@@ -52,7 +52,7 @@ cluster.initial_master_nodes: ["node"]
 http.host: 0.0.0.0
 ```
 
-安装后默认会自动生成证书，严格来说，所有的 ssl 都应该开启，但是这里只涉及 transport 部分，并且 http ssl 可以根据实际情况来决定是否开启。
+安装后默认会自动生成证书，严格来说，所有的 SSL 都应该开启，但是这里只涉及 transport 部分，并且 http SSL 可以根据实际情况来决定是否开启。
 
 执行以下步骤，将单节点的 transport 证书替换，然后重启集群。
 
@@ -83,8 +83,8 @@ http.host: 0.0.0.0
 
 一些可以参考的官方文档：
 
-- https://www.elastic.co/docs/deploy-manage/maintenance/add-and-remove-elasticsearch-nodes
-- https://www.elastic.co/docs/deploy-manage/security/set-up-basic-security
+- <https://www.elastic.co/docs/deploy-manage/maintenance/add-and-remove-elasticsearch-nodes>
+- <https://www.elastic.co/docs/deploy-manage/security/set-up-basic-security>
 
 # 修改集群索引上限
 
@@ -103,7 +103,7 @@ PUT _cluster/settings
 
 # 索引的生命周期管理
 
-设置了生命周期的索引在执行 rollover 之后，索引的时间值 age 会自动更新，导致 ilm 的过期时间没有办法正常对上，这里参考旧版本 elasticsearch 的方法，将日期时间写定在索引名称上，可以作为生命周期管理的依据。
+设置了生命周期的索引在执行 rollover 之后，索引的时间值 age 会自动更新，导致 ilm 的过期时间没有办法正常对上，这里参考旧版本 Elasticsearch 的方法，将日期时间写定在索引名称上，可以作为生命周期管理的依据。
 
 ```json
 # 获取现有的索引模板

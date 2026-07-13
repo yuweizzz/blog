@@ -467,7 +467,7 @@ with smtplib.SMTP_SSL(stmp_address, stmp_port) as server:
     server.send_message(msg)
 ```
 
-## 将 python 项目打包 docker 镜像
+## 将 python 项目打包 Docker 镜像
 
 首先将依赖写入到 `requirements.txt` 中：
 
